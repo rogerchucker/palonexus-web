@@ -36,6 +36,8 @@ const trustControls = [
 	'Runtime policy that evaluates context before actions execute.',
 	'Complete action logs for security, operations, and leadership review.',
 ];
+
+const requestAccessHref = 'mailto:rajarshi@remrem.org';
 ---
 
 <main class="site-shell">
@@ -49,7 +51,7 @@ const trustControls = [
 			<a href="#platform">Platform</a>
 			<a href="#governance">Governance</a>
 		</nav>
-		<a class="nav-cta" href="mailto:hello@palonexus.ai">Request access</a>
+		<a class="nav-cta" href={requestAccessHref}>Request access</a>
 	</header>
 
 	<section class="hero">
@@ -61,7 +63,7 @@ const trustControls = [
 				them, and use frameworks that make agent development repeatable.
 			</p>
 			<div class="hero-actions" aria-label="Primary actions">
-				<a class="button primary" href="mailto:hello@palonexus.ai">Request access</a>
+				<a class="button primary" href={requestAccessHref}>Request access</a>
 				<a class="button secondary" href="#solutions">Explore solutions</a>
 			</div>
 		</div>
@@ -187,7 +189,7 @@ const trustControls = [
 	<section class="closing">
 		<p class="eyebrow">Build your agentic operating model</p>
 		<h2>Design your agentic operating model with PaloNexus.</h2>
-		<a class="button primary" href="mailto:hello@palonexus.ai">Request access</a>
+		<a class="button primary" href={requestAccessHref}>Request access</a>
 	</section>
 </main>
 
@@ -195,6 +197,11 @@ const trustControls = [
 	.site-shell {
 		min-height: 100vh;
 		overflow: hidden;
+	}
+
+	.site-shell,
+	.site-shell * {
+		box-sizing: border-box;
 	}
 
 	.nav {
@@ -257,8 +264,11 @@ const trustControls = [
 		border: 1px solid #26322f;
 		display: inline-flex;
 		justify-content: center;
+		max-width: 100%;
 		min-height: 44px;
 		padding: 12px 18px;
+		text-align: center;
+		white-space: normal;
 	}
 
 	.hero {
@@ -639,6 +649,18 @@ const trustControls = [
 
 		.nav-cta,
 		.button {
+			width: min(100%, 18rem);
+		}
+
+		.nav,
+		.hero-actions,
+		.closing {
+			align-items: stretch;
+		}
+
+		.nav-cta,
+		.hero-actions .button,
+		.closing .button {
 			width: 100%;
 		}
 	}

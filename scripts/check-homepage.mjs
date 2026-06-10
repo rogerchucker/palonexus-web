@@ -10,6 +10,7 @@ const requiredContent = [
 	'Frameworks for agents',
 	'gateway, registry, identity',
 	'Design your agentic operating model',
+	'mailto:rajarshi@remrem.org',
 ];
 
 const missingContent = requiredContent.filter((content) => !html.includes(content));
