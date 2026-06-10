@@ -10,6 +10,7 @@
 		"build": "astro build",
 		"preview": "astro build && astro preview",
 		"astro": "astro",
+		"test:homepage": "astro build && node scripts/check-homepage.mjs",
 		"generate-types": "wrangler types",
 		"deploy": "astro build && wrangler deploy",
 		"cf-typegen": "wrangler types"
