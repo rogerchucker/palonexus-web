@@ -1,0 +1,27 @@
+{
+	// Dedicated config for the PaloNexus DOCS site (static Astro + Starlight, base "/docs").
+	// Deployed as a SEPARATE worker from the marketing site (palonexus-web). A more-specific
+	// Worker Route palonexus.ai/docs/* overrides the palonexus.ai Custom Domain for that path
+	// only, so the live marketing root is untouched.
+	//
+	// Assets are staged under ./dist-deploy/docs/ (see `npm run stage:docs`) because Astro's
+	// base "/docs" emits /docs/* URLs but flat output — nesting makes every path resolve.
+	//   Deploy:  npm run deploy:docs   (build + stage + wrangler deploy -c wrangler.docs.jsonc)
+	"compatibility_date": "2026-06-10",
+	"name": "palonexus-docs",
+	"assets": {
+		"directory": "./dist-deploy",
+		"html_handling": "auto-trailing-slash",
+		"not_found_handling": "404-page"
+	},
+	"routes": [
+		// Exact /docs (no trailing slash) so the asset handler can 308-redirect it to /docs/.
+		// Without this it falls through to the marketing worker and 404s. Kept separate from a
+		// greedy "/docs*" which would also swallow paths like /docs-foo on the marketing site.
+		{ "pattern": "palonexus.ai/docs", "zone_name": "palonexus.ai" },
+		{ "pattern": "palonexus.ai/docs/*", "zone_name": "palonexus.ai" }
+	],
+	"observability": {
+		"enabled": true
+	}
+}

@@ -1,46 +1,54 @@
-# Astro Starter Kit: Basics
+# PaloNexus Docs
+
+The PaloNexus documentation site — built with [Astro](https://astro.build) +
+[Starlight](https://starlight.astro.build) and served from the **`/docs`** context.
+
+Covers developer integration, the Python SDK reference, operations (Go + Terraform),
+self-hosting, architecture/features, and an HTTP API reference.
+
+## Local development
 
 ```sh
-npm create astro@latest -- --template basics
+npm install
+npm run dev        # http://localhost:4321/docs/
+npm run build      # static site -> dist/  (+ Pagefind search index)
+npm run preview    # serve the built static site
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The site is **static** (no adapter); `dist/` can be served by any static host. (The
+Cloudflare adapter was removed for the static docs build — re-add `@astrojs/cloudflare`
+in `astro.config.mjs` for a Cloudflare Workers deploy.)
 
-## 🚀 Project Structure
+## Structure
 
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+```
+astro.config.mjs            # base: '/docs', Starlight integration + sidebar (6 sections)
+src/content.config.ts       # Starlight docs collection
+src/content/docs/
+  index.md                  # home (splash)
+  getting-started/          # overview, concepts, local quickstart
+  develop/                  # developer integration guides
+  sdk/                      # Python SDK reference (agentdid, palonexus_agent)
+  operations/               # Go control-plane + Kustomize + Terraform/DOKS
+  concepts/                 # architecture & features
+  reference/                # HTTP API, headers, env vars
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+Content is authored in Markdown with Starlight frontmatter (`title`, `description`,
+`sidebar.order`). The sidebar autogenerates per directory (see `astro.config.mjs`).
+Source-of-truth drafts live in `../platform/docs/`.
 
-## 🧞 Commands
+## Add a page
 
-All commands are run from the root of the project, from a terminal:
+Drop a `.md` file in the relevant `src/content/docs/<section>/` directory with:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+```md
+---
+title: My page
+description: One-line summary.
+sidebar:
+  order: 5
+---
+```
 
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Cross-link with root-relative paths under the base, e.g. `/docs/sdk/agentdid/`.

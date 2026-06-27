@@ -12,12 +12,19 @@
 		"astro": "astro",
 		"test:homepage": "astro build && node scripts/check-homepage.mjs",
 		"generate-types": "wrangler types",
-		"deploy": "astro build && wrangler deploy",
+		"stage:docs": "rm -rf dist-deploy && mkdir -p dist-deploy/docs && cp -R dist/. dist-deploy/docs/",
+		"deploy:docs": "astro build && npm run stage:docs && wrangler deploy -c wrangler.docs.jsonc",
+		"deploy": "npm run deploy:docs",
 		"cf-typegen": "wrangler types"
 	},
 	"dependencies": {
 		"@astrojs/cloudflare": "^13.7.0",
-		"astro": "^6.4.5"
+		"@astrojs/starlight": "^0.40.0",
+		"astro": "^6.4.5",
+		"astro-mermaid": "^2.1.0",
+		"mermaid": "^11.16.0",
+		"sharp": "^0.35.2",
+		"starlight-openapi": "^0.25.3"
 	},
 	"devDependencies": {
 		"wrangler": "^4.99.0"
