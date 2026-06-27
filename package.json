@@ -10,11 +10,17 @@
 		"build": "astro build",
 		"preview": "astro build && astro preview",
 		"astro": "astro",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"test:e2e": "playwright test",
+		"test:docs": "playwright test",
+		"validate": "npm run format:check && npm run build && npm run test:e2e",
 		"test:homepage": "astro build && node scripts/check-homepage.mjs",
 		"generate-types": "wrangler types",
 		"stage:docs": "rm -rf dist-deploy && mkdir -p dist-deploy/docs && cp -R dist/. dist-deploy/docs/",
-		"deploy:docs": "astro build && npm run stage:docs && wrangler deploy -c wrangler.docs.jsonc",
-		"deploy": "npm run deploy:docs",
+		"ci:deploy": "astro build && npm run stage:docs && wrangler deploy -c wrangler.docs.jsonc",
+		"deploy": "node scripts/no-manual-deploy.mjs",
+		"deploy:docs": "node scripts/no-manual-deploy.mjs",
 		"cf-typegen": "wrangler types"
 	},
 	"dependencies": {
@@ -27,6 +33,9 @@
 		"starlight-openapi": "^0.25.3"
 	},
 	"devDependencies": {
+		"@playwright/test": "^1.61.1",
+		"prettier": "^3.9.0",
+		"typescript": "^6.0.3",
 		"wrangler": "^4.99.0"
 	},
 	"overrides": {

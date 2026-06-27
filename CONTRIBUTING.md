@@ -183,6 +183,25 @@ Before opening a PR:
 > Note: a parallel build/validation process may already own `npm run build` in some
 > workflows — coordinate before running it yourself if so.
 
+## Releasing (CI-only deployment)
+
+Deployment is automated and **cannot** be done from a laptop. A push to `main` (a merged,
+reviewed PR) is the only way to publish, and only after the end-to-end tests pass.
+
+1. **Validate locally** exactly as CI does:
+   ```bash
+   npm run validate     # Prettier check + docs build + Playwright E2E
+   ```
+2. **Open a PR** to `main`. The `validate` job (format → build → Playwright E2E) runs on the
+   PR; it must be green to merge. The Playwright report is attached as an artifact.
+3. **Merge to `main`.** CI re-runs `validate`, then the `deploy` job publishes the
+   `palonexus-docs` worker and runs a post-deploy smoke test.
+
+`npm run deploy` is disabled on purpose (`scripts/no-manual-deploy.mjs`). The end-to-end
+tests live in `tests/e2e/docs.spec.ts`. The complete release runbook — verification, rollback,
+required Cloudflare secrets, and troubleshooting — is the
+[Releasing the docs site](src/content/docs/operations/releasing-the-docs.md) operations page.
+
 ## Quick checklist
 
 - [ ] Page is in the right `src/content/docs/<section>/` directory with `title`,

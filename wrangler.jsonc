@@ -1,19 +1,19 @@
 {
 	"compatibility_date": "2026-06-10",
-	"compatibility_flags": [
-		"global_fetch_strictly_public"
-	],
+	"compatibility_flags": ["global_fetch_strictly_public"],
 	"name": "palonexus-web",
 	"main": "@astrojs/cloudflare/entrypoints/server",
 	"assets": {
 		"directory": "./dist",
-		"binding": "ASSETS"
+		"binding": "ASSETS",
 	},
-	"kv_namespaces": [{
-		"binding": "SESSION",
-		"id": "eabbc0a0886b4789b474c2767e74c716"
-	}],
+	"kv_namespaces": [
+		{
+			"binding": "SESSION",
+			"id": "eabbc0a0886b4789b474c2767e74c716",
+		},
+	],
 	"observability": {
-		"enabled": true
-	}
+		"enabled": true,
+	},
 }

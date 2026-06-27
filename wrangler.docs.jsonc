@@ -12,16 +12,16 @@
 	"assets": {
 		"directory": "./dist-deploy",
 		"html_handling": "auto-trailing-slash",
-		"not_found_handling": "404-page"
+		"not_found_handling": "404-page",
 	},
 	"routes": [
 		// Exact /docs (no trailing slash) so the asset handler can 308-redirect it to /docs/.
 		// Without this it falls through to the marketing worker and 404s. Kept separate from a
 		// greedy "/docs*" which would also swallow paths like /docs-foo on the marketing site.
 		{ "pattern": "palonexus.ai/docs", "zone_name": "palonexus.ai" },
-		{ "pattern": "palonexus.ai/docs/*", "zone_name": "palonexus.ai" }
+		{ "pattern": "palonexus.ai/docs/*", "zone_name": "palonexus.ai" },
 	],
 	"observability": {
-		"enabled": true
-	}
+		"enabled": true,
+	},
 }

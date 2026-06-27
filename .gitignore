@@ -29,6 +29,11 @@ pnpm-debug.log*
 coverage/
 .nyc_output/
 
+# Playwright E2E
+playwright-report/
+test-results/
+playwright/.cache/
+
 # TypeScript and tool caches
 *.tsbuildinfo
 .eslintcache

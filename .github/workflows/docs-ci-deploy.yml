@@ -1,0 +1,113 @@
+name: Docs CI & Deploy
+
+# The ONLY supported path to production. Pull requests run the validate gate; a push to
+# main (i.e. a merged, reviewed PR) runs validate and then deploys to Cloudflare Workers.
+# There is no manual/laptop deploy path — see scripts/no-manual-deploy.mjs.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Least privilege: the workflow only needs to read the repo. Deployment authenticates to
+# Cloudflare with a scoped API token from secrets, never the GITHUB_TOKEN.
+permissions:
+  contents: read
+
+# Serialize per ref. Cancel superseded PR runs, but never cancel an in-flight deploy.
+concurrency:
+  group: docs-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  validate:
+    name: Validate (format · build · E2E)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Format check (Prettier)
+        run: npm run format:check
+
+      - name: Build docs (also validates content schema + Mermaid transform)
+        run: npm run build
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: End-to-end documentation tests (Playwright)
+        run: npm run test:e2e
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  deploy:
+    name: Deploy to Cloudflare Workers
+    needs: validate
+    # SAFEGUARDS — deployment is gated on ALL of:
+    #   * the canonical repository (forks have a different owner/name → never deploy),
+    #   * a push event (pull_request never deploys, even from a branch in this repo),
+    #   * the main branch ref.
+    # Fork PRs additionally cannot read the secrets below, so they cannot publish.
+    if: ${{ github.repository == 'remrem-apps/palonexus-web' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    # The "production" GitHub Environment holds the Cloudflare secrets and can require a
+    # human reviewer / restrict to main before any deploy runs.
+    environment:
+      name: production
+      url: https://palonexus.ai/docs/
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and stage docs assets
+        run: npm run build && npm run stage:docs
+
+      - name: Deploy with Wrangler
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy -c wrangler.docs.jsonc
+
+      - name: Verify deployment (post-deploy smoke test)
+        run: |
+          set -euo pipefail
+          fail=0
+          for url in \
+            "https://palonexus.ai/docs/" \
+            "https://palonexus.ai/docs/develop/" \
+            "https://palonexus.ai/docs/operations/self-hosting/"; do
+            code=$(curl -fsS -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 6 --retry-all-errors "$url" || echo 000)
+            echo "$code  $url"
+            [ "$code" = "200" ] || { echo "::error::Post-deploy check failed for $url (HTTP $code)"; fail=1; }
+          done
+          # /docs (no trailing slash) must redirect; marketing root must stay reachable.
+          curl -fsS -o /dev/null -w 'redirect /docs -> %{redirect_url} (HTTP %{http_code})\n' "https://palonexus.ai/docs" || true
+          root=$(curl -fsS -o /dev/null -w '%{http_code}' "https://palonexus.ai/" || echo 000)
+          echo "$root  https://palonexus.ai/ (marketing root, must remain reachable)"
+          [ "$root" = "200" ] || { echo "::error::Marketing root no longer 200 (HTTP $root)"; fail=1; }
+          exit $fail

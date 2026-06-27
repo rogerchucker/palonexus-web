@@ -1,0 +1,19 @@
+# Build + tooling output
+node_modules
+dist
+dist-deploy
+.astro
+.wrangler
+playwright-report
+test-results
+
+# Lockfiles and generated specs are not hand-formatted
+package-lock.json
+openapi
+
+# Prose is authored by hand — don't let Prettier reflow Markdown tables, captions, or
+# Mermaid fences. Content correctness is enforced by the docs build, not by formatting.
+src/content
+public
+*.md
+*.mdx
