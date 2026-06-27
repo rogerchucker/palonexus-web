@@ -15,9 +15,26 @@ npm run build      # static site -> dist/  (+ Pagefind search index)
 npm run preview    # serve the built static site
 ```
 
-The site is **static** (no adapter); `dist/` can be served by any static host. (The
-Cloudflare adapter was removed for the static docs build — re-add `@astrojs/cloudflare`
-in `astro.config.mjs` for a Cloudflare Workers deploy.)
+The site is **static** (no adapter); `dist/` can be served by any static host.
+
+Validate the way CI does before pushing:
+
+```sh
+npm run validate   # Prettier format check + docs build + Playwright E2E
+```
+
+## Deployment
+
+Publishing is **CI-only**. The site is deployed to the Cloudflare Worker `palonexus-docs`
+(served at `palonexus.ai/docs`) **only** by GitHub Actions on a push to `main`, and **only
+after** the Playwright E2E tests pass. There is no laptop deploy path — `npm run deploy`
+intentionally refuses and points you to the release guide.
+
+- Pipeline: [`.github/workflows/docs-ci-deploy.yml`](.github/workflows/docs-ci-deploy.yml)
+- Full process (local validation, PR checks, merge behavior, verification, rollback,
+  troubleshooting, required secrets): **`src/content/docs/operations/releasing-the-docs.md`**
+  (published at `/docs/operations/releasing-the-docs/`).
+- Required GitHub secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` (see `.env.example`).
 
 ## Structure
 
