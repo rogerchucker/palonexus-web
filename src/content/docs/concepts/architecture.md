@@ -11,11 +11,13 @@ the decision spine, the listeners it exposes, and the trust zones it sits in.
 
 ## The decision spine
 
-The spine is [`internal/authz`](https://github.com/). Envoy's HTTP `ext_authz` filter
-forwards each request here; the handler dispatches on the `X-Palonexus-Actor` header:
+The spine is [`internal/authz`](https://github.com/). Every request reaches it and the
+handler dispatches on the `X-Palonexus-Actor` header — the headline path is **agent
+egress**, with north-south ingress as the foundation underneath it:
 
-- **present** → `serveEgress` (the agent on-ramp)
-- **absent** → `serveIngress` (north-south)
+- **present** → `serveEgress` (the agent on-ramp — *may this agent make this outbound
+  call, on behalf of this human, for this task, right now?*)
+- **absent** → `serveIngress` (north-south, forwarded by Envoy's `ext_authz` filter)
 
 Both paths call the same dependency packages in order:
 
@@ -33,9 +35,10 @@ is a dependency of it.
 
 ### The request path, end to end
 
-The diagram below traces a single request from the two entry points — a north-south
-**client** through the Envoy Gateway, and a **governed agent pod** through the egress
-forward-proxy — into the *same* `/authz` decision. Read it left to right: both paths
+The diagram below traces a single request from the two entry points — a **governed
+agent pod** through the egress forward-proxy (the headline path), and a north-south
+**client** through the Envoy Gateway (the foundation underneath) — into the *same*
+`/authz` decision. Read it left to right: both paths
 converge on the `:9191` decision listener, which runs the internal stages in order
 (identity → registry → policy → audit → metrics) and only forwards to the upstream on an
 **allow** (the bold edge). The dashed edges are the two identity sources the decision
@@ -47,11 +50,11 @@ registry, audit, and metrics without touching the decision listener.
 
 ```mermaid
 flowchart LR
-  client([North-south client])
   agent([Governed agent pod])
+  client([North-south client])
 
-  gw["Envoy Gateway<br/>SecurityPolicy.extAuth"]
   proxy["Egress forward-proxy :9092"]
+  gw["Envoy Gateway<br/>SecurityPolicy.extAuth"]
 
   subgraph cp["Control plane — one Go binary"]
     dec{{":9191 /authz decision"}}
@@ -67,17 +70,17 @@ flowchart LR
   aidp[("agent-idp<br/>did:web issuer, VCs")]
   upstream([Upstream: service / model / tool / peer])
 
-  client -->|HTTP| gw -->|ext_authz| dec
   agent -->|HTTP_PROXY| proxy --> dec
+  client -->|HTTP| gw -->|ext_authz| dec
   dec --> id --> reg --> pol --> aud --> met
   id -.JWKS.-> idp
   pol -.verify VP.-> aidp
   met ==>|allow| upstream
 ```
 
-*The two entry points (gateway ext_authz and egress proxy) converge on one `/authz`
+*The two entry points (egress proxy and gateway ext_authz) converge on one `/authz`
 decision; identity is verified against the enterprise IdP (OIDC) and agent-idp (Logto is the
-demo's IdP), and only an allow reaches the upstream.*
+first supported enterprise IdP), and only an allow reaches the upstream.*
 
 ## Two listeners (plus the egress proxy)
 
@@ -103,11 +106,11 @@ are pinned to reach only it. See [Egress enforcement](/docs/concepts/egress-enfo
                        ┌──────────────────────────────────────────┐
                        │  CONTROL PLANE  (one Go binary)            │
                        │                                            │
+  agent pods ──────────▶  :9092  egress forward-proxy (same decision)
+                       │                                            │
   gateway ──ext_authz──▶  :9191  /authz   (decision hot path)       │
                        │                                            │
   operators / CI ──────▶  :8181  registry · audit · egress · /metrics
-                       │                                            │
-  agent pods ──────────▶  :9092  egress forward-proxy (same decision)
                        └──────────────────────────────────────────┘
 ```
 

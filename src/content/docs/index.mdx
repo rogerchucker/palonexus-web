@@ -3,7 +3,7 @@ title: PaloNexus
 description: An IdP-neutral control plane and Python SDK for AI-agent identity, human ownership, task-scoped delegation, temporary elevation, and tamper-evident audit — one /authz decision for every agent action.
 template: splash
 hero:
-  tagline: Govern every AI agent like a first-class identity — owned by a human, granted task-scoped access, elevated only on approval, and proven on a tamper-evident audit trail. One /authz decision for every request and every agent's outbound call.
+  tagline: "Govern every outbound action an AI agent takes — model call, tool call, agent→agent hop — at one deny-by-default /authz decision: may this agent make this call, on behalf of this human, for this task, right now? Owned by a human, granted task-scoped access, elevated only on approval, proven on a tamper-evident audit trail. The same decision also gates inbound calls."
   actions:
     - text: Start in 10 minutes
       link: /docs/getting-started/quickstart-agent-dev/
@@ -165,6 +165,7 @@ flow, end to end, copy-pasteable.
 ---
 
 **IdP-neutral by design.** PaloNexus sits beside your existing workforce IAM and never replaces
-it — any OIDC/SCIM IdP integrates the same way. Logto is the reference IdP used in demos and
-seeded datasets; see the [IdP Support Model](/docs/concepts/idp-support/). For the security
+it. Logto is the **first supported enterprise IdP**; Okta, Entra ID, and others integrate on the
+same standard OIDC/SCIM surfaces as near-term roadmap. See the
+[IdP Support Model](/docs/concepts/idp-support/). For the security
 posture and an honest compliance statement, see [Security & Trust](/docs/concepts/security-and-trust/).

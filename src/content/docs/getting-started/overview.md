@@ -7,10 +7,13 @@ sidebar:
 
 PaloNexus is a Kubernetes-native **control layer** that unifies six pillars —
 **gateway, identity, registry, policy, observability, audit** — onto a single
-authorization decision. Every request entering the cluster hits the gateway, which
-asks the control plane one question via Envoy `ext_authz`: *may this caller reach this
-service?* The same decision point governs **agent egress**: every outbound action an
-agent takes (model call, tool call, agent→agent hop) is decided at the same `/authz`.
+authorization decision. Its headline job is **agent egress governance**: every
+outbound action an agent takes — model call, tool call, agent→agent hop — is decided
+at one deny-by-default `/authz` that answers *may this agent make this call, on behalf
+of this human, for this task, right now?* The same decision point **also** gates
+inbound calls — every north-south request entering the gateway asks the same `/authz`
+*may this caller reach this service?* via Envoy `ext_authz`. That north-south
+capability is the foundation egress is built on, not the headline.
 
 ## The one-diagram story
 
@@ -74,8 +77,8 @@ in sync with it.
 
 | Capability | Status |
 |---|---|
-| **Ingress authz** — every north-south request decided at `/authz` via Envoy `ext_authz`, deny-by-default | Must-have (shipped) |
-| **Agent egress governance** — every model / tool / agent→agent / external call decided at the *same* `/authz` (allowlist → budget → delegation → OPA) | Must-have (shipped) |
+| **Agent egress governance** — every model / tool / agent→agent / external call decided at one deny-by-default `/authz` (allowlist → budget → delegation → OPA) | Must-have (shipped) |
+| **Ingress authz** — every north-south request decided at the *same* `/authz` via Envoy `ext_authz`, deny-by-default; the foundation egress is built on | Foundational (shipped) |
 | **DID/VC agent identity** — `did:key` subjects under a `did:web` issuer, Membership + Capability VCs | Must-have (shipped) |
 | **Delegations / TBAC** — human-approved, time-boxed, task-scoped Delegation VCs | Must-have (shipped) |
 | **Human-approved egress hold** — needs-approval / external egress held for a human decision | Must-have (shipped) |

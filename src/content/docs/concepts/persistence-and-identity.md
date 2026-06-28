@@ -7,7 +7,7 @@ sidebar:
 
 Two production-hardening capabilities make the control plane safe to run beyond a
 demo: **durable, pluggable persistence** and **cryptographic egress identity**. Both
-are shipped and verified live on DOKS.
+are shipped and verified live on a managed Kubernetes cluster (DOKS example).
 
 > Canonical design: `docs/persistence-and-identity.md` in the platform repo.
 

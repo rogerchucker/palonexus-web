@@ -1,6 +1,6 @@
 ---
 title: Architecture overview
-description: The six pillars converging on one /authz decision, the request flow (identity → registry → policy → audit → metrics), and both directions of traffic — ingress and agent egress.
+description: The six pillars converging on one /authz decision, the request flow (identity → registry → policy → audit → metrics), and both directions of traffic — agent egress and ingress.
 sidebar:
   order: 1
 ---
@@ -8,13 +8,16 @@ sidebar:
 PaloNexus is a Kubernetes-native **control layer**: gateway, registry, identity,
 policy, observability, and audit unified onto **one request decision**. The trick to
 "one control layer" is that all six concerns meet on a **single question** —
-*may this caller reach this service?* — answered at the control plane's `/authz`
-endpoint. Identity, the registry, and policy converge to answer it; recording the
-answer is audit; counting it is observability.
+*may this agent make this outbound call, on behalf of this human, for this task, right
+now?* — answered at the control plane's `/authz` endpoint. Every outbound action an
+agent takes — a model call, a tool call, or an agent→agent hop — is decided at that
+`/authz`, carrying the agent identity and the user it acts for. Identity, the registry,
+and policy converge to answer it; recording the answer is audit; counting it is
+observability.
 
-The same decision point governs **agent egress**: every outbound action an agent
-takes — a model call, a tool call, or an agent→agent hop — is decided at the *same*
-`/authz`, carrying the agent identity and the user it acts for.
+The same decision point **also** governs **ingress**: every north-south request asks
+the same `/authz` — *may this caller reach this service?* That inbound capability is
+the foundation egress is built on, not the headline.
 
 ## The six pillars, one decision
 
@@ -46,29 +49,29 @@ On an allow, the control plane stamps `X-Palonexus-Subject` and `X-Palonexus-Ups
 response headers; the gateway forwards those so upstreams trust the edge and never
 re-parse the raw token. See [Headers](/docs/reference/headers/) for the full set.
 
-## Two directions: ingress and egress
+## Two directions: egress and ingress
 
 A request that carries the `X-Palonexus-Actor` header is treated as an **agent egress**
-call and takes the egress decision path; everything else is ordinary north-south
-**ingress**.
+call and takes the egress decision path — the headline case; everything else is
+ordinary north-south **ingress**, the foundation it is built on.
 
 ```
- client ──HTTP──▶ Envoy Gateway ──ext_authz──▶ /authz ──▶ upstream (apps)
-                                                  │  ingress: who / what / may
-
  agent ──egress──▶ egress proxy ──▶ /authz ──▶ model broker / tool / peer agent
                                        │  egress: actor + on-behalf-of + task
                                        │  + allowlist + budget + delegation + OPA
+
+ client ──HTTP──▶ Envoy Gateway ──ext_authz──▶ /authz ──▶ upstream (apps)
+                                                  │  ingress: who / what / may
 ```
 
-- **Ingress** answers *may this user/client reach this service?* — identity →
-  registry → policy.
 - **Egress** answers *may THIS agent, acting for THIS user on THIS task, reach THIS
-  target?* — it resolves both the calling agent and the target from the registry,
-  then runs an **allowlist → budget → delegation (TBAC) → OPA** decision. Agent
-  identity is proven cryptographically (a Verifiable Presentation), not taken from a
-  header. See [Egress enforcement](/docs/concepts/egress-enforcement/) and
+  target right now?* — it resolves both the calling agent and the target from the
+  registry, then runs an **allowlist → budget → delegation (TBAC) → OPA** decision.
+  Agent identity is proven cryptographically (a Verifiable Presentation), not taken
+  from a header. See [Egress enforcement](/docs/concepts/egress-enforcement/) and
   [Persistence & identity](/docs/concepts/persistence-and-identity/).
+- **Ingress** answers *may this user/client reach this service?* — identity →
+  registry → policy. It is the same `/authz`, and the foundation egress builds on.
 
 ## Design invariants
 

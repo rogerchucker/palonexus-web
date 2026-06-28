@@ -11,7 +11,7 @@ every registration, delegation, and revocation. The opt-in persistence layer
 makes them durable behind the *same* storage interface, selected entirely by
 environment variables.
 
-> Status: shipped and verified live on DOKS with `REGISTRY_BACKEND=postgres` /
+> Status: shipped and verified live on a managed Kubernetes cluster (DOKS example) with `REGISTRY_BACKEND=postgres` /
 > `IDP_STORE_BACKEND=postgres` (Postgres via CloudNativePG). Registry and
 > agent-idp store survive pod restarts.
 

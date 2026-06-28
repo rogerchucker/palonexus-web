@@ -40,7 +40,7 @@ selects offline mode). Unset values fall back to the local-dev defaults.
 
 Build an in-memory facade that needs no cluster (for tests/dev).
 
-Mirrors the demo seeder's ``FakeLogtoClient`` fake client philosophy: the full
+Mirrors ``seed-logto``'s ``FakeLogtoClient`` philosophy: the full
 register -> deny -> delegate -> approve -> succeed flow runs against an
 in-memory `FakeControlPlane`. This is the clean
 seam REM-151 builds out; the foundation slice ships a thin but real fake
@@ -107,7 +107,9 @@ Args:
     sponsor: The business sponsor — a stable directory subject (mandatory).
     team: Optional owning team/group key.
     risk_tier: low | medium | high | critical.
-    runtime: An approved runtime, e.g. ``doks_prod``.
+    runtime: An approved runtime label, e.g. ``doks_prod`` or ``k8s_prod`` —
+        these are just example labels for *where* the agent runs, not a
+        DigitalOcean/DOKS requirement.
     scenario: The seed scenario key (e.g. ``devops-incident``), recorded
         on the returned handle for task binding.
     tenant_id: Org/tenant id; defaults to the facade's ``tenant_id``.
@@ -143,13 +145,20 @@ it and returns ``False``.
 
 **Methods of `RevocationClient`**
 
-#### `cascade(self, *, parent_did: str | None = None, tenant: str | None = None) -> dict[str, typing.Any]`
+#### `cascade(self, *, parent_did: str | None = None, tenant: str | None = None, subject: str | None = None) -> dict[str, typing.Any]`
 
 Revoke everything under an agent/tenant (agent-idp ``/v1/revocation/cascade``).
 
 Returns the cascade report (agents suspended/quarantined, delegations
 revoked/invalidated). ``parent_did`` is accepted for API symmetry with the
 plan; the server cascades by ``tenant`` today.
+
+Args:
+    parent_did: The agent/owner DID the cascade is rooted at (API symmetry).
+    tenant: Tenant id to cascade (live; defaults to the facade's tenant).
+    subject: Offline only — scope the cascade to one human subject's
+        delegations (the SCIM-leaver path, roadmap item 18). Live cascade is
+        tenant-scoped server-side.
 
 ### `Task`
 
@@ -165,6 +174,7 @@ Yielded by ``with pn.task(...) as task``. Carries the typed
 Like `check`, but enforce the decision by raising on non-allow.
 
 Raises:
+    DelegationExpired: A previously-approved delegation's time-box elapsed.
     ApprovalRequired: The control plane needs a human-approved delegation.
     PolicyDenied: The control plane returned a hard deny.
     ControlPlaneUnavailable: The decision point was unreachable (fail closed).
@@ -298,7 +308,7 @@ by the live session, never serialized here.
 
 A human principal who can own / sponsor / approve / operate / audit agents.
 
-Backed by the workforce directory (your IdP, synced) via ``agent-idp`` ``/v1/directory/employees``.
+Backed by the Logto directory via ``agent-idp`` ``/v1/directory/employees``.
 
 | Field | Type | Default |
 |---|---|---|
@@ -346,7 +356,7 @@ as its ``info``.
 
 ### `PolicyDecision`
 
-The control plane's answer to "may this caller reach this target right now?".
+The control plane's answer to "may this agent make this call, on behalf of this human, for this task, right now?".
 
 Backed by control-plane ``/authz``. ``allow`` and ``needs_approval`` are
 mutually meaningful: a 200 is ``allow=True``; a 401 + needs-approval header is
@@ -356,6 +366,7 @@ mutually meaningful: a 200 is ``allow=True``; a 401 + needs-approval header is
 |---|---|---|
 | `allow` | `bool` | _required_ |
 | `needs_approval` | `bool` | `False` |
+| `expired` | `bool` | `False` |
 | `reason` | `str` | `''` |
 | `subject` | `str | None` | — |
 | `upstream` | `str | None` | — |
@@ -413,9 +424,9 @@ the gateway enforces at ``/authz`` — the anti-drift surface the parity test
 
 ### `AssetType`
 
-A PaloNexus-only asset taxonomy entry (not held in the workforce IdP).
+A PaloNexus-only asset taxonomy entry (not held in Logto).
 
-The workforce IdP holds identity/roles; PaloNexus holds asset types and maps human
+Logto holds identity/roles; PaloNexus holds asset types and maps human
 permissions -> agent task scopes (§15.1 separation).
 
 | Field | Type | Default |

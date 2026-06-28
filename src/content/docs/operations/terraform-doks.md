@@ -5,6 +5,8 @@ sidebar:
   order: 6
 ---
 
+This is one **optional** provisioning example (DigitalOcean). PaloNexus runs on any Kubernetes or via Docker Compose — you do not need DigitalOcean.
+
 `infra/terraform/` brings a budget **DOKS** cluster up and down for the demo. It
 provisions only the cloud substrate — VPC, cluster, registry — and wires the
 registry pull-credentials into the cluster. The platform workloads themselves are

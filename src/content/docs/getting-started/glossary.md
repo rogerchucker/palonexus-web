@@ -54,8 +54,11 @@ can change, the subject does not.
 to answer one question — *may this caller reach this target?* — for both ingress and agent
 egress. Returns `200` (allow), `401` + needs-approval (delegation required), or `403` (deny).
 
-**ext_authz.** Envoy's external-authorization filter. Every request through the gateway is
-routed to `/authz` via `ext_authz` before it reaches an upstream — so there is no
+**ext_authz.** Envoy's external-authorization filter — the mechanism that routes every
+request to one decision point, `/authz`, before it reaches an upstream. The decision it
+asks is the **agent-egress question** — *may this agent make this call, on behalf of this
+human, for this task, right now?* — and the *same* `/authz` answers it for north–south
+ingress too (the foundation egress governance builds on). Either way there's no
 per-service auth code, just one place to reason about access.
 
 **Deny-by-default.** The platform's default answer is **no**. Unknown agent, invalid or
@@ -138,7 +141,8 @@ The hard problem PaloNexus governs: every egress passes the same `/authz` decisi
 agent + on-behalf-of identity.
 
 **Ingress.** A north–south request *into* the cluster (client → gateway → upstream), the
-classic API-gateway direction.
+classic API-gateway direction. It is the **foundational** decision the platform started
+from — the same `/authz` spine that now also governs agent **egress**.
 
 **A2A — Agent-to-Agent.** One agent calling another. The hop is itself gated and carries the
 original on-behalf-of subject.

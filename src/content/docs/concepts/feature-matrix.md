@@ -1,20 +1,20 @@
 ---
 title: Feature matrix
-description: Every PaloNexus platform capability — ingress authz, agent egress governance, DID/VC identity, delegation/TBAC, budgets, admission, persistence backends, observability, audit hash-chain, and the consoles — with status and where it's documented.
+description: Every PaloNexus platform capability — agent egress governance, ingress authz, DID/VC identity, delegation/TBAC, budgets, admission, persistence backends, observability, audit hash-chain, and the consoles — with status and where it's documented.
 sidebar:
   order: 7
 ---
 
 A single table of everything the platform does, with shipped status and a pointer to
 where each capability is documented. All rows marked **Shipped** are built,
-unit-tested, and verified live on DOKS.
+unit-tested, and verified live on a managed Kubernetes cluster (DOKS example).
 
 ## Capabilities
 
 | Capability | What it does | Status | Documented in |
 |---|---|---|---|
-| **Ingress authz** | Every north-south request is decided at `/authz` (identity → registry → policy) via Envoy `ext_authz`; allow stamps `X-Palonexus-Subject`/`-Upstream`. | Shipped | [Architecture overview](/docs/concepts/index/), [HTTP API](/docs/reference/http-api/) |
-| **Agent egress governance** | Every outbound agent call (model / tool / A2A / external) is decided at the *same* `/authz`: allowlist → budget → delegation → OPA. | Shipped | [Egress enforcement](/docs/concepts/egress-enforcement/) |
+| **Agent egress governance** | The headline pillar: every outbound agent call (model / tool / A2A / external) is decided at one deny-by-default `/authz` — *may this agent make this call, on behalf of this human, for this task, right now?* — via allowlist → budget → delegation → OPA. | Shipped | [Egress enforcement](/docs/concepts/egress-enforcement/) |
+| **Ingress authz** | Foundational: every north-south request is decided at the *same* `/authz` (identity → registry → policy) via Envoy `ext_authz`; allow stamps `X-Palonexus-Subject`/`-Upstream`. The foundation agent egress builds on. | Shipped | [Architecture overview](/docs/concepts/index/), [HTTP API](/docs/reference/http-api/) |
 | **Network-layer egress proxy** | Forward proxy (`:9092`) confines agent egress; raw `curl` → 407; same decision as `/authz`, audited `egress.proxy`. | Shipped | [Egress enforcement](/docs/concepts/egress-enforcement/) |
 | **Envoy egress gateway** | Transparent data-plane alternative to the proxy (`SecurityPolicy.extAuth` → `/authz`). | Shipped (`components/egress-gateway`) | [Egress enforcement](/docs/concepts/egress-enforcement/) |
 | **Admission webhook** | Mutates proxy env into agent pods; rejects un-provisioned agents at registration time. | Shipped (`components/agent-admission`) | [Egress enforcement](/docs/concepts/egress-enforcement/) |
@@ -73,6 +73,6 @@ open; **Planned** means the capability is scoped but not built.
 
 ## Status legend
 
-- **Shipped** — built, tested, and verified running live on DOKS.
+- **Shipped** — built, tested, and verified running live on a managed Kubernetes cluster (DOKS example).
 - **Partial** — a shipped capability with a production-grade hardening upgrade still open.
 - **Planned** — scoped and tracked in `BACKLOG.md` / the `README.md` checklist, not yet built.

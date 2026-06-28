@@ -12,7 +12,7 @@ agent→agent hop, an external webhook) pass through the *same* `/authz` decisio
 `httpx`/`curl`), enforced at the **network layer** rather than by cooperative
 middleware, and with a **human egress-approval** path for risky calls.
 
-> **Status: shipped and verified live on DOKS.** This page summarizes the canonical
+> **Status: shipped and verified live on a managed Kubernetes cluster (DOKS example).** This page summarizes the canonical
 > design (`docs/egress-enforcement.md` in the platform repo).
 
 ## Defense in depth: the layers

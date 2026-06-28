@@ -79,6 +79,14 @@ The dev/kind/selfhost overlays all strip the same three env entries (`OIDC_ISSUE
 `OIDC_JWKS_URL`, `OIDC_AUDIENCE`) to enter anonymous passthrough. Same image
 everywhere — only the overlay differs.
 
+:::note[Wire your own IdP for production]
+Anonymous passthrough is fine for evaluation, but production should verify human
+identity against your workforce IdP. Enable the `oidc` component (below) to point the
+control plane at **your** issuer — **Logto** (the first supported IdP), Okta, Entra ID, or
+any OIDC provider. Agent *egress* identity (DID/VC) is independent and already on. Full
+steps: [Bring your own IdP](/docs/operations/bring-your-own-idp/).
+:::
+
 ## The opt-in hardening components
 
 Production hardenings ship as Kustomize **components** you list in the selfhost
@@ -93,6 +101,7 @@ components:
   - ../../components/egress-sidecar      # per-agent localhost sidecar (langchain model-egress fix), fresh 12h revocable VP
   - ../../components/egress-gateway      # OPTIONAL Envoy egress data plane (ext_authz -> /authz)
   - ../../components/agent-admission     # webhook: inject proxy env + reject un-provisioned agent pods
+  - ../../components/oidc                # wire YOUR IdP (Logto/Okta/Entra); DELETE the OIDC-strip patch when enabled
 ```
 
 | Component | What it does |
@@ -103,6 +112,7 @@ components:
 | `egress-sidecar` | adds a localhost `egress-sidecar` to each agent pod so `langchain_openai`'s `base_url` (which it can't strip) routes through the proxy; mints a fresh long-TTL (12h) revocable VP per request. **Pair with `egress-enforcement`** |
 | `egress-gateway` | optional transparent Envoy forward-proxy (`egress-gw.apps.svc:3128`) deciding every call via the `ext_authz` filter — the egress mirror of the ingress keystone |
 | `agent-admission` | mutating + validating webhook: injects the proxy env at admission and **rejects** agent pods whose agent isn't registered+provisioned at the IdP. Self-contained TLS-bootstrap Job (no cert-manager) |
+| `oidc` | wires your enterprise IdP (Logto first-supported / Okta / Entra / any OIDC) as human sign-in — re-adds `OIDC_ISSUER`/`OIDC_JWKS_URL`/`OIDC_AUDIENCE` pointing at your issuer. **Enabling it requires deleting the anonymous-passthrough strip patch** (they conflict). → [Bring your own IdP](/docs/operations/bring-your-own-idp/) |
 
 ### Order matters
 

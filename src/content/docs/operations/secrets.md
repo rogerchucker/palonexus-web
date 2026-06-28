@@ -31,9 +31,9 @@ Kubernetes `Secret`s, ideally synced from an external manager.
 ## Cluster secret / env fail-closed matrix
 
 The catalog above is the *what*; this matrix is the **operational** view used by
-the DOKS rollout — every cluster Secret/env, its namespace, the consumer, what it
+your cluster rollout — every cluster Secret/env, its namespace, the consumer, what it
 unlocks, and the **fail-closed default** when it's absent. Grounded against the
-live `palonexus-doks` rollout (`ops-portal-deploy-note.md`). The guiding rule:
+live `palonexus-doks` reference rollout (`ops-portal-deploy-note.md`). The guiding rule:
 absence never crash-loops the platform — it degrades to the *safe* (closed) state.
 
 | Secret / env | Namespace · component | Consumed by | Enables | Fail-closed default if absent |

@@ -58,13 +58,20 @@ Exposed by the control plane on the management plane (`MGMT_ADDR`, `:8181`) at
 
 | Metric | Type | Meaning |
 |---|---|---|
-| `palonexus_authz_decisions_total` | counter | allow/deny decisions, labelled by service/decision |
-| `palonexus_authz_duration_seconds` | histogram | decision latency (default buckets) |
+| `palonexus_authz_decisions_total` | counter | allow/deny decisions, labelled by `service`/`decision`/`rule` (the deny *stage*) |
+| `palonexus_authz_duration_seconds` | histogram | end-to-end decision latency (default buckets) |
+| `palonexus_authz_stage_duration_seconds` | histogram | **per-stage** egress decision latency, labelled by `stage` = `identity`\|`registry`\|`policy` — shows *where* the time goes (VP crypto, lookups, the delegation/OPA hop) |
 | `palonexus_token_usage_total` | counter | per-agent LLM token consumption, reported by the model-broker |
 | `palonexus_agent_cost_usd_total` | counter | per-agent spend in USD, reported by the model-broker |
 
 The token/cost counters are how the egress budget gate is observed — see
-[Egress enforcement (ops)](/docs/operations/egress-enforcement-ops/).
+[Egress enforcement (ops)](/docs/operations/egress-enforcement-ops/). For per-stage latency
+attribution and the decision-cost benchmark, see [Performance](/docs/operations/performance/):
+
+```promql
+# Which stage dominates the decision? (p99 per stage)
+histogram_quantile(0.99, sum by (le, stage) (rate(palonexus_authz_stage_duration_seconds_bucket[5m])))
+```
 
 ## The Day-2 operational loop
 
