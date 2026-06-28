@@ -69,7 +69,7 @@ PaloNexus runs at three fidelities. The same decision spine underlies all three;
 what changes is how much of the *enforcement plane* is real. Use this matrix to
 pick: evaluate on the left, run production on the right.
 
-| Capability | Offline SDK (`PaloNexus.offline()`) | Docker Compose | DOKS / Kustomize `selfhost` |
+| Capability | Offline SDK (`PaloNexus.offline()`) | Docker Compose | Any Kubernetes (kind/EKS/GKE/DOKS) `selfhost` |
 |---|---|---|---|
 | **Enforcement fidelity** | in-process decision simulation | real control-plane `/authz` decision | real `/authz` **plus** Envoy request forwarding |
 | **Envoy `ext_authz` forwarding** | — | decision only (no L7 proxy) | ✅ `SecurityPolicy.extAuth` forwards on allow |
@@ -82,18 +82,22 @@ pick: evaluate on the left, run production on the right.
 | **High availability** | — | — | ✅ HA control plane + autoscale pool |
 | **Best for** | unit tests, the hero flow, CI | local evaluation, demos | staging / production |
 
-Compose and DOKS share **every env var** — only the orchestration and the opt-in
-hardening components differ, so what you prove locally holds in production. Start
-with [Docker Compose](/docs/operations/docker-compose/) to evaluate, then graduate
-via the [DOKS runbook](/docs/operations/doks-runbook/).
+Compose and any Kubernetes cluster share **every env var** — only the orchestration
+and the opt-in hardening components differ, so what you prove locally holds in
+production. The zero-to-governed [runbook](/docs/operations/doks-runbook/) is
+**cluster-agnostic** (kind, EKS, GKE, on-prem, DOKS) — DOKS is just the worked
+example. Start with [Docker Compose](/docs/operations/docker-compose/) to evaluate,
+then graduate via the runbook against whichever cluster you run.
 
 ## Pages in this section
 
 1. [Control plane (Go)](/docs/operations/control-plane/) — architecture, ports, the full env-var reference, build/test, fail-closed invariants.
 2. [Self-hosting](/docs/operations/self-hosting/) — deploy with Kustomize: prereqs, overlays, opt-in components, secrets.
-3. [Docker Compose](/docs/operations/docker-compose/) — the non-Kubernetes evaluation path: the full stack via `docker compose up`, with the allow/deny/needs-approval smoke test.
-4. [Persistence](/docs/operations/persistence/) — pluggable registry + agent-idp backends (memory/postgres/mysql/sqlite/mongodb), CloudNativePG.
-4. [Egress enforcement (ops)](/docs/operations/egress-enforcement-ops/) — the forward-proxy, proxy-only NetworkPolicies, the admission webhook, the Envoy egress gateway.
-5. [Terraform / DOKS](/docs/operations/terraform-doks/) — provision the cluster + DOCR + VPC, costs, ghcr.io alternative.
-6. [DOKS runbook — zero to governed agent](/docs/operations/doks-runbook/) — the cold-start path: cluster → Gateway/Envoy CRDs → `kubectl apply -k` → seed → deploy a governed agent → verify allow/deny/needs-approval in ≤30 min.
-7. [Observability](/docs/operations/observability/) — Grafana LGTM, the OTel collector, the overview dashboard, DID/VC traces.
+3. [Bring your own IdP](/docs/operations/bring-your-own-idp/) — wire your own enterprise IdP (Logto first-supported / Okta / Entra / any OIDC) as human sign-in via the `oidc` component.
+4. [Docker Compose](/docs/operations/docker-compose/) — the non-Kubernetes evaluation path: the full stack via `docker compose up`, with the allow/deny/needs-approval smoke test.
+5. [Persistence](/docs/operations/persistence/) — pluggable registry + agent-idp backends (memory/postgres/mysql/sqlite/mongodb), CloudNativePG.
+6. [Egress enforcement (ops)](/docs/operations/egress-enforcement-ops/) — the forward-proxy, proxy-only NetworkPolicies, the admission webhook, the Envoy egress gateway.
+7. [Terraform / DOKS](/docs/operations/terraform-doks/) — one **optional** provisioning example (DigitalOcean); PaloNexus runs on any Kubernetes.
+8. [Zero to governed agent runbook](/docs/operations/doks-runbook/) — the cluster-agnostic cold-start path (kind/EKS/GKE/DOKS; DOKS is the worked example): cluster → Gateway/Envoy CRDs → `kubectl apply -k` → seed → deploy a governed agent → verify allow/deny/needs-approval in ≤30 min.
+9. [Observability](/docs/operations/observability/) — Grafana LGTM, the OTel collector, the overview dashboard, DID/VC traces.
+10. [Performance](/docs/operations/performance/) — the egress-decision benchmark (~2.9µs, `make bench-egress`), per-stage latency, and the live-p99 method.

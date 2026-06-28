@@ -18,9 +18,12 @@ plumbing ([Egress enforcement](/docs/concepts/egress-enforcement/)), the credent
 ([Persistence & identity](/docs/concepts/persistence-and-identity/)), or the deny-reason catalog
 ([Troubleshooting](/docs/develop/troubleshooting/)).
 
-The whole system reduces to **one question, asked of every request**:
+The whole system reduces to **one question, asked of every agent action**:
 
-> *May this caller — on behalf of this human, on this task — reach this target, right now?*
+> *May this agent make this outbound call, on behalf of this human, for this task, right now?*
+
+The same question gates ordinary inbound calls too (*may this caller reach this service?*) —
+that north-south capability is the foundation egress is built on, not the headline.
 
 [`/authz`](/docs/getting-started/glossary/) answers it. Identity, registry, policy, audit,
 and metrics converge there (`internal/authz/authz.go`); everything else is a dependency of that
@@ -100,19 +103,21 @@ In the portal, the **Audit explorer** exposes exactly this: the hash-chained log
 *The Audit explorer: the tamper-evident, hash-chained decision log — filter it, deep-link any
 event to its Tempo trace, and verify the chain.*
 
-## One decision for ingress and egress
+## One decision for egress and ingress
 
 The same `/authz` covers both directions, so there is **no per-service auth code** — just one
 place to reason about access:
 
+- **Egress** (the headline, and the hard part): every outbound action an agent takes — model
+  call, tool call, agent-to-agent hop — passes the decision, carrying agent **and**
+  on-behalf-of identity, answering *may this agent make this outbound call, on behalf of this
+  human, for this task, right now?* Enforced at the **network layer** (forward proxy +
+  NetworkPolicy + admission webhook), so it holds for *any* framework, not just cooperating SDK
+  code. See [Egress enforcement](/docs/concepts/egress-enforcement/).
 - **Ingress** (north-south): `client → gateway → /authz → upstream`. Envoy's
-  [`ext_authz`](/docs/getting-started/glossary/) filter routes every request through
-  `/authz` before it reaches a service. This is the keystone (`SecurityPolicy.extAuth`).
-- **Egress** (the hard part): every outbound action an agent takes — model call, tool call,
-  agent-to-agent hop — passes the *same* decision, carrying agent **and** on-behalf-of identity.
-  Enforced at the **network layer** (forward proxy + NetworkPolicy + admission webhook), so it
-  holds for *any* framework, not just cooperating SDK code. See
-  [Egress enforcement](/docs/concepts/egress-enforcement/).
+  [`ext_authz`](/docs/getting-started/glossary/) filter routes every request through the *same*
+  `/authz` before it reaches a service (the keystone, `SecurityPolicy.extAuth`). This is the
+  foundation egress is built on, not the MVP headline.
 
 A request is an agent egress call iff it carries an `X-Palonexus-Actor` header; otherwise it
 takes the ingress path.

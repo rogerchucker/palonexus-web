@@ -371,6 +371,10 @@ with the blocker list if the gate is not met.
 |---|
 | `local_dev`, `doks_dev`, `doks_stage`, `doks_prod`, `github_actions`, `kubernetes_job`, `external_mcp_client` |
 
+These are **example runtime labels** describing *where* an agent runs; the `doks_*`
+values are illustrative (substitute e.g. `k8s_prod`, `eks_prod`) and imply no
+DigitalOcean/DOKS dependency — PaloNexus runs on any Kubernetes or via Docker Compose.
+
 **Statuses:** `draft`, `pending_approval`, `approved`, `active`, `suspended`,
 `quarantined`, `retired`. The F4 cascade sets `suspended`/`quarantined` directly; the
 endpoints below govern manual transitions.

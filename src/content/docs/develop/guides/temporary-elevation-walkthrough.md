@@ -308,13 +308,54 @@ Each step → SDK call → underlying API → the real policy decision and audit
 | 2 | **Request delegation** | `task.request_delegation(..., ttl=300)` | `POST /v1/delegations/request` | **201** · `Delegation(status="pending")`; `notAfter = now + ttl` |
 | 3 | **Maya approves → VC minted** | portal / `pn._fake.approve_delegation(id, approver=)` | `POST /v1/delegations/{id}/approve {"approver":"maya.chen@…"}` (authority `org:agents:approve`) | **200** · `status=approved`, `vcJti`, `notAfter` |
 | 4 | **Retry authorize → allow** | `task.authorize(action, resource)` | `POST /authz` (identical headers) | **200** · `X-Palonexus-Subject: ethan.park@…` → `PolicyDecision(allow=True)`; audit `allow=true rule=inline` |
-| 5 | **TTL expiry** | next `task.check(...)` after `notAfter` | `GET /v1/delegations/check` | live `{"ok":false,"reason":"delegation expired"}` → back to needs-approval. 🟡 offline fake does **not** auto-expire |
+| 5 | **TTL expiry** | next `task.check(...)` after `notAfter` | `GET /v1/delegations/check` | live `{"ok":false,"reason":"delegation expired"}` → `PolicyDecision(expired=True)` → `authorize` raises `DelegationExpired`. Offline: fast-forward with `pn._fake.advance(seconds)` to prove the same revert deterministically |
 | 6 | **Revoke** | `pn.revoke(delegation, reason=)` | `POST /v1/revoke {"vcJti": …}` | **200** · stays denied across restore |
 | 7 | **Next check — denied again** | `task.check(action, resource)` | `POST /authz` | **401**/**403** — back to deny-by-default |
 | (opt) | **Cascade** | `pn.revocation.cascade()` | `POST /v1/revocation/cascade` | `{delegations_revoked, agents_suspended, agents_quarantined}` |
 
 On a live cluster the audit chain stays intact across the whole deny→approve→succeed→revoke
 lifecycle: `GET /v1/audit/verify → {"ok":true,"brokenAtSeq":0}`.
+
+### Proving expiry and approver authority offline
+
+The two time-and-authority guarantees — *only the right human may approve* (AC-6) and *access is
+temporary* (AC-7) — are enforced by `PaloNexus.offline()`, so you can prove them with no cluster.
+`pn._fake.advance(seconds)` fast-forwards the delegation clock; `may_approve` runs the two-gate rule:
+
+```python
+from palonexus import PaloNexus, DelegationExpired, GovernanceError
+
+AGENT = "northstar-devops-incident-agent"
+OWNER, APPROVER = "ethan.park@northstar.example", "maya.chen@northstar.example"
+AUDITOR = "omar.haddad@northstar.example"   # holds org:agents:approve for Security, not DevOps
+ACTION, RESOURCE, TASK = "runbooks:read", "runbooks-api:/runbooks/db-failover", "INC-4821"
+
+with PaloNexus.offline() as pn:
+    pn.agents.register(name=AGENT, owner=OWNER, sponsor=APPROVER, scenario="devops-incident").provision()
+    with pn.task(subject=OWNER, task_id=TASK, scenario="devops-incident", actor=AGENT) as task:
+        deleg = task.request_delegation(action=ACTION, resource=RESOURCE, reason=TASK, ttl=300)
+
+        # AC-6: the auditor holds approve authority — but for the Security domain, not DevOps.
+        try:
+            pn._fake.approve_delegation(deleg.id, approver=AUDITOR)
+        except GovernanceError as e:
+            print("approver rejected:", e)          # outside_scenario_domain:devops-incident
+
+        pn._fake.approve_delegation(deleg.id, approver=APPROVER)     # Maya qualifies on both gates
+        assert task.authorize(action=ACTION, resource=RESOURCE).allow
+
+        # AC-7: fast-forward past notAfter — access is temporary, so it reverts to deny.
+        pn._fake.advance(301)
+        try:
+            task.authorize(action=ACTION, resource=RESOURCE)
+        except DelegationExpired:
+            print("access expired — re-approval required")
+```
+
+```text
+approver rejected: omar.haddad@northstar.example may not approve delegation deleg-…: outside_scenario_domain:devops-incident
+access expired — re-approval required
+```
 
 ## Operational experience
 
@@ -367,20 +408,26 @@ The **two-code convention** (`authz.go serveEgress` + [Troubleshooting](/docs/de
 |---|---|---|---|
 | 1 | Check before delegation | offline `needs_approval=True`; egress **401** needs-approval | ✅ |
 | 2 | Authorize without approval | **401** → `ApprovalRequired` (`authorize` raises; `check` returns) | ✅ |
-| 3 | Negative persona (Claire) | offline hard deny **403** `…not authorized for scenario devops-incident` | ⚠️ offline-enforced; live via authority-preview (gap) |
-| 4 | Delegation expired (TTL) | live `check` `ok=false (expired)` → **401** → `DelegationExpired` | ⚠️ on-cluster only (gap) |
+| 3 | Negative persona (Claire) | offline hard deny **403** `…not authorized for scenario devops-incident` | ⚠️ offline-enforced; live control-plane scenario-authority hard-deny still via authority-preview (gap) |
+| 4 | Delegation expired (TTL) | `check` `expired=True` → `authorize` raises `DelegationExpired` | ✅ offline (`pn._fake.advance`) + live |
 | 5 | Delegation revoked mid-task | live StatusList re-check denies next call **403** → `CredentialRevoked` | ✅ |
 | 6 | Register without owner/sponsor | `GovernanceError` before any network call | ✅ |
 | 7 | Unreachable `/authz` | fail-closed → `ControlPlaneUnavailable` (never silent allow) | ✅ |
-| 8 | Approver lacks `org:agents:approve` | approval rejected; only Maya may approve | ⚠️ live preview only (gap) |
+| 8 | Approver lacks authority / wrong domain | `approve_delegation` raises `GovernanceError` (`lacks org:agents:approve` / `outside_scenario_domain:…`); only Maya may approve devops | ✅ offline (`may_approve` two-gate) + live |
 | 9 | Wrong resource/scope mismatch | deny — must match the exact `(action, resource)` tuple | ✅ |
 | 10 | Cascade / SCIM leaver | all on-behalf-of (or tenant) delegations revoked; next call denies | ✅ |
 
-:::note[Known offline gaps — tracked as follow-ups]
-The offline `FakeControlPlane` is a convenience and does **not** model three things the live
-cluster enforces correctly: TTL clock-expiry (case 4), approver-authority on approve (case 8), and
-a control-plane scenario-authority hard-deny for the negative persona (case 3). Do not rely on the
-offline fake to prove those three — they are tracked as build follow-ups in Linear under PaloNexus.
+:::note[Offline parity — what the fake now enforces]
+The offline `FakeControlPlane` now models **TTL clock-expiry** (case 4 — fast-forward with
+`pn._fake.advance(seconds)`; an expired grant reverts to deny and `authorize` raises
+`DelegationExpired`) and **approver-authority on approve** (case 8 — `approve_delegation` runs the
+two-gate `may_approve` rule, so only an `org:agents:approve` holder who covers the scenario domain
+can approve). Covered by `tests/test_elevation_gaps.py`.
+
+One asymmetry remains and is the opposite of a fake gap: the negative-persona hard-deny (case 3) is
+**offline-enforced** but the *live* control plane currently relies on authority-preview rather than a
+first-class scenario-authority hard-deny at `/authz`. That control-plane enhancement is tracked as a
+build follow-up in Linear under PaloNexus.
 :::
 
 ## Acceptance and cleanup
@@ -394,8 +441,8 @@ The demo-storyline acceptance slice (legend: ✅ implemented + tested · 🟡 pa
 | AC-3 | Task-scoped delegation (exact `(action, resource)` tuple) | ✅ |
 | AC-4 | Denied access surfaced clearly (no silent 500) | ✅ |
 | AC-5 | Elevation request (`ttl`) creates a pending grant | ✅ |
-| AC-6 | Approval by an authorized employee (Maya); others can't | 🟡 live-enforced; offline fake doesn't check approver authority |
-| AC-7 | Temporary (TTL) access; expiry denies | 🟡 `notAfter` honored live; offline clock-expiry not enforced |
+| AC-6 | Approval by an authorized employee (Maya); others can't | ✅ two-gate `may_approve` enforced offline + live |
+| AC-7 | Temporary (TTL) access; expiry denies | ✅ `notAfter` honored live; offline clock-expiry via `pn._fake.advance` |
 | AC-8 | Enforcement at egress (same `/authz`; proxy floor) | ✅ |
 | AC-9 | Audit hash-chained + verifiable; tamper detected | ✅ |
 | AC-10 | Revocation — single | ✅ |

@@ -11,8 +11,10 @@ each is trusted. It's the definitive header contract for both the ingress and eg
 paths.
 
 The `/authz` decision is shaped by — and produces — a small set of headers. The
-presence of `X-Palonexus-Actor` is what selects the **egress** decision path over the
-default **ingress** path. Header names are defined in `internal/authz/authz.go`.
+primary path is **agent egress** — *may this agent make this call, on behalf of this
+human, for this task, right now?* — and the presence of `X-Palonexus-Actor` is what
+selects it. Without `X-Palonexus-Actor`, the *same* endpoint serves the foundational
+**ingress** path. Header names are defined in `internal/authz/authz.go`.
 
 ## Request headers (in)
 

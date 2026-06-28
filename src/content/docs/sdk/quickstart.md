@@ -91,6 +91,12 @@ identity = agent.provision()                  # mint did:key + Membership VC (id
 print(identity.did)                           # did:key:z…
 ```
 
+:::note[`runtime` is just a label]
+`runtime="doks_prod"` is an example **runtime label** describing *where* the agent
+runs — a free-form tag like `k8s_prod` or `local_dev`. It is not a DOKS/DigitalOcean
+requirement; PaloNexus runs on any Kubernetes or via Docker Compose.
+:::
+
 The mandatory-ownership rule, demonstrated:
 
 ```python

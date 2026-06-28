@@ -63,7 +63,16 @@ those same standards.
 |---|---|---|---|---|
 | **Demo IdP** | The concrete reference IdP PaloNexus seeds its Northstar demo data into, so every walkthrough is reproducible. **Not** a required dependency. | **Logto** (sandbox tenant) | `seed-logto` fixture, `LOGTO_*` env, the `logto-m2m` Secret, and the portal `/settings/logto` connector — all demo-only | Shipped (reference demo) |
 | **Supported IdP** | Any OIDC/SCIM-compliant IdP can supply human identity through the standard surfaces below. | Okta, Microsoft Entra ID, Auth0, Ping, Google Workspace, Amazon Cognito, Keycloak, Logto, and any OIDC/SCIM IdP | OIDC sign-in + JWKS (`OIDC_ISSUER` / `OIDC_AUDIENCE` / `OIDC_JWKS_URL`); SCIM / directory sync into agent-idp `/v1/directory` | Standards-based (see honesty note) |
-| **Production customer IdP** | Your own workforce IdP, in your tenant, kept as the source of truth. PaloNexus runs beside it and is configured to verify its tokens and consume its directory. | Whatever your org already runs | Point OIDC env at your issuer/JWKS; feed your directory (SCIM / API sync / webhooks) into agent-idp | Bring-your-own via OIDC/SCIM |
+| **Production customer IdP** | Your own workforce IdP, in your tenant, kept as the source of truth. PaloNexus runs beside it and is configured to verify its tokens and consume its directory. | Whatever your org already runs | Point OIDC env at your issuer/JWKS (the `oidc` component) + feed your directory into agent-idp — see [Bring your own IdP](/docs/operations/bring-your-own-idp/) | Bring-your-own via OIDC/SCIM |
+
+:::note[Logto is the first supported IdP]
+Logto is more than the demo seed — it is the **first IdP PaloNexus ships an end-to-end
+integration for** (the `seed-logto` seeder, the portal connector, and a worked
+[bring-your-own-Logto runbook](/docs/operations/bring-your-own-idp/)). It is **supported
+now**, not the only future one: Okta, Microsoft Entra ID, Auth0, and any OIDC/SCIM provider
+integrate through the identical standard surfaces below, and shipped vendor connectors for
+them are near-term roadmap.
+:::
 
 ## Integration patterns
 

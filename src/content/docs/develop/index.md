@@ -8,22 +8,26 @@ sidebar:
 This section is the developer's path: take a LangChain/LangGraph agent and run it
 as a **governed workload** on PaloNexus, where **every outbound action it takes** —
 a model call, a tool call, an agent-to-agent hop, an external request — is decided
-at the *same* `/authz` decision point that governs north-south traffic. No
-per-service auth code, one place to reason about access.
+at one deny-by-default `/authz` answering *may this agent make this call, on behalf
+of this human, for this task, right now?* That **agent egress governance is the real
+work**; the *same* decision point also governs north-south traffic, the foundation it
+builds on. No per-service auth code, one place to reason about access.
 
 ## The mental model
 
-PaloNexus governs **one decision per request**: the gateway asks the control plane
-one question — *may this caller reach this service?* — and identity, registry,
-policy, audit, and metrics converge on the answer.
+PaloNexus governs **one decision per request**. For an agent the defining question is
+*may this agent make this outbound call, on behalf of this human, for this task, right
+now?* — and identity, registry, policy, audit, and metrics converge on the answer. The
+same `/authz` also answers the inbound *may this caller reach this service?*, the
+foundation underneath.
 
 An agent is unusual because **it is both a callee and a caller**, and those two
 sides are governed very differently:
 
 | | What it is | How it's governed |
 |---|---|---|
-| **Ingress** | a user (or upstream) invoking the agent (`POST /threads/{id}/runs`) | an ordinary north-south request the platform already handles — register the agent, route it, done. Zero new control-plane code. |
-| **Egress** | the agent invoking a model, tool, database, or peer agent | the **real work**: route every outbound action back through the *same* `/authz`, carrying the agent's own identity plus the user it acts for. |
+| **Egress** | the agent invoking a model, tool, database, or peer agent | the **real work** (the headline): route every outbound action back through the *same* `/authz`, carrying the agent's own identity plus the user it acts for. |
+| **Ingress** | a user (or upstream) invoking the agent (`POST /threads/{id}/runs`) | an ordinary north-south request the platform already handles — register the agent, route it, done. Zero new control-plane code. The foundation egress builds on. |
 
 The elegant part: **models, tools, and peer agents become ordinary registry
 entries.** An agent calling the model broker is just a registered caller
@@ -66,11 +70,13 @@ throwaway PoC. See [Budgets and allowlists](/docs/develop/budgets-and-allowlists
 ## The phased path
 
 Each phase is independently shippable. Match your ask to a phase and do only that
-phase's steps.
+phase's steps. The agent-egress story is phases 1–3; the ingress step below is the
+**foundational prerequisite** that gets the agent reachable, not stage 0 of the agent
+governance work.
 
 | Phase | Deliverable | Where |
 |---|---|---|
-| **0 — PoC ingress** | agent reachable through the edge, governed by existing authz | [Deploy an agent](/docs/develop/deploy-an-agent/) (Deployment + Service + HTTPRoute, register the agent entry) |
+| **Foundation — PoC ingress** (prerequisite) | agent reachable through the edge, governed by existing authz | [Deploy an agent](/docs/develop/deploy-an-agent/) (Deployment + Service + HTTPRoute, register the agent entry) |
 | **1 — Identity + model broker** | agent holds a workload identity; LLM calls gated + metered | + [identity](/docs/develop/agent-identity/), [egress middleware/sidecar](/docs/develop/egress-enforcement/), the [model broker](/docs/develop/deploy-an-agent/#the-model-broker), proxy-only NetworkPolicy |
 | **2 — Tool & A2A egress + budgets** | every tool/peer call hits `/authz`; allowlists + budgets enforced | + registry `Allow*` / `Budget` — [Budgets and allowlists](/docs/develop/budgets-and-allowlists/) |
 | **3 — Human-approved delegation** | sensitive actions need a human-approved, time-boxed delegation | + [Delegations and approvals](/docs/develop/delegations-and-approvals/) |

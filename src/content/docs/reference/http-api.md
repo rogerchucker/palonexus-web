@@ -15,11 +15,14 @@ endpoints read and stamp, see [Headers](/docs/reference/headers/).
 
 ## 1. The decision endpoint — `/authz`
 
-The single endpoint the gateway calls via Envoy HTTP `ext_authz`, on the control
-plane's **decision listener `:9191`**. A `200` means allow (the gateway routes to the
-upstream); `403` means deny; `401` means an invalid credential or a needs-approval
-egress. A request carrying `X-Palonexus-Actor` takes the **egress** path; everything
-else is **ingress**.
+The single decision point, on the control plane's **decision listener `:9191`**. Its
+primary job is the **agent-egress question** — *may this agent make this call, on behalf
+of this human, for this task, right now?* A request carrying `X-Palonexus-Actor` takes
+that **egress** path. The *same* endpoint also serves the **foundational ingress**
+decision (the north-south request the gateway calls via Envoy HTTP `ext_authz`);
+everything without `X-Palonexus-Actor` takes the ingress path. Either way: a `200` means
+allow (the gateway routes to the upstream); `403` means deny; `401` means an invalid
+credential or a needs-approval egress.
 
 | Method | Path | Purpose |
 |---|---|---|

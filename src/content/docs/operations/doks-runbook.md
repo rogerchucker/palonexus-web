@@ -5,11 +5,17 @@ sidebar:
   order: 6.5
 ---
 
+:::note[Cluster-agnostic]
+These steps work on **any** Kubernetes — kind, EKS, GKE, on-prem, DOKS. DOKS is
+the worked example here; substitute your cluster's kubeconfig/context. PaloNexus
+does not depend on DigitalOcean.
+:::
+
 This is the **cold-start path**: from nothing to a *governed* agent — one whose
 model, tool, and agent-to-agent egress is decided at the control plane's
-`/authz` — on **DOKS**, in under 30 minutes. It stitches together the pieces that
-already have their own pages so you run them in the right order with the right
-prerequisites:
+`/authz` — on **any Kubernetes (DOKS shown)**, in under 30 minutes. It stitches
+together the pieces that already have their own pages so you run them in the right
+order with the right prerequisites:
 
 - [Terraform / DOKS](/docs/operations/terraform-doks/) provisions the cluster, registry, and VPC.
 - [Self-hosting](/docs/operations/self-hosting/) is the Kustomize deploy and the opt-in hardening components.
