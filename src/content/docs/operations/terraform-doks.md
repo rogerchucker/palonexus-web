@@ -7,10 +7,19 @@ sidebar:
 
 This is one **optional** provisioning example (DigitalOcean). PaloNexus runs on any Kubernetes or via Docker Compose — you do not need DigitalOcean.
 
-`infra/terraform/` brings a budget **DOKS** cluster up and down for the demo. It
+`infra/terraform-doks/` brings a budget **DOKS** cluster up and down for the demo. It
 provisions only the cloud substrate — VPC, cluster, registry — and wires the
 registry pull-credentials into the cluster. The platform workloads themselves are
 deployed *on top* via Kustomize (see [Self-hosting](/docs/operations/self-hosting/)).
+
+> **GKE and EKS have their own equivalent modules** — `infra/terraform-gke/` and
+> `infra/terraform-eks/`, same `make up`/`make down` shape described below. EKS
+> uses public-only subnets (no NAT gateway) and the
+> `terraform-aws-modules/eks/aws` community module rather than hand-rolled
+> resources; both cost meaningfully more per month than DOKS since neither GKE
+> Standard mode nor EKS has a free control plane the way DOKS does. This page
+> covers DOKS specifically as the worked example; the platform repo's
+> `docs/self-hosting.md` covers all three clouds side by side.
 
 ## What gets created
 
@@ -56,7 +65,7 @@ Defaults target a tight ~$60–80/mo budget.
 ## Up / down
 
 ```bash
-cd infra/terraform
+cd infra/terraform-doks
 cp terraform.tfvars.example terraform.tfvars   # edit region/sizes if desired
 
 make up                       # init + plan + apply, then saves kubeconfig

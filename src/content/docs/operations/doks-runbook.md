@@ -130,11 +130,17 @@ plane; node pool `palonexus-default` = `s-2vcpu-4gb` ×3, autoscale 2→4; amd64
 `registry_enabled`). To stand up a fresh one:
 
 ```bash
-cd infra/terraform
+cd infra/terraform-doks
 cp terraform.tfvars.example terraform.tfvars   # edit region/sizes if desired
 make up                 # init + plan + apply, then saves the kubeconfig
 make registry-login     # doctl registry login → DOCR
 ```
+
+GKE and EKS have their own equivalent modules (`infra/terraform-gke/`,
+`infra/terraform-eks/`, same `make up`/`make down` shape) if you'd rather
+provision on one of those instead — see
+[Terraform / DOKS](/docs/operations/terraform-doks/) for the DOKS-specific
+walkthrough this runbook uses as its worked example.
 
 `make up` writes the kubeconfig and merges it into your context. Confirm:
 
