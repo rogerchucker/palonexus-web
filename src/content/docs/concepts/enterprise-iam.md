@@ -255,6 +255,9 @@ In the operator portal it surfaces as two tabs:
 - [Enterprise IAM API](/docs/reference/enterprise-iam-api/) — the exact request/response
   shapes for `/v1/directory`, `/v1/governance`, `/v1/authority`, `/v1/revocation`, and
   `/v1/sts`.
+- [Governance credentials](/docs/concepts/verifiable-credentials/) — compliance and
+  provenance credentials: cryptographically verifiable attestations that build on this same
+  ownership/activation model.
 - [Consoles](/docs/concepts/consoles/) — the portal Directory and Governance walkthrough
   screenshots.
 - [Delegations & approvals (how-to)](/docs/develop/delegations-and-approvals/) — request,

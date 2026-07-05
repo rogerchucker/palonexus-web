@@ -29,6 +29,16 @@ docs:
   *who* delegated *what* action on *what* resource, time-boxed. Present on a
   `Delegation` once its `status` is `approved`.
 - **Capability VC** — a credential granting a specific capability to an agent.
+- **Compliance Credential** — a named-standard attestation (GDPR, HIPAA, SOC2-TypeII,
+  EU-AI-Act-Art50) about an agent, issued by a `compliance_auditor`-role human as a real,
+  signed `did:web` JWT-VC. Self-attested — PaloNexus verifies the signature and revocation
+  status, not the underlying audit claim. See
+  [Governance credentials](/docs/concepts/verifiable-credentials/).
+- **Provenance Credential** — a self-declared attestation of what produced an agent's
+  outputs (base model, training-data lineage, declared owner), issued by a
+  `provenance_attestor`-role human. A routine model update **supersedes** the prior
+  credential (no cascade); an explicit revoke does cascade. See
+  [Governance credentials](/docs/concepts/verifiable-credentials/).
 
 **VP — Verifiable Presentation.** A holder-signed wrapper an agent builds *fresh* on each
 egress call: the agent signs (with its `did:key`) over an audience + nonce, wrapping its
@@ -105,6 +115,13 @@ targets drive the needs-approval path.
 agent. Every agent must have an **owner** (accountable) and a **sponsor** (business backing)
 — the no-orphaned-agents rule. An **approver** authorizes delegations, an **operator** runs
 the agent, an **auditor** reviews its trail.
+
+**`compliance_auditor` / `provenance_attestor`.** Two narrower, credential-issuing roles,
+distinct from the general **auditor** above: `compliance_auditor` may issue/revoke Compliance
+Credentials, `provenance_attestor` may issue/revoke Provenance Credentials. Deliberately
+separate roles — the person who knows an agent's model lineage is often not its compliance
+auditor or its business owner. See
+[Governance credentials](/docs/concepts/verifiable-credentials/).
 
 **`org:agents:*`.** The org-scope authority strings carried on org roles:
 `org:agents:own`, `:sponsor`, `:approve`, `:operate`, `:audit`. `HumanOwner.agent_authority`
