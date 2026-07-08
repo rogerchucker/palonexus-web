@@ -1,0 +1,15 @@
+---
+import type { ClosingData } from '../../content.config';
+
+interface Props {
+	data: ClosingData;
+}
+
+const { data } = Astro.props;
+---
+
+<section class="closing">
+	<p class="eyebrow">{data.eyebrow}</p>
+	<h2>{data.heading}</h2>
+	<a class="button primary" href={data.cta.href}>{data.cta.label}</a>
+</section>

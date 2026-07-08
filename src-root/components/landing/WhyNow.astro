@@ -1,0 +1,17 @@
+---
+import type { WhyNowData } from '../../content.config';
+
+interface Props {
+	data: WhyNowData;
+}
+
+const { data } = Astro.props;
+---
+
+<section class="why-now">
+	<div>
+		<p class="eyebrow">{data.eyebrow}</p>
+		<h2>{data.heading}</h2>
+	</div>
+	<slot />
+</section>

@@ -1,0 +1,20 @@
+---
+import type { GovernanceData } from '../../content.config';
+
+interface Props {
+	data: GovernanceData;
+}
+
+const { data } = Astro.props;
+---
+
+<section id="governance" class="section governance">
+	<div class="governance-copy">
+		<p class="eyebrow">{data.eyebrow}</p>
+		<h2>{data.heading}</h2>
+		<slot />
+	</div>
+	<ul class="control-list">
+		{data.items.map((item) => <li>{item}</li>)}
+	</ul>
+</section>

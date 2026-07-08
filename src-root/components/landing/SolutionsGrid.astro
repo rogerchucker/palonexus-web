@@ -1,0 +1,33 @@
+---
+import type { SolutionsData } from '../../content.config';
+
+interface Props {
+	data: SolutionsData;
+}
+
+const { data } = Astro.props;
+---
+
+<section id="solutions" class="section">
+	<div class="section-heading">
+		<p class="eyebrow">{data.eyebrow}</p>
+		<h2>{data.heading}</h2>
+	</div>
+
+	<div class="solution-grid">
+		{
+			data.cards.map((card) => (
+				<article class="solution-card">
+					<p class="card-kicker">{card.kicker}</p>
+					<h3>{card.title}</h3>
+					<p>{card.description}</p>
+					<ul>
+						{card.items.map((item) => (
+							<li>{item}</li>
+						))}
+					</ul>
+				</article>
+			))
+		}
+	</div>
+</section>

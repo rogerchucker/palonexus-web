@@ -1,0 +1,44 @@
+---
+import type { HeroData } from '../../content.config';
+
+interface Props {
+	data: HeroData;
+}
+
+const { data } = Astro.props;
+---
+
+<section class="hero">
+	<div class="hero-copy">
+		<p class="eyebrow">{data.eyebrow}</p>
+		<h1>{data.heading}</h1>
+		<p class="hero-lede">{data.lede}</p>
+		<div class="hero-actions" aria-label="Primary actions">
+			<a class="button primary" href={data.primaryCta.href}>{data.primaryCta.label}</a>
+			<a class="button secondary" href={data.secondaryCta.href}>{data.secondaryCta.label}</a>
+		</div>
+	</div>
+
+	<div class="hero-panel" aria-label="PaloNexus platform flow">
+		<div class="flow-row source">
+			<span>SRE agent</span>
+			<span>DevOps agent</span>
+			<span>SecOps agent</span>
+		</div>
+		<div class="flow-core">
+			<p>PaloNexus control layer</p>
+			<div class="core-grid">
+				<span>Identity</span>
+				<span>Policy</span>
+				<span>Registry</span>
+				<span>Audit</span>
+			</div>
+		</div>
+		<div class="flow-row target">
+			<span>Clouds</span>
+			<span>Tools</span>
+			<span>Data</span>
+			<span>Workflows</span>
+		</div>
+	</div>
+</section>

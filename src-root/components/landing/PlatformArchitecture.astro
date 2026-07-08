@@ -1,0 +1,33 @@
+---
+import type { PlatformData } from '../../content.config';
+
+interface Props {
+	data: PlatformData;
+}
+
+const { data } = Astro.props;
+---
+
+<section id="platform" class="section platform">
+	<div class="section-heading narrow">
+		<p class="eyebrow">{data.eyebrow}</p>
+		<h2>{data.heading}</h2>
+	</div>
+	<div class="architecture">
+		{
+			data.columns.map((column, index) => (
+				<>
+					{index > 0 && (
+						<div class="arch-connector" aria-hidden="true">
+							-&gt;
+						</div>
+					)}
+					<div class:list={['arch-column', { core: index === 1 }]}>
+						<h3>{column.title}</h3>
+						<p>{column.description}</p>
+					</div>
+				</>
+			))
+		}
+	</div>
+</section>

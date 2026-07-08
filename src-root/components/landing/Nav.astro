@@ -1,0 +1,20 @@
+---
+import type { NavData } from '../../content.config';
+
+interface Props {
+	data: NavData;
+}
+
+const { data } = Astro.props;
+---
+
+<header class="nav" aria-label="Primary navigation">
+	<a class="brand" href="/" aria-label={`${data.brand} home`}>
+		<span class="brand-mark" aria-hidden="true">PN</span>
+		<span>{data.brand}</span>
+	</a>
+	<nav class="nav-links" aria-label="Page sections">
+		{data.links.map((link) => <a href={link.href}>{link.label}</a>)}
+	</nav>
+	<a class="nav-cta" href={data.cta.href}>{data.cta.label}</a>
+</header>
