@@ -1,12 +1,13 @@
 name: Docs CI & Deploy
 
-# The ONLY supported path to production. Pull requests run the validate gate; a push to
-# main (i.e. a merged, reviewed PR) runs validate and then deploys to Cloudflare Workers.
-# There is no manual/laptop deploy path — see scripts/no-manual-deploy.mjs.
+# The ONLY supported path to production. This workflow runs ONLY on a push to main
+# (i.e. a merged, reviewed PR): it re-runs the validate gate (docs-ci.yml, the same
+# workflow PRs run) and then deploys to Cloudflare Workers. Pull requests are validated
+# by docs-ci.yml on its own — this workflow never runs for PRs, so PR checks never show
+# a skipped deploy job. There is no manual/laptop deploy path — see
+# scripts/no-manual-deploy.mjs.
 on:
   push:
-    branches: [main]
-  pull_request:
     branches: [main]
 
 # Least privilege: the workflow only needs to read the repo. Deployment authenticates to
@@ -14,56 +15,29 @@ on:
 permissions:
   contents: read
 
-# Serialize per ref. Cancel superseded PR runs, but never cancel an in-flight deploy.
+# Serialize deploys per ref; never cancel an in-flight deploy.
 concurrency:
-  group: docs-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: docs-deploy-${{ github.ref }}
+  cancel-in-progress: false
 
 env:
   NODE_VERSION: '22'
 
 jobs:
   validate:
-    name: Validate (format · build · E2E)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Format check (Prettier)
-        run: npm run format:check
-
-      - name: Build docs (also validates content schema + Mermaid transform)
-        run: npm run build
-
-      - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
-
-      - name: End-to-end documentation tests (Playwright)
-        run: npm run test:e2e
-
-      - name: Upload Playwright report
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 7
+    name: Validate
+    # Reuse the exact validate gate PRs run — the deploy can never bypass it.
+    uses: ./.github/workflows/docs-ci.yml
+    permissions:
+      contents: read
 
   deploy:
     name: Deploy to Cloudflare Workers
     needs: validate
     # SAFEGUARDS — deployment is gated on ALL of:
     #   * the canonical repository (forks have a different owner/name → never deploy),
-    #   * a push event (pull_request never deploys, even from a branch in this repo),
-    #   * the main branch ref.
+    #   * a push event to the main branch ref (defense in depth on top of the trigger —
+    #     pull_request never deploys, even from a branch in this repo).
     # Fork PRs additionally cannot read the secrets below, so they cannot publish.
     if: ${{ github.repository == 'remrem-apps/palonexus-web' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest

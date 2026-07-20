@@ -42,6 +42,8 @@ after** the Playwright E2E tests pass. There is no laptop deploy path — `npm r
 intentionally refuses and points you to the release guide.
 
 - Pipeline: [`.github/workflows/docs-ci-deploy.yml`](.github/workflows/docs-ci-deploy.yml)
+  (push to `main` → validate + deploy); PRs run the same validate gate via
+  [`.github/workflows/docs-ci.yml`](.github/workflows/docs-ci.yml).
 - Full process (local validation, PR checks, merge behavior, verification, rollback,
   troubleshooting, required secrets): **`src/content/docs/operations/releasing-the-docs.md`**
   (published at `/docs/operations/releasing-the-docs/`).
@@ -112,6 +114,8 @@ Actions on a push to `main`, and **only after** the Playwright E2E tests pass. T
 no laptop deploy path — `npm run deploy:root` intentionally refuses.
 
 - Pipeline: [`.github/workflows/root-ci-deploy.yml`](.github/workflows/root-ci-deploy.yml)
+  (push to `main` → validate + deploy); PRs run the same validate gate via
+  [`.github/workflows/root-ci.yml`](.github/workflows/root-ci.yml).
 - Worker config: [`wrangler.jsonc`](wrangler.jsonc) — static assets, no adapter, no KV.
 - Required GitHub secrets: shared with docs — `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`.
 
