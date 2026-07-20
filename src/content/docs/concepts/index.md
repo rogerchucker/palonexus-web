@@ -5,6 +5,8 @@ sidebar:
   order: 1
 ---
 
+PaloNexus connects every agent action to an accountable human or service owner, verifies that the delegation is valid, issues narrowly scoped runtime credentials, and enforces that authority when an agent calls a model, tool, application programming interface, sandbox, or another agent.
+
 PaloNexus is a Kubernetes-native **control layer**: gateway, registry, identity,
 policy, observability, and audit unified onto **one request decision**. The trick to
 "one control layer" is that all six concerns meet on a **single question** —
