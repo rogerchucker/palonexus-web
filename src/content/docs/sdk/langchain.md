@@ -164,4 +164,4 @@ agent = create_agent(model, tools=[guarded], middleware=[mw])
 ## Next
 
 - [LangGraph adapter](/docs/sdk/langgraph/) — governed nodes + HITL resume.
-- [SDK quickstart](/docs/sdk/quickstart/) · [Glossary](/docs/getting-started/glossary/)
+- [Quickstart](/docs/getting-started/quickstart/) · [Glossary](/docs/getting-started/glossary/)

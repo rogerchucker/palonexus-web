@@ -1,21 +1,25 @@
 ---
-title: Enterprise IAM — directory, governance, tokens
-description: A hands-on walkthrough of the enterprise-IAM loop on a running agent-idp — sync the directory, resolve sign-ins, govern + activate agents, grant authorized delegations, cascade revocation on lifecycle changes, and mint short-lived agent tokens at the STS, all from the bundled CLIs.
+title: Connect Agents to Enterprise Authority — hands-on
+description: A hands-on walkthrough of connecting agent authority to the workforce directory on a running agent-idp — sync the directory, resolve sign-ins, govern + activate agents, grant authorized delegations, watch lifecycle changes cascade into automatic revocation, and mint short-lived runtime credentials at the STS, all from the bundled CLIs.
 sidebar:
   order: 8
 ---
 
-The enterprise-IAM layer in `agent-idp` answers a different question than the egress
-gate does: not *may this call go out?* but *who, in the org, is this agent acting for,
-and does that human actually hold the authority being delegated?* It pulls the
-enterprise directory in (SCIM), reconciles sign-ins against it, governs agent
-ownership, ties every delegation to a real human authority, cascades revocation when
-people leave, and mints short-lived agent tokens that separate the **agent** subject
-from the **human** actor.
+The teeth of this walkthrough are **lifecycle-linked revocation**: when a directory
+sync reports a leaver or a mover, the delegations that person backed are revoked,
+their agents are quarantined, and the STS refuses to mint new credentials — all
+automatically, from one directory change. The enterprise-IAM layer in `agent-idp`
+answers a different question than the egress gate does: not *may this call go out?*
+but *who, in the org, is this agent acting for, and does that human actually hold the
+authority being delegated?* It pulls the enterprise directory in (SCIM), reconciles
+sign-ins against it, governs agent ownership, ties every delegation to a real human
+authority, cascades revocation when people leave, and mints short-lived runtime
+credentials (agent tokens) that separate the **agent** subject from the **human**
+actor.
 
 Each feature ships a small stdlib-only CLI you run against a live `agent-idp`. This
 guide walks the whole loop end to end. For the data model and the decision rules see
-[Enterprise IAM concepts](/docs/concepts/enterprise-iam/); for the raw endpoints see
+[Connect Agents to Enterprise Authority (concepts)](/docs/concepts/enterprise-iam/); for the raw endpoints see
 the [Enterprise IAM API](/docs/reference/enterprise-iam-api/).
 
 ## What you'll do
@@ -310,7 +314,7 @@ and `/v1/sts` endpoint, ready to try interactively.
 
 ## See also
 
-- [Enterprise IAM concepts](/docs/concepts/enterprise-iam/) — the data model and decision rules.
+- [Connect Agents to Enterprise Authority (concepts)](/docs/concepts/enterprise-iam/) — the data model and decision rules.
 - [Enterprise IAM API](/docs/reference/enterprise-iam-api/) — the endpoint reference.
 - [Environment variables § agent-idp](/docs/reference/env-vars/#agent-idp) — config and the tunable in-code constants.
-- [Delegations and approvals](/docs/develop/delegations-and-approvals/) — the crypto-egress, human-in-the-loop delegation layer.
+- [Authority delegation](/docs/develop/delegations-and-approvals/) — the crypto-egress, human-in-the-loop delegation layer.

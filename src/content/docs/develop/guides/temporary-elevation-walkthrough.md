@@ -14,8 +14,8 @@ chain — then access returns to zero.
 
 Every Python snippet on this page runs against `PaloNexus.offline()` — no cluster, no network —
 using the real Northstar seed personas (no invented users). It is the doctest-trimmed companion
-to the [SDK quickstart](/docs/sdk/quickstart/), the [LangGraph adapter](/docs/sdk/langgraph/),
-and [Delegations and approvals](/docs/develop/delegations-and-approvals/).
+to the [Quickstart](/docs/getting-started/quickstart/), the [LangGraph adapter](/docs/sdk/langgraph/),
+and [Authority delegation](/docs/develop/delegations-and-approvals/).
 
 :::note[What this demonstrates]
 **Deny-by-default**, **just-in-time (JIT) elevation** instead of standing secrets, and
@@ -368,7 +368,7 @@ and lands in the delegation + audit record. Pending cards show the agent (`actor
 requested time. **Approve** → `POST /v1/delegations/{id}/approve` mints the Delegation VC
 (`status: approved`, `vcJti`, `notAfter`). Active-credential cards show approved-by, VC jti, a
 live **Expires** countdown, and a **Revoke** button. The mechanics live in
-[Delegations and approvals](/docs/develop/delegations-and-approvals/).
+[Authority delegation](/docs/develop/delegations-and-approvals/).
 
 ### The auditor — `/audit`
 
@@ -388,7 +388,7 @@ services, follow the existing operations runbooks rather than re-deriving them h
 - [Docker Compose](/docs/operations/docker-compose/) — the no-cluster path. The compose
   `smoke.sh` asserts the decision trio (`allow` public / `deny` private /
   `needs-approval` regulated egress) using this exact canonical target.
-- [DOKS runbook](/docs/operations/doks-runbook/) — zero-to-governed-agent on `palonexus-doks`,
+- [DOKS runbook](/docs/operations/doks-runbook/) — zero-to-authority-bound-agent on `palonexus-doks`,
   including the `SecurityPolicy.extAuth` keystone and the deploy-then-validate sign-off.
 
 :::caution[Live cluster runs `AGENT_IDENTITY_MODE=vc`]
@@ -456,7 +456,7 @@ fixture); `request_delegation` is idempotent per `(subject, action, resource)`, 
 
 ## Next
 
-- [SDK quickstart](/docs/sdk/quickstart/) — the typed API this guide uses, one page.
-- [LangGraph adapter](/docs/sdk/langgraph/) · [Delegations and approvals](/docs/develop/delegations-and-approvals/).
+- [Quickstart](/docs/getting-started/quickstart/) — the typed API this guide uses, one page.
+- [LangGraph adapter](/docs/sdk/langgraph/) · [Authority delegation](/docs/develop/delegations-and-approvals/).
 - [Recipes](/docs/develop/recipes/) — more runnable offline governance patterns.
 - [Troubleshooting](/docs/develop/troubleshooting/) — decode any deny reason · [Glossary](/docs/getting-started/glossary/).

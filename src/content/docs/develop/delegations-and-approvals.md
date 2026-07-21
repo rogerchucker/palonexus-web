@@ -1,6 +1,6 @@
 ---
-title: Delegations and Approvals
-description: Human-in-the-loop — time-boxed Delegation VCs, the runbook DID/VC challenge-response, the Approvals and Egress Approvals consoles, and the live-revocation race.
+title: Authority Delegation
+description: Human-in-the-loop authority delegation — time-boxed Delegation VCs, the runbook DID/VC challenge-response, the Approvals and Egress Approvals consoles, and the live-revocation race.
 sidebar:
   order: 5
 ---
@@ -157,7 +157,7 @@ RunbookContext(
 
 This is why runbooks-api is registered `dataClass: internal`, not `regulated`: the
 proxy does the coarse allowlist gate, and this fine-grained, per-resource gate runs
-**server-side**. See [Egress enforcement § layering](/docs/develop/egress-enforcement/#the-layering-coarse-at-the-proxy-fine-at-the-server).
+**server-side**. See [Credential-safe action enforcement § layering](/docs/develop/egress-enforcement/#the-layering-coarse-at-the-proxy-fine-at-the-server).
 
 ## The two consoles
 
@@ -228,6 +228,6 @@ approval, is the [autonomous flow](/docs/develop/autonomous-flow/).
 ## See also
 
 - [Temporary elevation walkthrough (INC-4821)](/docs/develop/guides/temporary-elevation-walkthrough/) — this exact flow, end-to-end and runnable offline, with the SDK error table and the elevation flow table.
-- [Agent identity](/docs/develop/agent-identity/) — how the agent the delegation is issued to gets its `did:key` + Membership VC.
+- [Accountable agent identity](/docs/develop/agent-identity/) — how the agent the delegation is issued to gets its `did:key` + Membership VC.
 - [Recipe: revocation race](/docs/develop/recipes/revocation-race/) — revoke mid-task and watch the next check deny.
 - [Troubleshooting § SDK typed error tree](/docs/develop/troubleshooting/#the-sdk-typed-error-tree) — map `ApprovalRequired` / `DelegationExpired` / `CredentialRevoked` to their fixes.

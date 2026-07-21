@@ -18,7 +18,7 @@ agent onboarding / delegation / revocation APIs documented in
 agent-only control plane into one that knows the *workforce* behind each agent: who an
 employee is, who owns an agent, who may delegate authority, and what short-lived token an
 agent may exchange that delegation for. For the why, see
-[Enterprise IAM](/docs/concepts/enterprise-iam/).
+[Connect agents to enterprise authority](/docs/concepts/enterprise-iam/).
 
 **Base URL** — same service as the rest of agent-idp: `:8090` (env `PORT`). All these
 endpoints are unauthenticated management-plane calls in the MVP; the cryptographic edge is
@@ -714,7 +714,7 @@ A named-standard attestation about an agent (GDPR, HIPAA, SOC2-TypeII, EU-AI-Act
 issued by an accountable human holding the `compliance_auditor` role. Query is public;
 issuance requires the role. **Revocation does not currently check the role** — a known,
 tracked gap (unlike provenance credentials in §9, where revoke does check it). See
-[Governance credentials](/docs/concepts/verifiable-credentials/) for the concept.
+[Governance credentials](/docs/concepts/identity-and-credentials/) for the concept.
 
 | Method | Path | Purpose |
 |---|---|---|
@@ -842,7 +842,7 @@ genuinely credential-type-agnostic, not implicitly hardcoded to one type.
 A self-declared attestation of what produced an agent's outputs — base model, training-data
 lineage, declared model owner — issued by a distinct `provenance_attestor` role. Query is
 public; issuance and revocation require the role. See
-[Governance credentials](/docs/concepts/verifiable-credentials/) for the supersession model.
+[Governance credentials](/docs/concepts/identity-and-credentials/) for the supersession model.
 
 | Method | Path | Purpose |
 |---|---|---|
@@ -918,8 +918,8 @@ revocation cascade, with reason code `provenance_credential_revoked`.
 
 ## See also
 
-- [Enterprise IAM](/docs/concepts/enterprise-iam/) — the concept and the F1–F6 story
-- [Governance credentials](/docs/concepts/verifiable-credentials/) — the compliance/provenance
+- [Connect agents to enterprise authority](/docs/concepts/enterprise-iam/) — the concept and the F1–F6 story
+- [Governance credentials](/docs/concepts/identity-and-credentials/) — the compliance/provenance
   concept and the cryptographic-verifiability story (F20, F24, F25)
 - [HTTP API](/docs/reference/http-api/) — the control-plane, egress, and agent-idp onboarding APIs
 - **Requirements docs** in the platform repo (`docs/requirements/`): `01-directory-sync.md`

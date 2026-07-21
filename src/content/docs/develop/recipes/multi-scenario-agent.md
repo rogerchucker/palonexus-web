@@ -68,5 +68,5 @@ fan an agent fleet out across scenarios in tests without a cluster.
 
 ## Related
 
-- [SDK quickstart](/docs/sdk/quickstart/) · [Offline tests](/docs/develop/recipes/offline-tests/).
+- [Quickstart](/docs/getting-started/quickstart/) · [Offline tests](/docs/develop/recipes/offline-tests/).
 - [Glossary — Scenario / Negative persona](/docs/getting-started/glossary/).

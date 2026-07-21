@@ -17,21 +17,30 @@ const { data } = Astro.props;
 			<a class="button primary" href={data.primaryCta.href}>{data.primaryCta.label}</a>
 			<a class="button secondary" href={data.secondaryCta.href}>{data.secondaryCta.label}</a>
 		</div>
+		<ul class="hero-distinction" aria-label="Where PaloNexus fits">
+			{
+				data.distinction.map((line) => (
+					<li>
+						<strong>{line.label}</strong> {line.text}
+					</li>
+				))
+			}
+		</ul>
 	</div>
 
-	<div class="hero-panel" aria-label="PaloNexus platform flow">
+	<div class="hero-panel" aria-label="PaloNexus authorization flow">
 		<div class="flow-row source">
 			<span>SRE agent</span>
 			<span>DevOps agent</span>
-			<span>SecOps agent</span>
+			<span>Coding agent</span>
 		</div>
 		<div class="flow-core">
-			<p>PaloNexus control layer</p>
+			<p>PaloNexus authorization layer</p>
 			<div class="core-grid">
-				<span>Identity</span>
-				<span>Policy</span>
-				<span>Registry</span>
-				<span>Audit</span>
+				<span>Ownership</span>
+				<span>Delegation</span>
+				<span>Credentials</span>
+				<span>Authority trail</span>
 			</div>
 		</div>
 		<div class="flow-row target">

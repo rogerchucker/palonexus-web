@@ -7,10 +7,44 @@ const HOMEPAGE = '/docs/';
 
 // Developer-facing integration + SDK docs.
 const DEVELOPER_PAGES = [
+	{ path: '/docs/getting-started/quickstart/', label: 'Quickstart (tabbed, Epic 30)' },
 	{ path: '/docs/develop/', label: 'Developer Integration index' },
 	{ path: '/docs/develop/deploy-an-agent/', label: 'Deploy an agent' },
 	{ path: '/docs/sdk/', label: 'SDK index' },
 	{ path: '/docs/sdk/agentdid/', label: 'AgentDID SDK' },
+	{ path: '/docs/getting-started/what-palonexus-is-not/', label: 'What PaloNexus is not' },
+	{ path: '/docs/concepts/identity-and-credentials/', label: 'Identity & credentials (merged)' },
+	{ path: '/docs/integrations/', label: 'Integrations index' },
+	{ path: '/docs/integrations/deep-agents-sandboxes/', label: 'Deep Agents integration (working)' },
+	{ path: '/docs/integrations/kagent/', label: 'kagent integration (planned)' },
+];
+
+// Epic 30 merged/renamed slugs. Each old URL must keep working via a static
+// meta-refresh stub whose refresh target AND canonical carry the '/docs' base
+// (see the `redirects` note in astro.config.mjs — destinations are emitted
+// verbatim, so a missing '/docs' prefix would 404 in production).
+const REDIRECTS = [
+	{ from: '/docs/getting-started/quickstart-agent-dev/', to: '/docs/getting-started/quickstart' },
+	{ from: '/docs/getting-started/quickstart-local/', to: '/docs/getting-started/quickstart' },
+	{ from: '/docs/sdk/quickstart/', to: '/docs/getting-started/quickstart' },
+	{ from: '/docs/concepts/security-and-trust/', to: '/docs/concepts/security-model' },
+	{ from: '/docs/concepts/verifiable-credentials/', to: '/docs/concepts/identity-and-credentials' },
+	{
+		from: '/docs/concepts/persistence-and-identity/',
+		to: '/docs/concepts/identity-and-credentials',
+	},
+	{ from: '/docs/concepts/idp-support/', to: '/docs/concepts/enterprise-iam' },
+	{ from: '/docs/concepts/consoles/', to: '/docs/concepts/architecture' },
+];
+
+// Epic 30 IA-1: the exact six top-level sidebar groups, in order.
+const SIDEBAR_GROUPS = [
+	'Get started',
+	'Concepts',
+	'Guides',
+	'Integrations',
+	'Reference',
+	'Self-host & operate',
 ];
 
 // Operator / self-hosting docs.
@@ -47,6 +81,11 @@ test.describe('critical pages render', () => {
 		expect(res?.status(), 'homepage HTTP status').toBeLessThan(400);
 		await expect(page).toHaveTitle(/PaloNexus/i);
 		await expect(page.locator('h1').first()).toBeVisible();
+		// The §15 one-sentence product line must stay verbatim on the docs homepage
+		// (em dash included; asserted on a robust substring spanning it).
+		await expect(page.locator('main')).toContainText(
+			'entitled to delegate—and only for the task, resource, and time originally approved',
+		);
 		expect(severe(errors), `console errors:\n${errors.join('\n')}`).toEqual([]);
 	});
 
@@ -71,6 +110,77 @@ test.describe('critical pages render', () => {
 			expect(severe(errors), `console errors on ${path}:\n${errors.join('\n')}`).toEqual([]);
 		});
 	}
+});
+
+test.describe('quickstart consolidation (Epic 30)', () => {
+	test('quickstart renders both persona tabs', async ({ page }) => {
+		await page.goto('/docs/getting-started/quickstart/', { waitUntil: 'domcontentloaded' });
+		await expect(page.getByRole('tab', { name: /Govern an agent/i })).toBeVisible();
+		await expect(page.getByRole('tab', { name: /Run the platform locally/i })).toBeVisible();
+	});
+});
+
+test.describe('merged-slug redirects (Epic 30)', () => {
+	for (const { from, to } of REDIRECTS) {
+		test(`old slug redirects: ${from} → ${to}`, async ({ page }) => {
+			// The static preview server returns the meta-refresh stub with a 200; assert
+			// the stub's refresh target and canonical rather than a Location header.
+			const res = await page.request.get(from);
+			expect(res.status(), `${from} stub status`).toBeLessThan(400);
+			const html = await res.text();
+			expect(html, `${from} meta-refresh destination`).toContain(
+				`http-equiv="refresh" content="0;url=${to}"`,
+			);
+			expect(html, `${from} canonical destination`).toContain(
+				`rel="canonical" href="https://palonexus.ai${to}"`,
+			);
+			// And a real browser lands on the destination page.
+			await page.goto(from, { waitUntil: 'domcontentloaded' });
+			await expect(page).toHaveURL(new RegExp(`${to.replace(/[/]/g, '\\/')}\\/?$`), {
+				timeout: 10_000,
+			});
+			await expect(page.locator('h1').first()).toBeVisible();
+		});
+	}
+});
+
+test.describe('sidebar information architecture (Epic 30)', () => {
+	test('exactly six top-level groups with the approved labels', async ({ page }) => {
+		await page.goto('/docs/concepts/architecture/', { waitUntil: 'domcontentloaded' });
+		const groups = page.locator(
+			'#starlight__sidebar ul.top-level > li > details > summary .group-label',
+		);
+		await expect(groups).toHaveCount(SIDEBAR_GROUPS.length);
+		await expect(groups).toHaveText(SIDEBAR_GROUPS, { useInnerText: true });
+	});
+
+	test('nested subgroups render (Guides / Integrations / Self-host)', async ({ page }) => {
+		await page.goto('/docs/concepts/architecture/', { waitUntil: 'domcontentloaded' });
+		const nested = page.locator('#starlight__sidebar ul.top-level details details summary');
+		for (const label of [
+			'Build & govern an agent',
+			'Walkthroughs',
+			'Recipes',
+			'Frameworks',
+			'Deploy',
+			'Configure',
+			'Operate',
+		]) {
+			await expect(
+				nested.filter({ hasText: label }).first(),
+				`nested group "${label}"`,
+			).toBeAttached();
+		}
+	});
+});
+
+test.describe('honesty markers', () => {
+	test('planned integration page carries a visible planned banner', async ({ page }) => {
+		await page.goto('/docs/integrations/kagent/', { waitUntil: 'domcontentloaded' });
+		const banner = page.locator('.starlight-aside--caution').first();
+		await expect(banner, 'planned-integration caution aside').toBeVisible();
+		await expect(banner).toContainText(/planned integration/i);
+	});
 });
 
 test.describe('navigation', () => {

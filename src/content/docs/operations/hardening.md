@@ -79,7 +79,7 @@ kind's default CNI does **not** enforce NetworkPolicy, so #4's lockdown is advis
 
 ## Related
 
-- [Security & Trust](/docs/concepts/security-and-trust/) — the enterprise overview this checklist hardens toward.
+- [Security model](/docs/concepts/security-model/) — the enterprise overview this checklist hardens toward.
 - [Self-hosting — the opt-in hardening components](/docs/operations/self-hosting/#the-opt-in-hardening-components).
 - [Security model](/docs/concepts/security-model/) — the invariants this checklist turns on.
 - [Persistence](/docs/operations/persistence/) · [Secrets](/docs/operations/secrets/) · [Backups](/docs/operations/backups/).

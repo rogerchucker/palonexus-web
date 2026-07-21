@@ -45,7 +45,7 @@ On each governed tool the gate asks `pn` (the live control plane, or the offline
 | **allow** | the tool runs and returns its normal output |
 | **needs-approval** | `interrupt()` pauses the run for a human-approved, time-boxed [delegation](/docs/getting-started/glossary/); on resume the gate **re-checks** and runs the tool only if it is now allowed (requires a checkpointer + `thread_id`) |
 | **hard deny** | a deny `ToolMessage` is substituted — the model sees `PaloNexus denied <tool>: …`, not the tool result |
-| **decision point unreachable** | raises [`ControlPlaneUnavailable`](/docs/sdk/quickstart/) (fail-closed) |
+| **decision point unreachable** | raises [`ControlPlaneUnavailable`](/docs/getting-started/quickstart/) (fail-closed) |
 
 ## The checkpointer requirement (for `interrupt_on`)
 
@@ -92,7 +92,7 @@ agent = create_deep_agent(
 )
 ```
 
-Decisions are made against the bound [request context](/docs/sdk/quickstart/), so drive the
+Decisions are made against the bound [request context](/docs/getting-started/quickstart/), so drive the
 agent inside a task:
 
 <!-- no-doctest: illustrative fragment — uses `agent` from a neighbouring block (not standalone-runnable) -->

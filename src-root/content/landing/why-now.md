@@ -1,9 +1,12 @@
 ---
 section: why-now
 eyebrow: Why now
-heading: Agents are becoming operational actors, not just chat interfaces.
+heading: Sandboxes isolate where agent code runs. Nobody isolates what it may do.
 ---
 
-As agents call APIs, trigger workflows, inspect infrastructure, and reason across systems,
-teams need a common operating model for identity, guardrails, lifecycle, and measurable
-outcomes. PaloNexus is built for that shift.
+The agent ecosystem itself is pointing at the gap: LangChain's sandbox guidance says to
+keep credentials outside the sandbox and inject them through an outbound proxy, and
+OpenAI's agent architecture keeps authentication and audit outside the workspace. Both
+name the broker; neither ships it. PaloNexus is that missing layer — it resolves the
+agent's owner, task, and delegation, then issues short-lived, scoped access outside the
+untrusted boundary, so no agent or sandbox ever holds a standing production credential.

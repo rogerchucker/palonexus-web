@@ -46,7 +46,7 @@ cannot reach a model/tool/peer/external host except through `/authz`.
 
 This is what makes the promise framework-agnostic: it holds for `create_agent`, a
 hand-rolled `StateGraph`, raw `httpx`, anything. See
-[Egress enforcement](/docs/develop/egress-enforcement/).
+[Credential-safe action enforcement](/docs/develop/egress-enforcement/).
 
 :::caution[Deny-by-default, fail closed]
 Unknown service, invalid token/VP, target not on the agent's allowlist, over
@@ -59,7 +59,7 @@ agent middleware mirrors this: any non-`200`, or an unreachable `/authz`, denies
 With `AGENT_IDENTITY_MODE=vc` the actor is the *proven*, registry-bound `did:key`
 behind a non-revoked Membership VC — the `X-Palonexus-Actor` header is trusted
 only if it matches. Revoking the Membership VC cuts egress on the next call. See
-[Agent identity](/docs/develop/agent-identity/).
+[Accountable agent identity](/docs/develop/agent-identity/).
 
 ### Never put a provider key in an agent pod
 
@@ -79,7 +79,7 @@ governance work.
 | **Foundation — PoC ingress** (prerequisite) | agent reachable through the edge, governed by existing authz | [Deploy an agent](/docs/develop/deploy-an-agent/) (Deployment + Service + HTTPRoute, register the agent entry) |
 | **1 — Identity + model broker** | agent holds a workload identity; LLM calls gated + metered | + [identity](/docs/develop/agent-identity/), [egress middleware/sidecar](/docs/develop/egress-enforcement/), the [model broker](/docs/develop/deploy-an-agent/#the-model-broker), proxy-only NetworkPolicy |
 | **2 — Tool & A2A egress + budgets** | every tool/peer call hits `/authz`; allowlists + budgets enforced | + registry `Allow*` / `Budget` — [Budgets and allowlists](/docs/develop/budgets-and-allowlists/) |
-| **3 — Human-approved delegation** | sensitive actions need a human-approved, time-boxed delegation | + [Delegations and approvals](/docs/develop/delegations-and-approvals/) |
+| **3 — Human-approved delegation** | sensitive actions need a human-approved, time-boxed delegation | + [Authority delegation](/docs/develop/delegations-and-approvals/) |
 
 The full multi-agent payoff is the [autonomous flow](/docs/develop/autonomous-flow/):
 an incident-triage agent reasons, gets denied a runbook, escalates to a peer
@@ -89,12 +89,12 @@ every hop decided at `/authz`.
 ## Where to go next
 
 - [Deploy an agent](/docs/develop/deploy-an-agent/) — package, deploy, register.
-- [Egress enforcement](/docs/develop/egress-enforcement/) — the developer view of the sidecar + proxy.
-- [Agent identity](/docs/develop/agent-identity/) — DID/VC self-provisioning.
-- [Delegations and approvals](/docs/develop/delegations-and-approvals/) — human-in-the-loop.
+- [Credential-safe action enforcement](/docs/develop/egress-enforcement/) — the developer view of the sidecar + proxy.
+- [Accountable agent identity](/docs/develop/agent-identity/) — DID/VC self-provisioning.
+- [Authority delegation](/docs/develop/delegations-and-approvals/) — human-in-the-loop.
 - [Autonomous flow](/docs/develop/autonomous-flow/) — the end-to-end hero flow.
 - [Budgets and allowlists](/docs/develop/budgets-and-allowlists/) — registry-level controls.
-- [Enterprise IAM](/docs/develop/enterprise-iam/) — drive the directory → governance → revocation → delegation → token-exchange loop end to end (the agent-idp CLIs + demo scripts).
+- [Connect agents to enterprise authority — hands-on](/docs/develop/enterprise-iam/) — drive the directory → governance → revocation → delegation → token-exchange loop end to end (the agent-idp CLIs + demo scripts).
 
 For the crypto library see the [`palonexus_agent` SDK](/docs/sdk/palonexus-agent/);
 for cluster prerequisites see [self-hosting](/docs/operations/self-hosting/); for

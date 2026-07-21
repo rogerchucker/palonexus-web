@@ -27,7 +27,11 @@ test.describe('marketing root renders', () => {
 		expect(res?.status(), 'homepage HTTP status').toBeLessThan(400);
 		await expect(page).toHaveTitle(/PaloNexus/i);
 		await expect(page.locator('h1').first()).toHaveText(
-			/Build, govern, and scale enterprise AI agents\./,
+			/Give AI agents authority without giving them standing access\./,
+		);
+		// The §15 one-sentence product line must stay verbatim in the hero lede.
+		await expect(page.locator('.hero-lede')).toContainText(
+			'entitled to delegate—and only for the task, resource, and time originally approved',
 		);
 
 		for (const anchor of SECTION_ANCHORS) {
@@ -35,6 +39,34 @@ test.describe('marketing root renders', () => {
 		}
 
 		expect(severe(errors), `console errors:\n${errors.join('\n')}`).toEqual([]);
+	});
+
+	test('hero carries the runtime / sandbox / PaloNexus three-line distinction', async ({
+		page,
+	}) => {
+		await page.goto('/', { waitUntil: 'domcontentloaded' });
+		const lines = page.locator('.hero-distinction li');
+		await expect(lines).toHaveCount(3);
+		await expect(lines.nth(0)).toContainText('Agent runtimes');
+		await expect(lines.nth(0)).toContainText('decide how an agent works');
+		await expect(lines.nth(1)).toContainText('Sandboxes');
+		await expect(lines.nth(1)).toContainText('decide where its code runs');
+		await expect(lines.nth(2)).toContainText('PaloNexus');
+		await expect(lines.nth(2)).toContainText('authorized to do');
+	});
+
+	test('works-with section lists working and planned ecosystems honestly', async ({ page }) => {
+		await page.goto('/', { waitUntil: 'domcontentloaded' });
+		const section = page.locator('section.works-with');
+		await expect(section).toBeAttached();
+		await expect(section.locator('.works-with-group').first()).toContainText('Working today');
+		// Every planned ecosystem must carry an explicit "Planned" marker (honesty rule).
+		const plannedGroup = section.locator('.works-with-group.planned');
+		await expect(plannedGroup).toContainText('kagent');
+		await expect(plannedGroup).toContainText('Agent Sandbox');
+		await expect(plannedGroup).toContainText('OpenAI Agents SDK');
+		await expect(plannedGroup).toContainText('MCP');
+		await expect(plannedGroup.locator('.planned-tag')).toHaveCount(4);
 	});
 
 	test('nav anchors scroll to the right section', async ({ page }) => {

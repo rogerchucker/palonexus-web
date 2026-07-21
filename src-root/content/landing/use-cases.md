@@ -1,18 +1,21 @@
 ---
 section: use-cases
-eyebrow: Use cases
-heading: Start where agents can reduce operational load without hiding accountability.
+eyebrow: Start here
+heading: Prevent agents and coding sandboxes from receiving standing production credentials.
 items:
   - >-
-    Resolve incidents with agents that can inspect telemetry, propose remediations, and
-    request approval before acting.
+    Denied by default. During incident INC-4821, an SRE agent requests a production
+    deployment restart. It holds no standing credentials, so the action stops at the
+    decision point.
   - >-
-    Automate deployment workflows while keeping infrastructure changes visible,
-    reversible, and policy-bound.
+    Owner-verified approval. PaloNexus routes the request to the service owner — and
+    verifies that this person is actually entitled to approve this action on this
+    resource.
   - >-
-    Review risky changes with agents that summarize blast radius, dependencies, and
-    operational readiness.
+    Five minutes of scoped access. On approval, the agent receives a short-lived
+    credential bound to that task, that deployment, and that window. Nothing else.
   - >-
-    Launch an internal agent marketplace with ownership, access scope, and lifecycle
-    metadata for every agent.
+    Auto-revoked, fully attributable. Access expires with the elevation window, and the
+    authority trail records the agent, owner, delegation, approver, policy, and
+    credential behind the action.
 ---

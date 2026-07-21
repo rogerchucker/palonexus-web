@@ -1,44 +1,96 @@
 ---
 title: Core concepts
-description: The vocabulary you need — the one decision, ingress vs egress, agent identity, delegations, and the registry.
+description: The vocabulary you need — the authority graph, delegation validation, just-in-time access, the one authorization contract, agent identity, delegations, and the registry.
 sidebar:
   order: 2
 ---
 
 A short tour of the ideas the rest of the docs build on.
 
-## One decision (`/authz`)
+## The authority graph
 
-Everything converges on a single authorization call. Envoy's `ext_authz` filter asks the
-control plane *may this caller reach this target?* on every request. The same `/authz`
-logic governs **agent egress** — a model call, tool call, or agent→agent hop is the same
-shape of question (`actor`, `on-behalf-of`, `task`, `target`, `action`, `resource`).
+Many systems can intercept an agent's calls. What makes a PaloNexus decision different is
+the **authority graph** behind it: every decision resolves a complete chain from a real
+person to the recorded action —
+
+```text
+human identity
+  → organizational role
+  → ownership of resource/service
+  → authority to delegate
+  → agent identity
+  → task mandate
+  → permitted operation
+  → target resource
+  → time/risk/budget constraints
+  → issued runtime credential
+  → recorded action
+```
+
+An agent never acts on its own authority. It acts with **delegated authority** — and the
+authority graph is what proves *whose* authority it is using, that the person was
+*entitled* to delegate it, and that the delegation is *still valid* at the moment of the
+call.
+
+## Delegation validation
+
+PaloNexus does not merely record that a human approved an action. It verifies that the
+approval itself carries authority:
+
+- the approver is **active** in the workforce directory;
+- the approver **has authority over the resource** being acted on;
+- the approver **may delegate** that authority;
+- the requested operation falls **within the approver's own permissions**;
+- the delegation stays **within duration, risk, budget, and environment limits**;
+- **separation-of-duties** constraints are satisfied;
+- the approving identity **has not changed role** since the approval.
+
+So a random manager cannot approve a production database deletion, a sponsor cannot grant
+an agent permissions the sponsor does not hold, and an approval loses force when the
+approver changes role or leaves the company.
+
+## Just-in-time access
+
+Agents hold **no standing enterprise credentials**. Access is issued at the moment a task
+requires it — scoped to one task, one target, a bounded action set, and a short time
+window — and it expires or is revoked automatically. A denial becomes access only through
+an approved, time-boxed delegation, never through a durable role grant.
+
+## One authorization contract (`/authz`)
+
+Everything converges on a single authorization call — the platform's **one authorization
+contract**. Envoy's `ext_authz` filter asks the control plane *may this caller reach this
+target?* on every request. The same `/authz` logic governs **agent egress** — a model call,
+tool call, or agent→agent hop is the same shape of question (`actor`, `on-behalf-of`,
+`task`, `target`, `action`, `resource`).
 
 ## Ingress vs egress
 
 - **Ingress (north–south):** a client → Envoy gateway → `/authz` → upstream service.
   Identity is a bearer token (OIDC via Dex); the target is resolved from the registry.
 - **Egress (the hard part):** an agent's outbound call → the egress proxy → `/authz` →
-  model/tool/peer/external. Identity is a **Verifiable Presentation** (the agent's
-  `did:key` + an issuer-signed Membership VC); the decision adds allowlist, budget,
-  delegation/TBAC, and OPA.
+  model/tool/peer/external. Identity is a **signed agent credential, presented fresh on
+  each call** (see [Credential formats](#credential-formats-implementation) for the wire
+  format); the decision adds allowlist, budget, delegation/TBAC, and OPA.
 
 Egress is enforced at the **network layer** (NetworkPolicy confines the pod to the egress
 proxy), so it holds for *any* framework — not just cooperating SDK code.
 
-## Agent identity (DID/VC)
+## Agent identity and ownership
 
-Agents are **`did:key`** subjects (self-certifying, minted per agent) issued an
-**issuer-signed Membership VC** by the **`did:web`** anchor (`did:web:agent-idp.agent-idp.svc`).
-No blockchain. Revocation is a StatusList checked at `/authz` — revoke an agent and its
-egress stops within seconds. See [Agent identity](/docs/develop/agent-identity/).
+Every agent has its own identity — distinct from any human's — plus a mandatory
+**accountable human owner** and **sponsor** before it can run. The identity is backed by a
+signed agent credential whose revocation is checked on every decision: revoke an agent and
+its egress stops within seconds. See [Accountable agent identity](/docs/develop/agent-identity/) and
+[Credential formats](#credential-formats-implementation) below for how this is implemented.
 
 ## Delegations (time-boxed, human-approved)
 
 A low-trust agent has *no standing access* to regulated resources. To act, it requests a
-**Delegation VC** — a time-boxed, task-scoped credential a human approves. The regulated
-resource (e.g. `runbooks-api`) verifies it server-side via a DID/VC **challenge-response**.
-See [Delegations & approvals](/docs/develop/delegations-and-approvals/).
+**delegation credential** — a time-boxed, task-scoped proof of authorization that a human
+approves. The regulated resource (e.g. `runbooks-api`) verifies it server-side via a
+cryptographic **challenge-response**.
+See [Authority delegation](/docs/develop/delegations-and-approvals/).
 
 ## The registry
 
@@ -72,16 +124,38 @@ sequenceDiagram
     Note over Z,I: every decision is hash-chained to the audit log
 ```
 
-*One regulated egress call: the agent proves its identity with a Verifiable Presentation, the
-call is denied by default, a human approves a time-boxed Delegation VC, the re-checked call is
-allowed on behalf of the human, and both decisions are written to the tamper-evident audit
-chain.*
+*One regulated egress call: the agent proves its identity with a signed presentation, the
+call is denied by default, a human approves a time-boxed delegation, the re-checked call is
+allowed on behalf of the human, and both decisions are written to the verifiable authority
+trail.*
+
+## Credential formats (implementation)
+
+Externally, the PaloNexus vocabulary is deliberately format-neutral: **agent identity**,
+**signed agent credentials**, **delegated authority**, **proof of authorization**, and
+**short-lived runtime credentials**. Beneath that vocabulary, the shipped implementation
+uses **DID/VC — one supported credential format, an implementation mechanism rather than
+the product category**:
+
+- **Agent identity (DID/VC).** Agents are **`did:key`** subjects (self-certifying, minted
+  per agent) issued an **issuer-signed Membership VC** by the **`did:web`** anchor
+  (`did:web:agent-idp.agent-idp.svc`). No blockchain. Revocation is a StatusList checked at
+  `/authz` — revoke an agent and its egress stops within seconds. See
+  [Accountable agent identity](/docs/develop/agent-identity/).
+- **Proof of identity on each call.** On every egress call the agent builds a fresh,
+  holder-signed **Verifiable Presentation (VP)** wrapping its Membership VC — proving *who
+  is calling, right now* without forwarding a raw bearer token.
+- **Delegated authority.** An approved delegation is carried as a **Delegation VC** — the
+  time-boxed, task-scoped credential from
+  [Delegations](#delegations-time-boxed-human-approved) — and regulated resources verify it
+  server-side via a DID/VC **challenge-response**. See
+  [Authority delegation](/docs/develop/delegations-and-approvals/).
 
 Every acronym above — DID, VC, VP, TBAC, on-behalf-of, deny-by-default — is defined in the
 [Glossary](/docs/getting-started/glossary/).
 
 ## Where to go next
 
-- [Local quickstart](/docs/getting-started/quickstart-local/) — run the platform + these docs.
+- [Quickstart](/docs/getting-started/quickstart/) — run the platform + these docs (the "Run the platform locally" tab).
 - [Deploy an agent](/docs/develop/deploy-an-agent/) — the developer path.
-- [Architecture](/docs/concepts/architecture/) — the six pillars in depth.
+- [Architecture](/docs/concepts/architecture/) — the decision service in depth.

@@ -71,7 +71,7 @@ SDK `palonexus 0.1.0`. This is the consolidated set the rest of these docs descr
   line, so the current compatible spine is **`:h13`-class**.
 - **Agent runtime** stays on the independently-versioned `remediation :h12`-class line (carries the
   async model-gate, issuer-key, and NetworkPolicy fixes from the autonomous-hero-flow wave).
-- **Docs program.** Added the [Security &amp; Trust](/docs/concepts/security-and-trust/) overview, this
+- **Docs program.** Added the [Security &amp; Trust](/docs/concepts/security-model/) overview, this
   changelog, the interactive **agent-idp API reference**, and a pass of diagrams, screenshots, and
   comparison tables. Repositioned the docs as **IdP-neutral** — Logto is an optional reference demo
   seed, not a requirement.
@@ -147,5 +147,5 @@ the platform `BACKLOG.md`); until then the repo's `docs/requirements/` holds the
 
 - [Upgrades & rollback](/docs/operations/upgrades/) — the authoritative compatibility matrix and procedure.
 - [Feature matrix](/docs/concepts/feature-matrix/) — capabilities with Shipped/Partial/Planned status.
-- [Security & Trust](/docs/concepts/security-and-trust/) — the enterprise security overview.
+- [Security model](/docs/concepts/security-model/) — the enterprise security overview.
 - [SDK reference](/docs/sdk/reference/) — the generated `palonexus` API surface.

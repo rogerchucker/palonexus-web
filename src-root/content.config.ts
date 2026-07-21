@@ -17,6 +17,9 @@ const heroSchema = z.object({
 	eyebrow: z.string(),
 	heading: z.string(),
 	lede: z.string(),
+	// The runtime / sandbox / PaloNexus three-line category distinction, rendered on
+	// the first screen directly under the hero actions.
+	distinction: z.array(z.object({ label: z.string(), text: z.string() })).length(3),
 	primaryCta: cta,
 	secondaryCta: cta,
 });
@@ -45,6 +48,17 @@ const platformSchema = z.object({
 	eyebrow: z.string(),
 	heading: z.string(),
 	columns: z.array(z.object({ title: z.string(), description: z.string() })).min(1),
+	// "Every result → authority trail" line rendered under the three-column diagram.
+	footer: z.string().optional(),
+});
+const worksWithSchema = z.object({
+	section: z.literal('works-with'),
+	eyebrow: z.string(),
+	heading: z.string(),
+	// Honesty rule: `working` lists only integrations that ship today; everything
+	// else goes in `planned` and is rendered with a visible "Planned" marker.
+	working: z.array(z.string()).min(1),
+	planned: z.array(z.string()).min(1),
 });
 const useCasesSchema = z.object({
 	section: z.literal('use-cases'),
@@ -71,6 +85,7 @@ const landingSchema = z.discriminatedUnion('section', [
 	solutionsSchema,
 	whyNowSchema,
 	platformSchema,
+	worksWithSchema,
 	useCasesSchema,
 	governanceSchema,
 	closingSchema,
@@ -81,6 +96,7 @@ export type HeroData = z.infer<typeof heroSchema>;
 export type SolutionsData = z.infer<typeof solutionsSchema>;
 export type WhyNowData = z.infer<typeof whyNowSchema>;
 export type PlatformData = z.infer<typeof platformSchema>;
+export type WorksWithData = z.infer<typeof worksWithSchema>;
 export type UseCasesData = z.infer<typeof useCasesSchema>;
 export type GovernanceData = z.infer<typeof governanceSchema>;
 export type ClosingData = z.infer<typeof closingSchema>;

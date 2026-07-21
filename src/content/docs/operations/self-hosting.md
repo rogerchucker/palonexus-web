@@ -129,7 +129,7 @@ Render-check the composed stack before applying:
 kubectl kustomize --load-restrictor LoadRestrictionsNone deploy/kustomize/overlays/selfhost
 ```
 
-Full operational detail in [Egress enforcement (ops)](/docs/operations/egress-enforcement-ops/).
+Full operational detail in [Credential-safe action enforcement (ops)](/docs/operations/egress-enforcement-ops/).
 
 ## Secrets to provide out-of-band
 
@@ -176,7 +176,7 @@ job. Symptom → cause → fix:
 | Allowed model call returns no completion though deploy is green | `model-broker-secrets` (`OPENAI_API_KEY`) absent — **fail-closed by design** | Apply the model-broker Secret; deploy intentionally succeeds without it |
 | VCs stop verifying after an agent-idp restart | no stable `ISSUER_PRIVATE_KEY_B64` → ephemeral dev key regenerated | Provide the `agent-idp-secrets` issuer Secret (see [Secrets](/docs/operations/secrets/)) |
 | `kubectl get gateway` ADDRESS blank / Service stuck `<pending>` | LoadBalancer still provisioning on DO (can take minutes) | Wait, or `kubectl port-forward` to stay moving; confirm `PROGRAMMED=True` |
-| Portal `/settings/seed` → `ENOENT` on `python3` (only when using the optional Logto demo seed) | plain `node:*` portal image without the bundled `seed-logto` + Python | Use the bundled portal image, or seed from the CLI ([DOKS runbook Step 4](/docs/operations/doks-runbook/#step-4--seed-the-demo-identity-model)) — or skip the demo seed entirely and bring your own OIDC/SCIM IdP ([IdP Support Model](/docs/concepts/idp-support/)) |
+| Portal `/settings/seed` → `ENOENT` on `python3` (only when using the optional Logto demo seed) | plain `node:*` portal image without the bundled `seed-logto` + Python | Use the bundled portal image, or seed from the CLI ([DOKS runbook Step 4](/docs/operations/doks-runbook/#step-4--seed-the-demo-identity-model)) — or skip the demo seed entirely and bring your own OIDC/SCIM IdP ([IdP Support Model](/docs/concepts/enterprise-iam/#idp-support-model)) |
 | Egress lockdown not enforced on `kind` | kindnet CNI doesn't enforce NetworkPolicy (advisory only) | Expected on kind; the `/authz` gate still enforces. Use a NetworkPolicy-enforcing CNI (DOKS = Cilium) in production |
 
 ## DOKS / any cluster

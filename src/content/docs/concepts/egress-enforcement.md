@@ -1,9 +1,18 @@
 ---
-title: Egress enforcement
-description: The network-layer design that forces every outbound agent call through /authz — forward proxy, Envoy egress gateway, admission webhook, and a per-agent identity sidecar — with coarse-vs-fine layering.
+title: Credential-Safe Action Enforcement
+description: The egress-gateway enforcement mode — the agent boundary never holds standing credentials; every outbound agent call is authorized at /authz and credentials are injected after the untrusted boundary, via the forward proxy, Envoy egress gateway, admission webhook, and per-agent identity sidecar.
 sidebar:
   order: 3
 ---
+
+This page describes PaloNexus's **egress-gateway enforcement mode** — one of the
+[three enforcement modes](/docs/concepts/index/#three-enforcement-modes) (governed
+tool · token exchange · egress gateway), and the one that ships as today's primary
+enforcement. The agent makes its outbound request *through* PaloNexus, which
+authorizes it and injects credentials **after** the untrusted boundary — the agent
+boundary never holds standing credentials. This implements the credential-injecting
+outbound-proxy pattern that LangChain's sandbox documentation recommends for keeping
+secrets outside the sandbox.
 
 The hard part of governing agents is not the inbound request — it is **egress**:
 making every outbound action an agent takes (a model call, a tool call, an
@@ -168,7 +177,7 @@ way. The consequence for the registry's `dataClass`:
 So a resource that runs its own DID/VC challenge is registered `internal` (the
 runbooks demo is one example), while a target with no server-side gate stays
 `regulated` so the proxy holds it. See
-[Persistence & identity](/docs/concepts/persistence-and-identity/) for the
+[Agent identity & credentials](/docs/concepts/identity-and-credentials/) for the
 cryptographic identity that underpins all of this.
 
 ## The autonomous hero flow
@@ -184,6 +193,6 @@ grounded plan. **Every hop is decided at `/authz`.**
 
 - [HTTP API — the egress-request API](/docs/reference/http-api/)
 - [Headers — Proxy-Authorization VP](/docs/reference/headers/)
-- [Consoles — Egress Approvals](/docs/concepts/consoles/)
-- [Delegations & approvals (how-to)](/docs/develop/delegations-and-approvals/) — the needs-approval branch, end to end.
-- [Egress enforcement (operations)](/docs/operations/egress-enforcement-ops/) — wiring the proxy, gateway, and admission webhook.
+- [Consoles — Egress Approvals](/docs/concepts/architecture/#consoles)
+- [Authority delegation (how-to)](/docs/develop/delegations-and-approvals/) — the needs-approval branch, end to end.
+- [Credential-Safe Action Enforcement (Ops)](/docs/operations/egress-enforcement-ops/) — wiring the proxy, gateway, and admission webhook.

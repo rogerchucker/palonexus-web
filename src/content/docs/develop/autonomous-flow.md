@@ -152,7 +152,7 @@ The fully autonomous flow runs through the real agents:
 
 — every hop on the audit chain. The single-process delegation race (deny → approve
 → allow → revoke → deny) is provable standalone with `./scripts/phaseB-smoke.sh`;
-see [Delegations and approvals](/docs/develop/delegations-and-approvals/). Inspect
+see [Authority delegation](/docs/develop/delegations-and-approvals/). Inspect
 the result:
 
 ```bash

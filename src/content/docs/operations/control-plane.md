@@ -31,7 +31,7 @@ Agent **egress** calls take a parallel decision path. They are recognised by the
 `X-Palonexus-Actor` / `-On-Behalf-Of` / `-Task` / `-Target-Kind` headers (set by
 the agent's middleware); the egress evaluator adds agent-specific gates
 (allowlist, budget, delegation/TBAC) on top of the same deny-overrides shape. See
-[Egress enforcement](/docs/operations/egress-enforcement-ops/) and the
+[Credential-safe action enforcement](/docs/operations/egress-enforcement-ops/) and the
 [concept page](/docs/concepts/egress-enforcement/).
 
 ## Internal packages

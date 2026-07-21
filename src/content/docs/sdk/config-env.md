@@ -90,7 +90,7 @@ automatically on any non-memory backend.
 
 See [Environment variables § agent-idp](/docs/reference/env-vars/#agent-idp) for the full
 table and the [Enterprise IAM API](/docs/reference/enterprise-iam-api/) for the
-endpoints; the [Enterprise IAM how-to](/docs/develop/enterprise-iam/) walks the CLIs.
+endpoints; the [Connect agents to enterprise authority — hands-on](/docs/develop/enterprise-iam/) walks the CLIs.
 
 ## Egress decision point
 

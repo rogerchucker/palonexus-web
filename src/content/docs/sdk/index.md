@@ -1,6 +1,6 @@
 ---
 title: SDK Reference (Python)
-description: The palonexus SDK — one typed, framework-aware front door over the agent control plane. A lean core (facade, ten typed models, typed errors) wrapping three layers — crypto, idp, agent — with opt-in framework extras.
+description: The palonexus SDK — one typed, framework-aware front door over the PaloNexus authorization service. A lean core (facade, ten typed models, typed errors) wrapping three layers — crypto, idp, agent — with opt-in framework extras.
 sidebar:
   order: 1
 ---
@@ -13,14 +13,14 @@ pip install palonexus
 
 It is a typed, framework-aware facade that **wraps — does not replace** the platform's
 existing packages. The base install is deliberately lean: the `PaloNexus` facade, the
-[ten typed models](#the-ten-typed-models), the typed [error tree](/docs/sdk/quickstart/#authorize-enforce),
+[ten typed models](#the-ten-typed-models), the typed [error tree](/docs/getting-started/quickstart/#more-on-each-step),
 the idp HTTP client, and the crypto layer. Framework bindings are **opt-in extras** so an
 agent author who only needs `task.check(...)` never installs a graph runtime.
 
 :::tip[New here? Start with the quickstart]
-The fastest path is the [10-minute agent-dev quickstart](/docs/getting-started/quickstart-agent-dev/) —
-`pip install`, `PaloNexus.offline()`, register → denied → approved → succeed, no cluster. Then
-the [SDK quickstart](/docs/sdk/quickstart/) covers every call copy-pasteably.
+The fastest path is the [10-minute quickstart](/docs/getting-started/quickstart/) —
+`pip install`, `PaloNexus.offline()`, register → denied → approved → succeed, no cluster — and
+it covers every call copy-pasteably.
 :::
 
 ## One package, three layers
@@ -166,7 +166,7 @@ have an explicit graph, and [Deep Agents](/docs/sdk/deep-agents/) for planner/su
 
 ## Where to go next
 
-- [SDK quickstart](/docs/sdk/quickstart/) — init, register, task, check, delegate, audit, revoke.
+- [Quickstart](/docs/getting-started/quickstart/) — init, register, task, check, delegate, audit, revoke.
 - [LangChain adapter](/docs/sdk/langchain/) · [LangGraph adapter](/docs/sdk/langgraph/) — the framework extras.
 - [agentdid API reference](/docs/sdk/agentdid/) — every credential primitive (`palonexus.crypto`).
 - [palonexus_agent scaffold](/docs/sdk/palonexus-agent/) — identity bootstrap, egress gates, `create_app`.

@@ -1,0 +1,167 @@
+---
+title: Overview
+description: What PaloNexus decides — delegated authority for AI-agent actions — where it sits in the agent stack, the five core concepts, how a request is authorized, when to use it, and the five pillars behind every decision.
+sidebar:
+  order: 1
+---
+
+import { CardGrid, LinkCard, Steps } from '@astrojs/starlight/components';
+
+PaloNexus is an **authorization and accountability service for AI-agent actions** — the
+identity governance layer between AI agents and the systems they act upon. It decides
+**authority, not routing**: whenever an agent attempts an action — a model call, a tool
+call, an agent→agent hop — one deny-by-default `/authz` decision answers *may this agent
+make this call, on behalf of this human, for this task, right now?* Behind that answer sits
+the [authority graph](/docs/getting-started/concepts/): whose authority the agent is using,
+whether that person was entitled to delegate it, and whether the delegation is still valid
+at this moment.
+
+PaloNexus is **not** an agent runtime and **not** a sandbox — it is the layer that governs
+what either is allowed to do with real enterprise systems:
+
+| Layer | What it owns | Examples |
+|---|---|---|
+| **Agent runtime** | *How an agent works* — prompting, tool routing, memory, orchestration | LangChain, LangGraph, Deep Agents, OpenAI Agents SDK, kagent |
+| **Sandbox** | *Where its code runs* — isolated filesystems, command execution, workspace lifecycle | Kubernetes Agent Sandbox, E2B, Daytona, Modal |
+| **PaloNexus** | *What it is authorized to do and whose authority it is using* — accountable ownership, delegation, just-in-time credentials, revocation, authority trail | Works alongside all of the above |
+
+Keep your runtime and your sandbox — PaloNexus complements both. See
+[What PaloNexus is not](/docs/getting-started/what-palonexus-is-not/) for the honest
+category boundaries.
+
+<CardGrid>
+  <LinkCard
+    title="Quickstart"
+    href="/docs/getting-started/quickstart/"
+    description="Ten minutes to your first authority-bound agent: register → denied by default → human-approved → succeed, fully offline. A second tab brings the whole platform up locally."
+  />
+  <LinkCard
+    title="Temporary-elevation walkthrough"
+    href="/docs/develop/guides/temporary-elevation-walkthrough/"
+    description="The INC-4821 hero flow end to end: a production action is denied, an entitled owner grants a time-boxed elevation, the call succeeds on their behalf, and access expires automatically."
+  />
+  <LinkCard
+    title="Reference"
+    href="/docs/reference/"
+    description="The code-accurate contracts in one place: Python SDK API, HTTP + Enterprise IAM APIs, CLI, environment variables, headers, feature matrix, and glossary."
+  />
+</CardGrid>
+
+## Core concepts
+
+| Concept | What it means | Learn more |
+|---|---|---|
+| **Agent identity** | Every agent gets a signed, verifiable identity of its own — it never borrows a human's account. | [Agent identity & credentials](/docs/concepts/identity-and-credentials/) |
+| **Owner & delegation** | Every agent names an accountable human owner and sponsor; it may receive only authority an entitled human was permitted to delegate. | [Authority delegation](/docs/develop/delegations-and-approvals/) |
+| **Task-scoped credential** | Access is issued just-in-time for one task, one resource scope, and a short time window — never a standing credential. | [Core concepts](/docs/getting-started/concepts/) |
+| **Decision** | Every action resolves at one deny-by-default `/authz` answer: allow, deny, or *needs human approval*. | [The authorization model](/docs/concepts/) |
+| **Authority trail** | Every verdict is recorded on a hash-chained, tamper-evident log traceable from agent to task, delegation, approver, and outcome. | [Security model](/docs/concepts/security-model/) |
+
+## How a request is authorized
+
+<Steps>
+
+1. An agent attempts an action — a model call, tool call, agent→agent hop, or API request.
+
+2. The call reaches the deny-by-default **`/authz`** decision point — via an SDK guard, the
+   egress proxy, or Envoy `ext_authz` at the gateway. There is no path around it.
+
+3. PaloNexus resolves the agent's **identity**, its accountable **owner**, and the
+   on-behalf-of **subject** the task is bound to.
+
+4. Policy evaluates the task, action, resource, allowlists, budgets, and any active
+   delegation. No valid authority means **deny** — or ***needs approval*** when a human
+   *could* grant it.
+
+5. On needs-approval, a human whose entitlement is verified grants a **time-boxed,
+   task-scoped delegation**; the re-checked call passes *on that approver's behalf* and the
+   access expires automatically.
+
+6. The verdict — allow or deny, and every approval and expiry around it — lands on the
+   tamper-evident **authority trail**.
+
+</Steps>
+
+The same loop in one picture — your workforce IdP owns your humans, PaloNexus owns your
+agents, and one decision connects them:
+
+```mermaid
+flowchart LR
+    L[Workforce IdP<br/>owns humans<br/>Okta · Entra · Logto…] -->|owner + sponsor| P[PaloNexus<br/>owns agents]
+    P -->|outbound call:<br/>deny-by-default| Z{authz}
+    Z -->|needs approval| H[Human delegates<br/>task-scoped access]
+    H -->|approve, time-boxed| E[Temporary elevation<br/>Delegation VC]
+    E -->|allow, on-behalf-of| Z
+    Z -->|every decision| A[(Audit<br/>proves control)]
+```
+
+*The PaloNexus control loop: your workforce IdP (Okta, Entra ID, Logto in the demo, …) owns
+humans, PaloNexus owns agents, a human delegates task-scoped access, an approval turns a
+denial into a time-boxed elevation, and every `/authz` decision is proven on the audit chain.
+Any OIDC/SCIM IdP plugs in the same way — see
+[Connect agents to enterprise authority](/docs/concepts/enterprise-iam/).*
+
+The same one authorization contract also gates inbound (north–south) requests entering the
+gateway — *may this caller reach this service?* via Envoy `ext_authz`. That ingress
+capability is the foundation egress governance is built on; the gateway, ingress, and
+Kubernetes wiring behind it are deployment mechanics covered in
+[Self-host & operate](/docs/operations/self-hosting/).
+
+## When to use PaloNexus
+
+- You are giving AI agents — or coding sandboxes — access to production systems, and you
+  refuse to hand them **standing production credentials**.
+- Every agent action must be traceable to an **accountable human owner** and a valid,
+  verifiable delegation of authority.
+- Access should be **just-in-time**: one task, one resource scope, a short time window,
+  automatic expiry.
+- Joiner / mover / leaver changes in your workforce IdP must **cascade immediately** into
+  agent access and ownership state.
+- Your security and audit teams need **tamper-evident evidence** of who authorized what,
+  when, and under whose authority.
+
+What ships today, what is opt-in, and what is planned is tracked honestly, row by row, in
+the [Feature matrix](/docs/concepts/feature-matrix/).
+
+## The five pillars
+
+| Pillar | What it guarantees |
+|---|---|
+| **Accountable ownership** | Every production agent has an active accountable owner and an organizational sponsor. |
+| **Authority-bound delegation** | An agent may receive only authority that an entitled human, group, or service owner is permitted to delegate. |
+| **Just-in-time access** | No standing enterprise credentials. Access is issued for one task, target, action set, and short time window. |
+| **Lifecycle-linked revocation** | Human and organizational changes cascade immediately into agent access and ownership state. |
+| **Verifiable authority trail** | Every action can be traced from the agent to the task, delegation, approver, policy, runtime credential, and target outcome. |
+
+Network enforcement, signed credentials, DIDs, Verifiable Credentials, OPA, Envoy, and
+Kubernetes are **implementation mechanisms beneath these pillars** — they are how the
+guarantees are enforced, not what the product is.
+
+## Implementation mechanisms
+
+Beneath the pillars, six cooperating mechanisms — gateway, identity, registry, policy,
+observability, audit — converge on the single `/authz` answer:
+
+| Mechanism | Role |
+|---|---|
+| **Gateway** | Envoy Gateway routes every request through `/authz` (`SecurityPolicy.extAuth`). |
+| **Identity** | Humans via Dex (OIDC); agents via DID/VC (`did:key` subjects + a `did:web` issuer anchor). |
+| **Registry** | The source of truth for services, agents, models, tools — plus egress allowlists and budgets. |
+| **Policy** | Inline rules then an OPA (Rego) veto; deny-by-default, fail-closed. |
+| **Observability** | Decisions, latency, per-agent token/cost as metrics; DID/VC spans as traces. |
+| **Audit** | Every decision hash-chains to its predecessor — tamper-evident. |
+
+The security invariants behind every decision — deny-by-default, fail-closed on every
+dependency, identity propagation (not token forwarding), and the tamper-evident authority
+trail — are specified in the [Security model](/docs/concepts/security-model/); the
+Kubernetes enforcement mechanics behind them are deployment detail in
+[Credential-safe action enforcement (Ops)](/docs/operations/egress-enforcement-ops/) and
+[Self-hosting](/docs/operations/self-hosting/).
+
+See it live on the operator console — authorization decisions, agent identities, active
+delegations, and consumption in a single posture view:
+
+![PaloNexus operator dashboard showing four headline metric cards — 22 authorization decisions (15 allow, 7 deny), 21 provisioned agent identities, 0 active delegations, and 2,769 tokens — above a live feed of recent allow and deny decisions for the remediation agent](/docs/screenshots/overview.png)
+
+*Live posture of the PaloNexus authorization service: authorization decisions, agent identities,
+delegations, and consumption in one view.*

@@ -95,4 +95,4 @@ egress-proxy) call that depends on any revoked credential denies in under a seco
 ## Related
 
 - [Deep Agents adapter](/docs/sdk/deep-agents/#offline-prove-the-contract-with-no-network) — the same flip inside `create_deep_agent`.
-- [Persistence & identity — revocation at /authz](/docs/concepts/persistence-and-identity/#revocation-enforced-at-authz).
+- [Agent identity & credentials — revocation at /authz](/docs/concepts/identity-and-credentials/#revocation-enforced-at-authz).

@@ -109,8 +109,8 @@ just DOKS. See [Self-hosting](/docs/operations/self-hosting/) for the overlay an
 component details.
 
 > For the full cold-start path — cluster → Gateway/Envoy CRDs → `kubectl apply -k`
-> → seed → deploy a governed agent → verify allow/deny/needs-approval in ≤30
-> minutes — follow the [DOKS runbook — zero to governed agent](/docs/operations/doks-runbook/).
+> → seed → deploy an authority-bound agent → verify allow/deny/needs-approval in ≤30
+> minutes — follow the [DOKS runbook — zero to authority-bound agent](/docs/operations/doks-runbook/).
 
 ## Cost (~$77/mo with defaults)
 

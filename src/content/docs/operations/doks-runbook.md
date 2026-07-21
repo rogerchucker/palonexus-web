@@ -1,6 +1,6 @@
 ---
-title: DOKS runbook — zero to governed agent
-description: An end-to-end, time-boxed runbook that takes a cold DigitalOcean Kubernetes cluster to a governed LangGraph agent making a denied → approved → allowed call in ≤30 minutes — cluster, Gateway API + Envoy Gateway CRDs, kubectl apply -k the selfhost overlay, seed, deploy an agent, and verify the allow/deny/needs-approval decision.
+title: DOKS runbook — zero to authority-bound agent
+description: An end-to-end, time-boxed runbook that takes a cold DigitalOcean Kubernetes cluster to an authority-bound LangGraph agent making a denied → approved → allowed call in ≤30 minutes — cluster, Gateway API + Envoy Gateway CRDs, kubectl apply -k the selfhost overlay, seed, deploy an agent, and verify the allow/deny/needs-approval decision.
 sidebar:
   order: 6.5
 ---
@@ -11,7 +11,7 @@ the worked example here; substitute your cluster's kubeconfig/context. PaloNexus
 does not depend on DigitalOcean.
 :::
 
-This is the **cold-start path**: from nothing to a *governed* agent — one whose
+This is the **cold-start path**: from nothing to an *authority-bound* agent — one whose
 model, tool, and agent-to-agent egress is decided at the control plane's
 `/authz` — on **any Kubernetes (DOKS shown)**, in under 30 minutes. It stitches
 together the pieces that already have their own pages so you run them in the right
@@ -42,7 +42,7 @@ Have these before you start the clock:
 
 The platform is **same-image-everywhere**; every behavioural switch is an env var
 delivered via Kustomize + out-of-band Secrets. The minimum-viable set for a
-governed-agent demo on the selfhost overlay:
+authority-bound-agent demo on the selfhost overlay:
 
 | Secret / env | Namespace | Consumed by | Required for | Default if absent |
 |---|---|---|---|---|
@@ -91,9 +91,9 @@ those images ship so the runbook stays one source of truth:
 | 2 | Out-of-band Secrets | ~2 min | secrets present in `palonexus` / `agent-idp` |
 | 3 | `kubectl apply -k overlays/selfhost` | ~6 min | all Deployments `Available`; Gateway `Programmed` |
 | 4 | Seed (portal button or CLI) | ~3 min | seed validation report passes |
-| 5 | Deploy + register a governed agent | ~5 min | agent pod `Ready` (2/2 with egress sidecar) |
+| 5 | Deploy + register an authority-bound agent | ~5 min | agent pod `Ready` (2/2 with egress sidecar) |
 | 6 | Verify allow / deny / needs-approval | ~3 min | the three decisions + audit rows |
-| | **Total** | **~30 min** | a governed agent + a denied→approved call |
+| | **Total** | **~30 min** | an authority-bound agent + a denied→approved call |
 
 The flow below is the same six steps as a dependency graph: nothing reconciles
 until the Gateway API + Envoy Gateway CRDs exist (Step 1 gates everything that
@@ -107,7 +107,7 @@ flowchart TD
   s1 --> s2[Step 2 - out-of-band Secrets]
   s2 --> s3[Step 3 - kubectl apply -k overlays/selfhost]
   s3 --> s4[Step 4 - seed Northstar via portal /settings/seed or CLI]
-  s4 --> s5[Step 5 - deploy + register governed agent - egress sidecar 2/2]
+  s4 --> s5[Step 5 - deploy + register authority-bound agent - egress sidecar 2/2]
   s5 --> v{Step 6 - /authz verdict}
   v -->|in-allowlist| allow[allow 200 + audit row]
   v -->|not allowlisted| deny[deny 403 + audit row]
@@ -117,7 +117,7 @@ flowchart TD
   na --> au
 ```
 
-*Zero-to-governed-agent as a dependency graph: CRDs first, then deploy, seed,
+*Zero-to-authority-bound-agent as a dependency graph: CRDs first, then deploy, seed,
 register, and verify the allow / deny / needs-approval trio into a tamper-evident
 audit.*
 
@@ -180,7 +180,7 @@ already present.
 ## Step 2 — Provide the out-of-band Secrets
 
 These are intentionally gitignored and absent from the rendered manifest set.
-The minimum for a governed-agent demo (see the matrix above):
+The minimum for a authority-bound-agent demo (see the matrix above):
 
 ```bash
 # Provider key (the ONLY place it lives) — needed for an allowed model call to 200
@@ -263,13 +263,13 @@ agent. Order matters; see [Self-hosting → opt-in components](/docs/operations/
 
 :::note[Step 4 is OPTIONAL — reference demo (Logto)]
 Seeding the demo identity model is **Logto-specific to the reference demo** and is
-**not required** to stand up a governed agent — the governed-agent path itself needs
+**not required** to stand up an authority-bound agent — the authority-bound-agent path itself needs
 no Logto. This step exists only to load the Northstar **demo** personas so the
 allow/deny/needs-approval verdicts have realistic subjects to decide against. A
 **"bring-your-own IdP"** deployment skips this and connects its own OIDC/SCIM
 workforce IdP (Okta, Microsoft Entra ID, Auth0, Ping, Google Workspace, Amazon
 Cognito, Keycloak, Logto, …) instead — see
-[IdP Support Model](/docs/concepts/idp-support/).
+[IdP Support Model](/docs/concepts/enterprise-iam/#idp-support-model).
 :::
 
 Load the Northstar org (28 personas, 6 agent scenarios, `org:agents:*` authority,
@@ -302,7 +302,7 @@ python3 seed_logto.py --no-dry-run apply     # apply against the connected tenan
 Use `--offline` on any subcommand to dry-run the seeder with the in-memory
 `FakeLogtoClient` (no live tenant) — useful to prove the path before real creds.
 
-## Step 5 — Deploy & register a governed agent
+## Step 5 — Deploy & register an authority-bound agent
 
 Follow the `deploy-langgraph-agent-to-palonexus` skill (the canonical workflow).
 Match the user's ask to a phase; for a *governed* (egress-gated, HITL-capable)
@@ -426,7 +426,7 @@ Be explicit about the real-cluster risks; none are in the happy-path timings:
 - [Terraform / DOKS](/docs/operations/terraform-doks/) — provision the cluster + DOCR + VPC.
 - [Self-hosting](/docs/operations/self-hosting/) — the overlay + opt-in hardening components.
 - [Secrets](/docs/operations/secrets/) — the never-in-image secret catalog and ESO/sealed-secrets.
-- [Egress enforcement (ops)](/docs/operations/egress-enforcement-ops/) — the proxy, proxy-only netpols, admission webhook.
+- [Credential-safe action enforcement (ops)](/docs/operations/egress-enforcement-ops/) — the proxy, proxy-only netpols, admission webhook.
 - The `deploy-langgraph-agent-to-palonexus` skill — the agent-deployment workflow Step 5 reuses.
 </content>
 </invoke>

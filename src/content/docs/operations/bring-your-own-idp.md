@@ -93,7 +93,7 @@ curl -sS -X POST "$AGENT_IDP_URL/v1/directory/sync" \
 
 The snapshot maps each employee to a stable `employeeId` subject + org/group membership; a
 leaver in a later snapshot triggers the revocation cascade (agents owned by that subject lose
-their delegations). See [Enterprise IAM](/docs/concepts/enterprise-iam/) for the schema. A
+their delegations). See [Connect agents to enterprise authority](/docs/concepts/enterprise-iam/) for the schema. A
 turnkey vendor SCIM *connector* (Logto/Okta push) is near-term roadmap; today you push the
 snapshot from your directory of record (the seeder in `seed-logto/` is the worked example for
 Logto, and a template for any source).

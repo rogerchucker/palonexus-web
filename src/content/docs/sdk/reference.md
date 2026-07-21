@@ -7,7 +7,7 @@ sidebar:
 
 > **Auto-generated** from the shipped `palonexus` v0.1.0 package by `platform/palonexus/tools/gen_reference.py` (docstrings + type signatures, stdlib `inspect`). Do not edit by hand — regenerate with `python platform/palonexus/tools/gen_reference.py` and rebuild the docs.
 
-Every symbol below is part of the package's public `__all__`, so this page tracks the code exactly. For task-oriented guides see the [SDK quickstart](/docs/sdk/quickstart/) and the framework adapter pages.
+Every symbol below is part of the package's public `__all__`, so this page tracks the code exactly. For task-oriented guides see the [Quickstart](/docs/getting-started/quickstart/) and the framework adapter pages.
 
 ## Facade and task API
 

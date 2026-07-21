@@ -1,15 +1,21 @@
 ---
-title: Egress Enforcement
-description: How the egress sidecar makes a LangChain model call traverse /authz transparently, how tool and peer calls use the proxied client, NO_PROXY, and the coarse-vs-fine layering.
+title: Credential-Safe Action Enforcement
+description: The developer's view of the egress-gateway enforcement mode — how the egress sidecar makes a LangChain model call traverse /authz transparently, how tool and peer calls use the proxied client, NO_PROXY, and the coarse-vs-fine layering.
 sidebar:
   order: 3
 ---
 
+This is the developer's view of the **egress-gateway enforcement mode** — one of the
+[three enforcement modes](/docs/concepts/index/#three-enforcement-modes) (governed
+tool · token exchange · egress gateway). Your agent code never holds standing
+credentials for the systems it acts on; every outbound call is authorized at `/authz`
+and credentials are injected after the untrusted boundary — the credential-injecting
+outbound-proxy pattern LangChain's sandbox docs recommend.
+
 The goal: **every** outbound agent call is decided at `/authz`, regardless of
 framework (`create_agent`, a hand-rolled `StateGraph`, raw `httpx`/`curl`),
 enforced at the **network layer** — not cooperative middleware — with a
-human-approval path. This page is the developer's view of how that works in
-practice.
+human-approval path. This page is how that works in practice.
 
 ## Three layers, defense in depth
 
@@ -121,7 +127,7 @@ agent --VP--> egress proxy            (coarse: identity + allowlist + budget)
 
 Both outcomes land on the audit chain as an `egress.proxy` record (allow or deny,
 with `actor=<agent>`). The human-approval mechanics are in
-[Delegations and approvals](/docs/develop/delegations-and-approvals/); the
+[Authority delegation](/docs/develop/delegations-and-approvals/); the
 registry controls in [Budgets and allowlists](/docs/develop/budgets-and-allowlists/).
 
 ## Verify the sidecar handoff

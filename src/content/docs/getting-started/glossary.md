@@ -1,6 +1,6 @@
 ---
 title: Glossary
-description: Every acronym and term used across the PaloNexus docs — DID, VC, VP, TBAC, Membership/Delegation VC, on-behalf-of, deny-by-default, ext_authz, HITL, and more.
+description: Every acronym and term used across the PaloNexus docs — authority graph, authority trail, just-in-time access, DID, VC, VP, TBAC, Membership/Delegation VC, on-behalf-of, deny-by-default, ext_authz, HITL, and more.
 sidebar:
   order: 7
 ---
@@ -9,6 +9,12 @@ The vocabulary the rest of the docs assume. Terms are grouped, but you can read 
 its own.
 
 ## Identity & credentials
+
+> **Mechanism, not category.** DID, VC, and VP are **credential formats** — implementation
+> mechanisms beneath the PaloNexus pillars, not the product category. Externally, PaloNexus
+> speaks of *agent identity*, *signed agent credentials*, *delegated authority*, *proof of
+> authorization*, and *short-lived runtime credentials*; DID/VC is one supported way to
+> implement them.
 
 **DID — Decentralized Identifier.** A self-describing identifier of the form `did:<method>:…`
 that resolves to a public key. PaloNexus uses two methods:
@@ -33,12 +39,12 @@ docs:
   EU-AI-Act-Art50) about an agent, issued by a `compliance_auditor`-role human as a real,
   signed `did:web` JWT-VC. Self-attested — PaloNexus verifies the signature and revocation
   status, not the underlying audit claim. See
-  [Governance credentials](/docs/concepts/verifiable-credentials/).
+  [Governance credentials](/docs/concepts/identity-and-credentials/).
 - **Provenance Credential** — a self-declared attestation of what produced an agent's
   outputs (base model, training-data lineage, declared owner), issued by a
   `provenance_attestor`-role human. A routine model update **supersedes** the prior
   credential (no cascade); an explicit revoke does cascade. See
-  [Governance credentials](/docs/concepts/verifiable-credentials/).
+  [Governance credentials](/docs/concepts/identity-and-credentials/).
 
 **VP — Verifiable Presentation.** A holder-signed wrapper an agent builds *fresh* on each
 egress call: the agent signs (with its `did:key`) over an audience + nonce, wrapping its
@@ -81,7 +87,17 @@ silent success.
 
 **TBAC — Task-Based Access Control.** Authorization scoped to a *task* (an incident, thread,
 or run id, e.g. `INC-4821`) rather than a standing role. A delegation is granted for one task
-and times out — the agent does not keep the privilege afterward.
+and times out — the agent does not keep the privilege afterward. TBAC is the mechanism
+beneath the **just-in-time access** pillar — how task-scoped authority is implemented, not
+a product category.
+
+**One authorization contract.** The design principle that every action — an inbound request
+or an agent's outbound call — converges on the same single `/authz` question and answer
+shape. Previously described in these docs as the "one-decision model".
+
+**Just-in-time access.** One of the five pillars: agents hold **no standing enterprise
+credentials**; access is issued for one task, target, action set, and short time window,
+then expires or is revoked automatically.
 
 **On-behalf-of.** An agent never acts as itself for regulated work; it acts *on behalf of* a
 human subject. The control plane records both the **actor** (agent) and the **subject**
@@ -111,6 +127,24 @@ targets drive the needs-approval path.
 
 ## Governance & authority
 
+**Authority graph.** The complete chain a PaloNexus decision resolves before it allows an
+action: human identity → organizational role → ownership of resource/service → authority to
+delegate → agent identity → task mandate → permitted operation → target resource →
+time/risk/budget constraints → issued runtime credential → recorded action. It is what makes
+the decision about *authority*, not merely interception. See
+[Core concepts](/docs/getting-started/concepts/).
+
+**Authority trail.** The record set proving the authority graph for every action: which
+agent acted, under whose authority, who approved the delegation, whether the approver was
+entitled to approve it, what task justified it, what credential was issued, and whether the
+authority was later revoked. Implemented as the hash-chained, tamper-evident **audit
+chain** (see *Audit hash chain*).
+
+**Authority-bound agent.** An agent that can act only with authority a real person or
+service owner was entitled to delegate — and only for the approved task, resource, and
+time. The positioning term for what the SDK and code surfaces call a *governed* agent
+(code symbols such as `governed_node` keep their code-accurate names).
+
 **Owner / Sponsor / Approver / Operator / Auditor.** The five human roles around a governed
 agent. Every agent must have an **owner** (accountable) and a **sponsor** (business backing)
 — the no-orphaned-agents rule. An **approver** authorizes delegations, an **operator** runs
@@ -121,7 +155,7 @@ distinct from the general **auditor** above: `compliance_auditor` may issue/revo
 Credentials, `provenance_attestor` may issue/revoke Provenance Credentials. Deliberately
 separate roles — the person who knows an agent's model lineage is often not its compliance
 auditor or its business owner. See
-[Governance credentials](/docs/concepts/verifiable-credentials/).
+[Governance credentials](/docs/concepts/identity-and-credentials/).
 
 **`org:agents:*`.** The org-scope authority strings carried on org roles:
 `org:agents:own`, `:sponsor`, `:approve`, `:operate`, `:audit`. `HumanOwner.agent_authority`
@@ -205,31 +239,31 @@ system of record for employees, groups, org roles, and lifecycle status. PaloNex
 Ping, Google Workspace, Amazon Cognito, Keycloak, Logto, …) via standards (**OIDC**, **SAML**,
 **SCIM / directory sync**, **API sync**, **webhooks**) and never owns human identity itself —
 it owns AI agents, delegation, task authorization, temporary elevation, and audit. See
-[IdP Support Model](/docs/concepts/idp-support/).
+[IdP Support Model](/docs/concepts/enterprise-iam/#idp-support-model).
 
 **OIDC — OpenID Connect.** The OAuth 2.0-based authentication standard PaloNexus uses to
 integrate a workforce IdP for human sign-in and to verify tokens against the IdP's **JWKS**.
 One of the standards that makes PaloNexus IdP-neutral. See
-[IdP Support Model](/docs/concepts/idp-support/).
+[IdP Support Model](/docs/concepts/enterprise-iam/#idp-support-model).
 
 **SAML — Security Assertion Markup Language.** The XML-based SSO/federation standard some
 enterprise IdPs use for workforce sign-in; supported alongside OIDC for connecting a workforce
-IdP. See [IdP Support Model](/docs/concepts/idp-support/).
+IdP. See [IdP Support Model](/docs/concepts/enterprise-iam/#idp-support-model).
 
 **Directory sync.** Keeping the **workforce directory** in step with the enterprise IdP —
 employees, groups, org roles, and lifecycle status — via **SCIM**, **API sync**, or
 **webhooks**. A snapshot reconcile keyed by the **stable subject**, idempotent and
-tenant-isolated. See [IdP Support Model](/docs/concepts/idp-support/).
+tenant-isolated. See [IdP Support Model](/docs/concepts/enterprise-iam/#idp-support-model).
 
 **Lifecycle status (joiner / mover / leaver).** The employee's state in the workforce IdP,
 propagated by directory sync: a **joiner** is provisioned, a **mover** changes
 groups/roles/org, and a **leaver** is deprovisioned (cascading revocation of any agent
-authority they held). See [IdP Support Model](/docs/concepts/idp-support/).
+authority they held). See [IdP Support Model](/docs/concepts/enterprise-iam/#idp-support-model).
 
 **Logto.** The **reference/demo IdP** used in PaloNexus walkthroughs and seeded demo data — a
 convenient OIDC/SCIM workforce IdP. PaloNexus is IdP-neutral; any OIDC/SCIM IdP (Okta, Entra
 ID, Auth0, …) integrates the same way. The `seed-logto` tool seeds the Northstar **demo** org
-into it. See [IdP Support Model](/docs/concepts/idp-support/).
+into it. See [IdP Support Model](/docs/concepts/enterprise-iam/#idp-support-model).
 
 **SCIM — System for Cross-domain Identity Management.** The standard (SCIM 2.0 User/Group)
 PaloNexus uses to sync the **workforce directory** from the enterprise IdP (Okta / Entra /
@@ -259,7 +293,7 @@ egress enforcement holds for *any* framework, not just cooperating SDK code.
 `subject`, `upstream`, `trace_id`.
 
 **AgentIdentity / HumanOwner / Delegation / TaskSession / Credential / AuditEvent / Resource /
-AssetType.** The core typed models — see the [SDK quickstart](/docs/sdk/quickstart/) and
+AssetType.** The core typed models — see the [Quickstart](/docs/getting-started/quickstart/) and
 [SDK overview](/docs/sdk/) for how they map to platform surfaces.
 
 **`X-Palonexus-*` headers.** The request/response headers carrying egress identity and the
