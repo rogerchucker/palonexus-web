@@ -78,9 +78,49 @@ test.describe('marketing root renders', () => {
 		}
 	});
 
-	test('primary CTAs point at the request-access mailto', async ({ page }) => {
+	test('primary CTAs point at the request-access page and docs are linked', async ({ page }) => {
 		await page.goto('/', { waitUntil: 'domcontentloaded' });
-		const ctas = page.locator('a[href="mailto:rajarshi@remrem.org"]');
+		// Nav CTA, hero primary, and closing CTA all route to the on-site form.
+		const ctas = page.locator('a[href="/request-access/"]');
 		expect(await ctas.count()).toBeGreaterThanOrEqual(3);
+		// Docs are reachable from the nav, the hero secondary CTA, and the closing.
+		const docsLinks = page.locator('a[href="/docs/"]');
+		expect(await docsLinks.count()).toBeGreaterThanOrEqual(2);
+		await expect(page.locator('.nav-links a[href="/docs/"]')).toHaveText('Docs');
+	});
+
+	test('request-access page renders the form with spam guard and email fallback', async ({
+		page,
+	}) => {
+		const errors = trackErrors(page);
+		const res = await page.goto('/request-access/', { waitUntil: 'networkidle' });
+		expect(res?.status(), 'request-access HTTP status').toBeLessThan(400);
+		const form = page.locator('form.request-form');
+		await expect(form).toBeAttached();
+		await expect(form).toHaveAttribute('action', '/api/request-access');
+		await expect(form).toHaveAttribute('method', 'post');
+		await expect(form.locator('input[name="name"]')).toHaveAttribute('required', '');
+		await expect(form.locator('input[name="email"]')).toHaveAttribute('required', '');
+		await expect(form.locator('textarea[name="details"]')).toBeAttached();
+		// Honeypot present but not visible to humans.
+		await expect(form.locator('input[name="website"]')).toBeAttached();
+		await expect(form.locator('input[name="website"]')).not.toBeInViewport();
+		// The error banner stays hidden unless the worker redirects back with ?error=1.
+		await expect(page.locator('.form-error')).not.toBeVisible();
+		// Email fallback stays available for people who prefer it.
+		await expect(page.locator('a[href="mailto:support@palonexus.ai"]').first()).toBeAttached();
+		expect(severe(errors), `console errors:\n${errors.join('\n')}`).toEqual([]);
+	});
+
+	test('request-access error state shows the fallback banner', async ({ page }) => {
+		await page.goto('/request-access/?error=1', { waitUntil: 'domcontentloaded' });
+		await expect(page.locator('.form-error')).toBeVisible();
+	});
+
+	test('request-access thanks page renders with a docs pointer', async ({ page }) => {
+		const res = await page.goto('/request-access/thanks/', { waitUntil: 'domcontentloaded' });
+		expect(res?.status(), 'thanks HTTP status').toBeLessThan(400);
+		await expect(page.locator('h1')).toContainText(/Thanks/);
+		await expect(page.locator('a[href="/docs/"]').first()).toBeAttached();
 	});
 });

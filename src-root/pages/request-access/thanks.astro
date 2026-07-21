@@ -1,0 +1,34 @@
+---
+import { getEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/landing/Nav.astro';
+
+const nav = await getEntry('landing', 'nav');
+if (!nav) throw new Error('Missing required landing page content entry in src/content/landing/');
+
+const navData = {
+	...nav.data,
+	links: nav.data.links.map((link) =>
+		link.href.startsWith('#') ? { ...link, href: `/${link.href}` } : link,
+	),
+};
+---
+
+<Layout>
+	<div class="site-shell">
+		<Nav data={navData} />
+		<main class="request-access">
+			<p class="eyebrow">Request received</p>
+			<h1>Thanks — we will be in touch.</h1>
+			<p class="request-lede">
+				Your request is in. Expect a reply within two business days. In the meantime, the
+				documentation covers the authorization model, the quickstart, and how PaloNexus fits
+				alongside your runtime or sandbox.
+			</p>
+			<div class="hero-actions">
+				<a class="button primary" href="/docs/">Read the docs</a>
+				<a class="button secondary" href="/">Back to the homepage</a>
+			</div>
+		</main>
+	</div>
+</Layout>

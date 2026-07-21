@@ -10,9 +10,24 @@
 	//   Deploy:  npm run deploy:root   (build + wrangler deploy -c wrangler.jsonc)
 	"compatibility_date": "2026-06-10",
 	"name": "palonexus-web",
+	// Worker script handles what assets don't match — the request-access form POST,
+	// forwarded via the free Email Routing send_email binding. The destination below
+	// must be a VERIFIED Email Routing destination address (an external inbox), which
+	// is why it is not support@palonexus.ai: zone addresses are routing rules, not
+	// destinations. support@ is the public-facing contact; its forwarding rule and
+	// these form submissions both land in the destination inbox below. Email Routing
+	// is already enabled on the palonexus.ai zone.
+	"main": "src-root/worker/index.js",
 	"assets": {
 		"directory": "./dist-root",
+		"binding": "ASSETS",
 	},
+	"send_email": [
+		{
+			"name": "REQUEST_ACCESS_EMAIL",
+			"destination_address": "rajarshic@gmail.com",
+		},
+	],
 	"observability": {
 		"enabled": true,
 	},
