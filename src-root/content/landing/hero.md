@@ -15,8 +15,8 @@ distinction:
     text: decides what it is authorized to do — and whose authority it is using.
 primaryCta:
   label: Request access
-  href: 'mailto:rajarshi@remrem.org'
+  href: '/request-access/'
 secondaryCta:
-  label: Explore solutions
-  href: '#solutions'
+  label: Read the docs
+  href: '/docs/'
 ---

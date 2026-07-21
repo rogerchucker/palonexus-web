@@ -77,6 +77,7 @@ const closingSchema = z.object({
 	eyebrow: z.string(),
 	heading: z.string(),
 	cta,
+	secondaryCta: cta.optional(),
 });
 
 const landingSchema = z.discriminatedUnion('section', [

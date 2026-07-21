@@ -8,7 +8,9 @@ links:
     href: '#platform'
   - label: Governance
     href: '#governance'
+  - label: Docs
+    href: '/docs/'
 cta:
   label: Request access
-  href: 'mailto:rajarshi@remrem.org'
+  href: '/request-access/'
 ---

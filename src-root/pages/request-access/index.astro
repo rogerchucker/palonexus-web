@@ -1,0 +1,73 @@
+---
+import { getEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/landing/Nav.astro';
+
+const nav = await getEntry('landing', 'nav');
+if (!nav) throw new Error('Missing required landing page content entry in src/content/landing/');
+
+// On subpages, in-page section anchors must point back at the homepage sections.
+const navData = {
+	...nav.data,
+	links: nav.data.links.map((link) =>
+		link.href.startsWith('#') ? { ...link, href: `/${link.href}` } : link,
+	),
+};
+---
+
+<Layout>
+	<div class="site-shell">
+		<Nav data={navData} />
+		<main class="request-access">
+			<p class="eyebrow">Request access</p>
+			<h1>Tell us where your agents need authority.</h1>
+			<p class="request-lede">
+				PaloNexus is self-hosted and onboarding is hands-on for now. Tell us what you are running
+				and what it needs to reach — we respond to every request, typically within two business
+				days.
+			</p>
+			<p class="form-error" role="alert">
+				Something went wrong sending your request. Please try again, or email
+				<a href="mailto:support@palonexus.ai">support@palonexus.ai</a> directly.
+			</p>
+			<form class="request-form" method="post" action="/api/request-access">
+				<div class="form-field">
+					<label for="ra-name">Name</label>
+					<input id="ra-name" name="name" type="text" required maxlength="200" />
+				</div>
+				<div class="form-field">
+					<label for="ra-email">Work email</label>
+					<input id="ra-email" name="email" type="email" required maxlength="200" />
+				</div>
+				<div class="form-field">
+					<label for="ra-company">Company</label>
+					<input id="ra-company" name="company" type="text" maxlength="200" />
+				</div>
+				<div class="form-field">
+					<label for="ra-details">What do your agents need to reach?</label>
+					<textarea
+						id="ra-details"
+						name="details"
+						rows="5"
+						maxlength="4000"
+						placeholder="Runtimes or frameworks in use, target systems (Kubernetes, GitHub, internal APIs, …), and how access is granted today."></textarea>
+				</div>
+				<div class="form-hp" aria-hidden="true">
+					<label for="ra-website">Website</label>
+					<input id="ra-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+				</div>
+				<div class="form-actions">
+					<button class="button primary" type="submit">Send request</button>
+					<p class="form-note">
+						Prefer email? Write to <a href="mailto:support@palonexus.ai">support@palonexus.ai</a>.
+					</p>
+				</div>
+			</form>
+		</main>
+	</div>
+	<script>
+		if (new URLSearchParams(window.location.search).has('error')) {
+			document.querySelector('.form-error')?.classList.add('visible');
+		}
+	</script>
+</Layout>
