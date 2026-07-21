@@ -1,18 +1,23 @@
 ---
-title: Agent Identity
-description: DID/VC agent identity — self-provision a did:key plus Membership VC at agent-idp, present a VP on egress, AGENT_IDENTITY_MODE=header vs vc, and revocation.
+title: Accountable Agent Identity
+description: Give every agent an identity that proves who acted on whose authority — self-provision signed agent credentials at agent-idp (DID/VC is one supported format), present a VP on egress, AGENT_IDENTITY_MODE=header vs vc, and revocation.
 sidebar:
   order: 4
 ---
 
-An agent's identity on PaloNexus is **cryptographic, not a trusted header**. The
-actor is a self-certifying `did:key` anchored to the org's `did:web` issuer, behind
-a non-revoked Membership Verifiable Credential (VC). The `X-Palonexus-Actor` header
-is honoured only when it matches the proven DID.
+The problem accountable agent identity solves: prove **which agent acted, whose
+authority it used, whether that authority was still valid, and why the action was
+allowed** — even against a workload willing to lie about who it is. That is why an
+agent's identity on PaloNexus is **cryptographic, not a trusted header**: a signed
+agent credential, revocable at any moment, tied through governance to an accountable
+human owner. DID/VC is **one supported credential format** — the mechanism used here,
+not the category. Concretely, the actor is a self-certifying `did:key` anchored to
+the org's `did:web` issuer, behind a non-revoked Membership Verifiable Credential
+(VC). The `X-Palonexus-Actor` header is honoured only when it matches the proven DID.
 
 ## Self-provision at agent-idp
 
-Before any DID is minted, a governed agent must be **accountably owned**. The SDK
+Before any DID is minted, an authority-bound agent must be **accountably owned**. The SDK
 makes that a typed, two-call path: `pn.agents.register(name, owner, sponsor)`
 enforces the *no-orphaned-agents* rule (a missing `owner` **or** `sponsor` raises
 `GovernanceError` client-side, before any network call), then `agent.provision()`
@@ -76,7 +81,7 @@ curl -s localhost:8090/v1/issuer               # {issuerDid, issuerPubMultibase}
 The [`palonexus_agent` SDK](/docs/sdk/palonexus-agent/) self-provisions on startup
 via these same endpoints (`identity.py`) and holds the private key + VCs in memory.
 It also writes its identity to the shared file the egress sidecar reads — see
-[Egress enforcement](/docs/develop/egress-enforcement/).
+[Credential-Safe Action Enforcement](/docs/develop/egress-enforcement/).
 
 :::note[Identity bootstrap bypasses the proxy]
 The agent has no VP until it has provisioned, so the call to agent-idp must bypass
@@ -124,7 +129,7 @@ curl -s -XPOST localhost:8090/v1/revoke -H 'content-type: application/json' \
 ```
 
 The same mechanism revokes a time-boxed Delegation VC mid-flight (the
-live-revocation race) — see [Delegations and approvals](/docs/develop/delegations-and-approvals/).
+live-revocation race) — see [Authority delegation](/docs/develop/delegations-and-approvals/).
 For the crypto primitives (Ed25519, did:web/did:key, JWT-VC, delegation chains) see
 the [`palonexus_agent` / agentdid SDK](/docs/sdk/palonexus-agent/) and the exact
 endpoints in the [HTTP API reference](/docs/reference/http-api/).

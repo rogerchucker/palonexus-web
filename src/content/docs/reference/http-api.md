@@ -306,4 +306,4 @@ Exposed on `:8181/metrics`:
 
 - [Headers](/docs/reference/headers/)
 - [Environment variables](/docs/reference/env-vars/)
-- [Egress enforcement](/docs/concepts/egress-enforcement/)
+- [Credential-safe action enforcement](/docs/concepts/egress-enforcement/)

@@ -25,7 +25,7 @@ four distinct command-line surfaces:
 verdicts have realistic personas and scopes to decide against. A bring-your-own-IdP
 deployment skips it entirely and connects its own OIDC/SCIM workforce IdP (Okta, Microsoft
 Entra ID, Auth0, Ping, Google Workspace, Amazon Cognito, Keycloak, Logto, …) — see the
-[IdP Support Model](/docs/concepts/idp-support/).
+[IdP Support Model](/docs/concepts/enterprise-iam/#idp-support-model).
 :::
 
 Source: `platform/seed-logto/src/nsr_seeder/cli.py`. The package ships a thin wrapper
@@ -190,12 +190,12 @@ pn = PaloNexus.from_env()    # reads PALONEXUS_* (or returns offline() when PALO
 
 `from_env()` reads the `PALONEXUS_*` client variables documented in
 [Environment variables — SDK](/docs/reference/env-vars/#sdk-palonexus-package--palonexusfrom_env).
-See the [SDK quickstart](/docs/sdk/quickstart/) to get started.
+See the [Quickstart](/docs/getting-started/quickstart/) to get started.
 
 ## See also
 
 - [Environment variables](/docs/reference/env-vars/) — the full env reference, including the reference demo seeder (`LOGTO_*`) table.
 - [agent-idp API (interactive)](/docs/reference/api/agent-idp/) — the try-it API reference generated from the OpenAPI 3.1 spec.
 - [DOKS runbook — Step 4](/docs/operations/doks-runbook/#step-4--seed-the-demo-identity-model) · [Self-hosting](/docs/operations/self-hosting/) — where these commands are used end to end.
-- [IdP Support Model](/docs/concepts/idp-support/) — why Logto is only the reference demo, and how any OIDC/SCIM IdP integrates.
-- [SDK quickstart](/docs/sdk/quickstart/) — the programmatic entry point.
+- [IdP Support Model](/docs/concepts/enterprise-iam/#idp-support-model) — why Logto is only the reference demo, and how any OIDC/SCIM IdP integrates.
+- [Quickstart](/docs/getting-started/quickstart/) — the programmatic entry point.

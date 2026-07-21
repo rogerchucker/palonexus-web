@@ -1,12 +1,12 @@
 ---
 title: PaloNexus
-description: An IdP-neutral control plane and Python SDK for AI-agent identity, human ownership, task-scoped delegation, temporary elevation, and tamper-evident audit — one /authz decision for every agent action.
+description: The authorization and accountability service for AI-agent actions — the identity governance layer between AI agents and the systems they act upon. Accountable ownership, authority-bound delegation, just-in-time access, lifecycle-linked revocation, and a verifiable authority trail.
 template: splash
 hero:
   tagline: "PaloNexus connects every agent action to an accountable human or service owner, verifies that the delegation is valid, issues narrowly scoped runtime credentials, and enforces that authority when an agent calls a model, tool, application programming interface, sandbox, or another agent."
   actions:
     - text: Start in 10 minutes
-      link: /docs/getting-started/quickstart-agent-dev/
+      link: /docs/getting-started/quickstart/
       icon: rocket
       variant: primary
     - text: Understand the model
@@ -19,22 +19,52 @@ hero:
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-Govern every outbound action an AI agent takes — model call, tool call, agent→agent hop — at one deny-by-default /authz decision: may this agent make this call, on behalf of this human, for this task, right now? Owned by a human, granted task-scoped access, elevated only on approval, proven on a tamper-evident audit trail. The same decision also gates inbound calls.
+**PaloNexus makes sure an AI agent can act only with authority that a real person or service owner was entitled to delegate—and only for the task, resource, and time originally approved.**
 
-PaloNexus is an **IdP-neutral control plane and Python SDK** for AI agents. Your workforce
+> Agent runtimes decide **how an agent works**.
+> Sandboxes decide **where its code runs**.
+> PaloNexus decides **what it is authorized to do and whose authority it is using**.
+
+PaloNexus is an **authorization and accountability service for AI-agent actions** — the
+identity governance layer between AI agents and the systems they act upon. Your workforce
 IdP (Okta, Entra ID, Auth0, Logto in the demo, …) owns your **humans**; PaloNexus owns your
-**agents** — minting each one a cryptographic identity, requiring an accountable human owner,
-and deciding every outbound action (model call, tool call, agent→agent hop) at one
-**deny-by-default `/authz`** decision that lands on a tamper-evident audit chain.
+**agents** — giving each a signed identity and a mandatory accountable human owner, and
+deciding every action an agent takes (model call, tool call, agent→agent hop) at one
+**deny-by-default `/authz`** decision: *may this agent make this call, on behalf of this
+human, for this task, right now?* Every verdict is recorded on a verifiable authority
+trail, and the same decision also gates inbound calls.
+
+## One concrete scenario: INC-4821
+
+During incident **INC-4821**, Northstar's devops agent needs to restart a production
+service. PaloNexus **denies** the call — the agent holds no standing production access.
+The service owner — a human PaloNexus verifies is *entitled* to approve this action for
+this resource — grants a **time-boxed, task-scoped elevation**. The re-checked call
+succeeds *on the owner's behalf*, the access expires automatically, and every step —
+deny, approval, allow, expiry — lands on the authority trail.
+
+[**Walk through the full temporary-elevation flow →**](/docs/develop/guides/temporary-elevation-walkthrough/)
+
+## Works with
+
+- **Working today:** LangChain · LangGraph · Deep Agents · OIDC/SCIM workforce IdPs
+  (Okta, Entra ID, Logto) · Kubernetes/Envoy
+- **Planned:** kagent · Kubernetes Agent Sandbox · OpenAI Agents SDK · Model Context
+  Protocol (MCP)
+
+See [Integrations](/docs/integrations/) for the per-ecosystem pages, and
+[What PaloNexus is not](/docs/getting-started/what-palonexus-is-not/) for how PaloNexus
+complements — rather than competes with — runtimes and sandboxes.
 
 ## How the SDK and the platform fit together
 
 PaloNexus is two complementary halves. You **build and integrate** with the `palonexus` SDK —
 a typed, framework-aware front door that wraps every model, tool, and agent-to-agent call your
 agent makes, with typed deny/approve and an `offline()` mode for tests. The **platform** then
-**governs and runs** each of those calls at one deny-by-default `/authz`, drawing identity from
+**authorizes** each of those calls at one deny-by-default `/authz`, drawing identity from
 your **workforce IdP** (humans) and **PaloNexus** (agents). A denial becomes a *time-boxed
-elevation* only when a human approves — and every decision lands on a tamper-evident audit chain.
+elevation* only when a human with the authority to approve it does — and every decision lands
+on the authority trail.
 
 ```mermaid
 flowchart LR
@@ -45,11 +75,11 @@ flowchart LR
     agent --> sdk
   end
 
-  subgraph run["② Govern + run · PaloNexus platform"]
+  subgraph run["② Authorize + prove · PaloNexus platform"]
     direction TB
     authz{"/authz<br/>deny-by-default"}
-    idp["agent-idp<br/>agent identity DID/VC · delegations"]
-    audit[("Audit<br/>tamper-evident chain")]
+    idp["agent-idp<br/>agent identity · delegations"]
+    audit[("Authority trail<br/>tamper-evident chain")]
     authz --> audit
   end
 
@@ -62,43 +92,58 @@ flowchart LR
   authz -- "allow · on-behalf-of" --> target
   authz -. "needs approval" .-> human
   human -- "approve · time-boxed" --> idp
-  idp -- "Delegation VC" --> authz
+  idp -- "delegation credential" --> authz
 ```
 
-*Two halves of one system. The **SDK** (①) is how you build — drop a guard into LangChain,
-LangGraph, or Deep Agents and test the whole flow offline. The **platform** (②) is how every
-call is governed: the thick arrow is the single integration point — every outbound agent action
-flows through `/authz`, which checks the agent's identity, asks a human to approve a time-boxed
-delegation when a regulated target needs one, and records the verdict on the audit chain.*
+*Two halves of one system, with PaloNexus sitting **between** your agents and the systems
+they act upon. The **SDK** (①) is how you build — drop a guard into LangChain, LangGraph,
+or Deep Agents and test the whole flow offline. The **platform** (②) is how every action is
+authorized: the thick arrow is the single integration point — every outbound agent action
+flows through `/authz`, which resolves the agent's identity and its owner's authority, asks
+an entitled human to approve a time-boxed delegation when a regulated target needs one, and
+records the verdict on the authority trail.*
 
 ## Choose your path
 
 <CardGrid>
-  <LinkCard
-    title="Build an agent →"
-    href="/docs/getting-started/quickstart-agent-dev/"
-    description="Developer path. pip install palonexus, run the register → denied → approved → succeed flow offline (no cluster, no signup), then govern a LangChain / LangGraph / Deep Agents app."
-  />
-  <LinkCard
-    title="Operate the platform →"
-    href="/docs/operations/self-hosting/"
-    description="Operator path. Stand up the control plane with Docker Compose or DOKS, wire OIDC + persistence, and run the Day-2 runbooks: backups, upgrades, hardening, observability."
-  />
-  <LinkCard
-    title="Understand the model →"
-    href="/docs/concepts/architecture/"
-    description="Architecture path. The six pillars, the one-decision design, IdP-neutral identity, delegation & temporary elevation, and how egress is enforced at the network layer."
-  />
-  <LinkCard
-    title="Evaluate: Security & Trust →"
-    href="/docs/concepts/security-and-trust/"
-    description="Buyer path. Trust boundaries, what PaloNexus verifies, data handling, deny-by-default + tamper-evident audit, hardening, and an honest compliance posture."
-  />
+  <Card title="Path A — Govern an agent" icon="rocket">
+    You build agents; PaloNexus decides what they're authorized to do.
+
+    1. [Quickstart — govern an agent](/docs/getting-started/quickstart/) (Python SDK tab):
+       `pip install palonexus`, then register → denied → approved → succeed, fully offline.
+    2. [Guides — build & govern an agent](/docs/develop/deploy-an-agent/): accountable
+       identity, [authority delegation](/docs/develop/delegations-and-approvals/),
+       [budgets & allowlists](/docs/develop/budgets-and-allowlists/), and the
+       [temporary-elevation walkthrough](/docs/develop/guides/temporary-elevation-walkthrough/).
+    3. [Integrations](/docs/integrations/): drop the [LangChain](/docs/sdk/langchain/),
+       [LangGraph](/docs/sdk/langgraph/), or [Deep Agents](/docs/sdk/deep-agents/) adapter
+       into the framework you already use.
+  </Card>
+  <Card title="Path B — Run the platform" icon="setting">
+    You operate the control layer your agents are governed by.
+
+    1. [Quickstart — run the platform locally](/docs/getting-started/quickstart/)
+       (local-platform tab): the whole stack on a local kind cluster with one command.
+    2. Self-host for real: [Docker Compose](/docs/operations/docker-compose/),
+       [Kustomize](/docs/operations/self-hosting/), or
+       [Terraform / DOKS](/docs/operations/terraform-doks/), then wire
+       [your own IdP](/docs/operations/bring-your-own-idp/) and
+       [persistence](/docs/operations/persistence/).
+    3. Operate Day-2: [observability](/docs/operations/observability/),
+       [backups](/docs/operations/backups/), [upgrades](/docs/operations/upgrades/),
+       [hardening](/docs/operations/hardening/).
+  </Card>
 </CardGrid>
+
+<LinkCard
+  title="Reference"
+  href="/docs/reference/"
+  description="Everything look-up-able in one place: the Python SDK API, HTTP + Enterprise IAM APIs, CLI, environment variables, headers, feature matrix, glossary, and changelog."
+/>
 
 ## Ten-minute first success
 
-The fastest way to understand PaloNexus is to watch a governed call get **denied, approved,
+The fastest way to understand PaloNexus is to watch an authorized call get **denied, approved,
 then succeed** — with no cluster, no network, and no API key:
 
 ```bash
@@ -119,55 +164,13 @@ with PaloNexus.offline() as pn:                       # in-memory control plane,
     # → run register → deny → delegate → approve → succeed in the quickstart.
 ```
 
-[**Run the full 10-minute quickstart →**](/docs/getting-started/quickstart-agent-dev/) · the same
+[**Run the full 10-minute quickstart →**](/docs/getting-started/quickstart/) · the same
 flow, end to end, copy-pasteable.
-
-## What you'll find here
-
-<CardGrid>
-  <Card title="Getting Started" icon="open-book">
-    [Overview](/docs/getting-started/overview/) of the one-decision model, the
-    [10-minute quickstart](/docs/getting-started/quickstart-agent-dev/), a
-    [local quickstart](/docs/getting-started/quickstart-local/), and a
-    [glossary](/docs/getting-started/glossary/).
-  </Card>
-  <Card title="Developer Integration" icon="puzzle">
-    [Deploy a governed agent](/docs/develop/deploy-an-agent/),
-    [delegations & approvals](/docs/develop/delegations-and-approvals/), the
-    [temporary-elevation walkthrough](/docs/develop/guides/temporary-elevation-walkthrough/),
-    [egress enforcement](/docs/develop/egress-enforcement/), and a
-    [recipes cookbook](/docs/develop/recipes/).
-  </Card>
-  <Card title="Python SDK" icon="seti:python">
-    The [`palonexus` SDK](/docs/sdk/) — a typed, framework-aware front door — with
-    [LangChain](/docs/sdk/langchain/), [LangGraph](/docs/sdk/langgraph/), and
-    [Deep Agents](/docs/sdk/deep-agents/) adapters and an [API reference](/docs/sdk/reference/).
-  </Card>
-  <Card title="Operations" icon="setting">
-    [Self-hosting](/docs/operations/self-hosting/),
-    [Docker Compose](/docs/operations/docker-compose/), the
-    [DOKS runbook](/docs/operations/doks-runbook/), and Day-2:
-    [backups](/docs/operations/backups/), [upgrades](/docs/operations/upgrades/),
-    [hardening](/docs/operations/hardening/).
-  </Card>
-  <Card title="Architecture & Features" icon="random">
-    The [six pillars](/docs/concepts/architecture/),
-    [security model](/docs/concepts/security-model/),
-    [IdP support model](/docs/concepts/idp-support/),
-    [enterprise IAM](/docs/concepts/enterprise-iam/), and the
-    [feature matrix](/docs/concepts/feature-matrix/).
-  </Card>
-  <Card title="Reference" icon="list-format">
-    Code-accurate contracts: the [HTTP API](/docs/reference/http-api/),
-    [headers](/docs/reference/headers/), [environment variables](/docs/reference/env-vars/),
-    and [releases & changelog](/docs/reference/changelog/).
-  </Card>
-</CardGrid>
 
 ---
 
 **IdP-neutral by design.** PaloNexus sits beside your existing workforce IAM and never replaces
 it. Logto is the **first supported enterprise IdP**; Okta, Entra ID, and others integrate on the
-same standard OIDC/SCIM surfaces as near-term roadmap. See the
-[IdP Support Model](/docs/concepts/idp-support/). For the security
-posture and an honest compliance statement, see [Security & Trust](/docs/concepts/security-and-trust/).
+same standard OIDC/SCIM surfaces as near-term roadmap. See
+[Connect agents to enterprise authority](/docs/concepts/enterprise-iam/). For the security
+posture and an honest compliance statement, see the [Security model](/docs/concepts/security-model/).

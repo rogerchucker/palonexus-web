@@ -50,7 +50,7 @@ agent's reach means adding the target to the right `Allow*` list — an audited
 This is the *coarse* gate enforced at the egress proxy. The *fine* gate — a
 human-approved, resource-scoped delegation — layers on top for `regulated` and
 server-gated targets; see
-[Delegations and approvals](/docs/develop/delegations-and-approvals/) and the
+[Authority delegation](/docs/develop/delegations-and-approvals/) and the
 [layering note](/docs/develop/egress-enforcement/#the-layering-coarse-at-the-proxy-fine-at-the-server).
 
 ## The Budget

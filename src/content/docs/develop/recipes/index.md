@@ -31,7 +31,7 @@ Each recipe was executed against the shipped `palonexus` package while writing t
 pip install palonexus                       # base install runs every recipe here
 ```
 
-All recipes share this preamble (register + provision the governed agent):
+All recipes share this preamble (register + provision the authority-bound agent):
 
 ```python
 from palonexus import PaloNexus
@@ -46,7 +46,7 @@ agent.provision()                            # mints did:key + Membership VC (id
 
 ## Related
 
-- [SDK quickstart](/docs/sdk/quickstart/) — the typed API these recipes use.
+- [Quickstart](/docs/getting-started/quickstart/) — the typed API these recipes use.
 - [LangChain](/docs/sdk/langchain/) · [LangGraph](/docs/sdk/langgraph/) · [Deep Agents](/docs/sdk/deep-agents/) adapters.
 - [Troubleshooting](/docs/develop/troubleshooting/) — decode any deny reason a recipe hits.
 - [Security model](/docs/concepts/security-model/) — the invariants the recipes demonstrate.

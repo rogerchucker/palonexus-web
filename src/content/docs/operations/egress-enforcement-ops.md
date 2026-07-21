@@ -1,15 +1,18 @@
 ---
-title: Egress Enforcement (Ops)
-description: Operating the egress data plane — the control-plane forward-proxy on :9092, the proxy-only NetworkPolicies and the pod-port gotcha, the admission webhook, the Envoy egress-gateway option, and AGENT_IDENTITY_MODE.
+title: Credential-Safe Action Enforcement (Ops)
+description: Operating the egress-gateway enforcement mode on Kubernetes — the control-plane forward-proxy on :9092, the proxy-only NetworkPolicies and the pod-port gotcha, the admission webhook, the Envoy egress-gateway option, and AGENT_IDENTITY_MODE.
 sidebar:
   order: 5
 ---
 
-The hard part of an agent control plane is **egress**: making every outbound
-action an agent takes — model call, tool call, agent→agent hop, external HTTP —
-pass through the *same* `/authz` decision carrying agent + on-behalf-of identity.
-This page is how you operate that data plane. For the why and the conceptual
-model, see [Egress enforcement (concept)](/docs/concepts/egress-enforcement/).
+This page is how you operate the **egress-gateway enforcement mode** — one of
+PaloNexus's [three enforcement modes](/docs/concepts/index/#three-enforcement-modes)
+(governed tool · token exchange · egress gateway) — on Kubernetes. The hard part is
+**egress**: making every outbound action an agent takes — model call, tool call,
+agent→agent hop, external HTTP — pass through the *same* `/authz` decision carrying
+agent + on-behalf-of identity, with credentials injected only after the untrusted
+boundary. For the why and the conceptual model, see
+[Credential-Safe Action Enforcement (concept)](/docs/concepts/egress-enforcement/).
 
 ## The control-plane forward-proxy (`:9092`)
 
@@ -30,7 +33,13 @@ A needs-approval (regulated) target is parked: the proxy **holds** the request o
 a pending-approval queue (default 120s) while an operator approves/denies it via
 the management API or the portal.
 
-## The `egress-enforcement` component (the floor)
+## Kubernetes enforcement mechanics
+
+Everything below is the Kubernetes implementation of the mode — the components,
+NetworkPolicies, and ports that make the authorization boundary a network guarantee
+rather than a convention.
+
+### The `egress-enforcement` component (the floor)
 
 `components/egress-enforcement` turns the app-level egress middleware into a
 network guarantee:
@@ -46,7 +55,7 @@ network guarantee:
 
 It is framework-agnostic: any HTTP client routed by the proxy env is governed.
 
-### The pod-port vs service-port gotcha
+#### The pod-port vs service-port gotcha
 
 NetworkPolicy enforces the **pod port** (post-DNAT), **not** the Service port. The
 `egress-proxy` Service is `:80` but the control-plane pod serves the proxy on
@@ -63,7 +72,7 @@ decision alias. Omit `9092` and traffic is silently dropped even though the
 Service appears reachable. The full proxy-only set also allows DNS (UDP/TCP 53)
 and the agent-idp (`agent-idp` namespace, TCP `8090`).
 
-## The `egress-sidecar` component (the LangChain fix)
+### The `egress-sidecar` component (the LangChain fix)
 
 `HTTP(S)_PROXY` does not cover everything: `langchain_openai`'s OpenAI client
 talks to whatever `base_url` it is given and does **not** consistently honour the
@@ -84,7 +93,7 @@ binds `127.0.0.1` only (pod-local), so there is no HTTP readiness probe — the
 agent container's readiness gates the pod. **Pair it with `egress-enforcement`**
 (it forwards to that component's `egress-proxy`).
 
-## The `agent-admission` webhook (the guarantee)
+### The `agent-admission` webhook (the guarantee)
 
 `components/agent-admission` is a mutating + validating admission webhook scoped to
 namespace `apps` and pods labelled `palonexus.io/agent=true`:
@@ -108,7 +117,7 @@ the provisioned check). TLS is self-contained: a one-shot Job generates a
 self-signed CA + serving cert into Secret `agent-admission-tls` and patches the
 webhook configs' `caBundle` (no cert-manager required).
 
-## The Envoy egress-gateway option
+### The Envoy egress-gateway option
 
 `components/egress-gateway` is the "proper data plane" alternative: a dedicated
 Envoy forward proxy in `apps` (`egress-gw.apps.svc:3128`) that decides every

@@ -148,6 +148,31 @@ p {
 	gap: 12px;
 }
 
+.hero-distinction {
+	display: grid;
+	gap: 10px;
+	list-style: none;
+	margin: 34px 0 0;
+	max-width: 620px;
+	padding: 0;
+}
+
+.hero-distinction li {
+	border-left: 3px solid #ded6c8;
+	color: #4d5651;
+	font-size: 15px;
+	line-height: 1.5;
+	padding: 2px 0 2px 14px;
+}
+
+.hero-distinction li strong {
+	color: #121413;
+}
+
+.hero-distinction li:last-child {
+	border-left-color: #b44d29;
+}
+
 .button.primary {
 	background: #121413;
 	color: #fffaf2;
@@ -238,7 +263,7 @@ p {
 .solution-grid {
 	display: grid;
 	gap: 18px;
-	grid-template-columns: repeat(3, 1fr);
+	grid-template-columns: repeat(2, 1fr);
 }
 
 .solution-card,
@@ -323,6 +348,75 @@ p {
 	color: #b44d29;
 	font-size: 24px;
 	font-weight: 900;
+}
+
+.arch-footer {
+	border-top: 1px dashed #ded6c8;
+	color: #4d5651;
+	font-size: 15px;
+	font-weight: 720;
+	margin: 26px 0 0;
+	padding-top: 18px;
+	text-align: center;
+}
+
+.works-with {
+	padding-top: 0;
+}
+
+.works-with-groups {
+	display: grid;
+	gap: 18px;
+	grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+	margin-top: 34px;
+}
+
+.works-with-group {
+	background: #fffaf2;
+	border: 1px solid #ded6c8;
+	border-radius: 8px;
+	padding: 24px 28px;
+}
+
+.works-with-group h3 {
+	color: #b44d29;
+	font-size: 13px;
+	font-weight: 800;
+	letter-spacing: 0.02em;
+	margin-bottom: 16px;
+	text-transform: uppercase;
+}
+
+.works-with-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.works-with-list li {
+	border: 1px solid #ded6c8;
+	border-radius: 999px;
+	color: #252b29;
+	font-size: 14px;
+	font-weight: 720;
+	padding: 8px 16px;
+}
+
+.works-with-group.planned .works-with-list li {
+	border-style: dashed;
+	color: #6b6257;
+}
+
+.planned-tag {
+	color: #b44d29;
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	margin-left: 6px;
+	text-transform: uppercase;
 }
 
 .use-case-list {
@@ -418,7 +512,8 @@ p {
 	}
 
 	.solution-grid,
-	.use-case-list {
+	.use-case-list,
+	.works-with-groups {
 		grid-template-columns: 1fr;
 	}
 

@@ -1,0 +1,36 @@
+---
+import type { WorksWithData } from '../../content.config';
+
+interface Props {
+	data: WorksWithData;
+}
+
+const { data } = Astro.props;
+---
+
+<section class="section works-with">
+	<div class="section-heading narrow">
+		<p class="eyebrow">{data.eyebrow}</p>
+		<h2>{data.heading}</h2>
+	</div>
+	<div class="works-with-groups">
+		<div class="works-with-group">
+			<h3>Working today</h3>
+			<ul class="works-with-list">
+				{data.working.map((item) => <li>{item}</li>)}
+			</ul>
+		</div>
+		<div class="works-with-group planned">
+			<h3>Planned</h3>
+			<ul class="works-with-list">
+				{
+					data.planned.map((item) => (
+						<li>
+							{item} <span class="planned-tag">Planned</span>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+	</div>
+</section>

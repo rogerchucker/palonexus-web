@@ -18,7 +18,7 @@ story from `register` to `revoke`.
 
 ## Related
 
-- [SDK quickstart](/docs/sdk/quickstart/) — the typed API the guides use.
-- [Delegations and approvals](/docs/develop/delegations-and-approvals/) — the human-in-the-loop layer.
+- [Quickstart](/docs/getting-started/quickstart/) — the typed API the guides use.
+- [Authority delegation](/docs/develop/delegations-and-approvals/) — the human-in-the-loop layer.
 - [Recipes](/docs/develop/recipes/) — short single-pattern offline snippets.
 - [Glossary](/docs/getting-started/glossary/) — the IAM acronyms.

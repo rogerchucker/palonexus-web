@@ -40,7 +40,7 @@ zones:
 | Namespace | What runs there |
 |---|---|
 | `palonexus` | control-plane, OPA, Dex (human OIDC), the model-broker (LiteLLM), the portal |
-| `apps` | the governed agent workloads (the four demo SRE agents) + their egress NetworkPolicies |
+| `apps` | the authority-bound agent workloads (the four demo SRE agents) + their egress NetworkPolicies |
 | `agent-idp` | the `did:web` agent identity provider (its own namespace so the Service DNS matches its DID) |
 | `observability` | Grafana LGTM + the standalone OTel Collector |
 
@@ -60,7 +60,7 @@ overlay changes:
 
 See [Self-hosting](/docs/operations/self-hosting/) for the deploy flow,
 [Persistence](/docs/operations/persistence/) for durable backends, and
-[Egress enforcement](/docs/operations/egress-enforcement-ops/) for the egress
+[Credential-safe action enforcement](/docs/operations/egress-enforcement-ops/) for the egress
 data plane.
 
 ## Deployment modes — pick by enforcement fidelity
@@ -84,7 +84,7 @@ pick: evaluate on the left, run production on the right.
 
 Compose and any Kubernetes cluster share **every env var** — only the orchestration
 and the opt-in hardening components differ, so what you prove locally holds in
-production. The zero-to-governed [runbook](/docs/operations/doks-runbook/) is
+production. The zero-to-authority-bound [runbook](/docs/operations/doks-runbook/) is
 **cluster-agnostic** (kind, EKS, GKE, on-prem, DOKS) — DOKS is just the worked
 example. Start with [Docker Compose](/docs/operations/docker-compose/) to evaluate,
 then graduate via the runbook against whichever cluster you run.
@@ -96,8 +96,8 @@ then graduate via the runbook against whichever cluster you run.
 3. [Bring your own IdP](/docs/operations/bring-your-own-idp/) — wire your own enterprise IdP (Logto first-supported / Okta / Entra / any OIDC) as human sign-in via the `oidc` component.
 4. [Docker Compose](/docs/operations/docker-compose/) — the non-Kubernetes evaluation path: the full stack via `docker compose up`, with the allow/deny/needs-approval smoke test.
 5. [Persistence](/docs/operations/persistence/) — pluggable registry + agent-idp backends (memory/postgres/mysql/sqlite/mongodb), CloudNativePG.
-6. [Egress enforcement (ops)](/docs/operations/egress-enforcement-ops/) — the forward-proxy, proxy-only NetworkPolicies, the admission webhook, the Envoy egress gateway.
+6. [Credential-safe action enforcement (ops)](/docs/operations/egress-enforcement-ops/) — the forward-proxy, proxy-only NetworkPolicies, the admission webhook, the Envoy egress gateway.
 7. [Terraform / DOKS](/docs/operations/terraform-doks/) — one **optional** provisioning example (DigitalOcean); PaloNexus runs on any Kubernetes.
-8. [Zero to governed agent runbook](/docs/operations/doks-runbook/) — the cluster-agnostic cold-start path (kind/EKS/GKE/DOKS; DOKS is the worked example): cluster → Gateway/Envoy CRDs → `kubectl apply -k` → seed → deploy a governed agent → verify allow/deny/needs-approval in ≤30 min.
+8. [Zero to authority-bound agent runbook](/docs/operations/doks-runbook/) — the cluster-agnostic cold-start path (kind/EKS/GKE/DOKS; DOKS is the worked example): cluster → Gateway/Envoy CRDs → `kubectl apply -k` → seed → deploy an authority-bound agent → verify allow/deny/needs-approval in ≤30 min.
 9. [Observability](/docs/operations/observability/) — Grafana LGTM, the OTel collector, the overview dashboard, DID/VC traces.
 10. [Performance](/docs/operations/performance/) — the egress-decision benchmark (~2.9µs, `make bench-egress`), per-stage latency, and the live-p99 method.

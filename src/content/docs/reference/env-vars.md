@@ -94,7 +94,7 @@ idp_revocations_log    durable revocation log with reason codes (F4)
 idp_tokens             STS token audit log — metadata only (F6)
 ```
 
-See the [Enterprise IAM how-to](/docs/develop/enterprise-iam/) and the
+See the [Connect agents to enterprise authority — hands-on](/docs/develop/enterprise-iam/) and the
 [Enterprise IAM API](/docs/reference/enterprise-iam-api/).
 
 ```bash
@@ -160,7 +160,7 @@ identity model into a **Logto** reference tenant. They are **only needed to run 
 demo seed** — PaloNexus itself does not require Logto. Any OIDC/SCIM workforce IdP
 (Okta, Microsoft Entra ID, Auth0, Ping, Google Workspace, Amazon Cognito, Keycloak,
 Logto, …) integrates via the standard patterns — see
-[IdP Support Model](/docs/concepts/idp-support/).
+[IdP Support Model](/docs/concepts/enterprise-iam/#idp-support-model).
 :::
 
 The `seed-logto` tool seeds the Northstar demo org (workforce identity) into a Logto tenant.
@@ -204,5 +204,5 @@ The smallest set that works in each mode — everything else has a working defau
 - [Headers](/docs/reference/headers/)
 - [HTTP API](/docs/reference/http-api/)
 - [SDK config & env (agent pod)](/docs/sdk/config-env/)
-- [Persistence & identity](/docs/concepts/persistence-and-identity/)
+- [Agent identity & credentials](/docs/concepts/identity-and-credentials/)
 - [Operations — self-hosting](/docs/operations/self-hosting/) · [Secrets](/docs/operations/secrets/) · [Migrations](/docs/operations/migrations/)

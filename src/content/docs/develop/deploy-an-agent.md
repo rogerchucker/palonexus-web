@@ -148,7 +148,7 @@ client talks to its `base_url` and does **not** reliably honour the process prox
 env, so a `ChatOpenAI` call would silently escape `/authz`. Model calls go through
 the sidecar (a `base_url` the client can't strip); everything else goes through
 `HTTPS_PROXY`; both land at the same `/authz`. Full rationale in
-[Egress enforcement](/docs/develop/egress-enforcement/).
+[Credential-safe action enforcement](/docs/develop/egress-enforcement/).
 
 ## 3. The proxy-only NetworkPolicy
 
@@ -229,7 +229,7 @@ unknown kind) returns false. Registry mutations are themselves audited — expec
 human-approved DID/VC enforcement is **server-side** — the proxy can only do the
 coarse allowlist gate, so the fine gate happens at the resource. Targets with **no**
 server-side gate (e.g. `scale_deployment`) stay `regulated`, so the proxy *holds*
-them for human approval. See [Delegations and approvals](/docs/develop/delegations-and-approvals/).
+them for human approval. See [Authority delegation](/docs/develop/delegations-and-approvals/).
 :::
 
 ## 5. The model broker
@@ -292,9 +292,9 @@ Once it is registered and provisioned, the agent appears in the **Agent registry
 
 ![PaloNexus Agent registry listing governed agents as cards, each showing the agent name, role, did:key identifier, granted capabilities and a provisioned status badge](/docs/screenshots/agent-registry.png)
 
-*The `/agents` registry — every governed agent with its identity (`did:key`),
+*The `/agents` registry — every authority-bound agent with its identity (`did:key`),
 delegated access and a provisioned status badge. A freshly deployed agent shows here
 with its capabilities once `register` + `provision` succeed.*
 
-Next: [Egress enforcement](/docs/develop/egress-enforcement/) explains how each
+Next: [Credential-safe action enforcement](/docs/develop/egress-enforcement/) explains how each
 outbound call actually traverses `/authz`.

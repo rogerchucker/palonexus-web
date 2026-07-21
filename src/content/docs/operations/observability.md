@@ -65,7 +65,7 @@ Exposed by the control plane on the management plane (`MGMT_ADDR`, `:8181`) at
 | `palonexus_agent_cost_usd_total` | counter | per-agent spend in USD, reported by the model-broker |
 
 The token/cost counters are how the egress budget gate is observed — see
-[Egress enforcement (ops)](/docs/operations/egress-enforcement-ops/). For per-stage latency
+[Credential-safe action enforcement (ops)](/docs/operations/egress-enforcement-ops/). For per-stage latency
 attribution and the decision-cost benchmark, see [Performance](/docs/operations/performance/):
 
 ```promql

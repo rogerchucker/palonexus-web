@@ -98,10 +98,10 @@ established on egress:
 
 In `vc` mode the proven, registry-bound agent name from the VP is authoritative; a
 missing/invalid VP, or an actor-name mismatch, is a hard `403`. See
-[Persistence & identity](/docs/concepts/persistence-and-identity/).
+[Agent identity & credentials](/docs/concepts/identity-and-credentials/).
 
 ## Related
 
 - [HTTP API](/docs/reference/http-api/)
 - [Environment variables](/docs/reference/env-vars/)
-- [Egress enforcement](/docs/concepts/egress-enforcement/)
+- [Credential-safe action enforcement](/docs/concepts/egress-enforcement/)

@@ -43,7 +43,7 @@ everywhere; only the Kustomize overlay changes. `AGENT_IDENTITY_MODE`,
 - [agent-idp API (interactive)](/docs/reference/api/agent-idp/) — try-it reference generated from the OpenAPI 3.1 spec.
 - [Releases & Changelog](/docs/reference/changelog/) — versioning policy, the current compatible component set, and release notes.
 - [Enterprise IAM API](/docs/reference/enterprise-iam-api/) — directory sync, employee identity, ownership governance, revocation cascade, human-authority delegation, and the STS token exchange.
-- [Enterprise IAM (concept)](/docs/concepts/enterprise-iam/) — the control loop those endpoints implement.
+- [Connect agents to enterprise authority (concept)](/docs/concepts/enterprise-iam/) — the control loop those endpoints implement.
 - [Architecture](/docs/concepts/architecture/) — how the listeners and packages fit together.
-- [Egress enforcement](/docs/concepts/egress-enforcement/) — the proxy and approval contracts in context.
-- [Persistence & identity](/docs/concepts/persistence-and-identity/) — the identity modes and backends.
+- [Credential-safe action enforcement](/docs/concepts/egress-enforcement/) — the proxy and approval contracts in context.
+- [Agent identity & credentials](/docs/concepts/identity-and-credentials/) — the identity modes and backends.

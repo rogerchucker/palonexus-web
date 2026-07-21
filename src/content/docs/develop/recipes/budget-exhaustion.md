@@ -5,7 +5,7 @@ sidebar:
   order: 4
 ---
 
-Every governed agent can carry a **rolling per-hour budget** — a ceiling on calls and on LLM
+Every authority-bound agent can carry a **rolling per-hour budget** — a ceiling on calls and on LLM
 tokens. When it's exceeded, the egress decision denies with `call budget exceeded` or
 `token budget exceeded` (a hard **403**), which the SDK surfaces as
 [`PolicyDenied`](/docs/develop/troubleshooting/#3-policy-inline--may-they-scope--allowlist--budget).

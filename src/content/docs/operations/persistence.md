@@ -7,9 +7,15 @@ sidebar:
 
 By default the control-plane **registry** and the **agent-idp store** (agents,
 delegations, revocations / StatusList) are in-process maps — a pod restart wipes
-every registration, delegation, and revocation. The opt-in persistence layer
-makes them durable behind the *same* storage interface, selected entirely by
-environment variables.
+every registration, delegation, and revocation. The in-memory default is also
+per-replica, so any multi-replica/HA deployment needs a shared backend. The
+opt-in persistence layer makes them durable behind the *same* storage interface,
+selected entirely by environment variables. This durability is what lets you
+prove which agent acted on whose still-valid authority *across restarts* — the
+identity and credential design it backs lives in
+[Agent identity & credentials](/docs/concepts/identity-and-credentials/).
+
+> Canonical design: `docs/persistence-and-identity.md` in the platform repo.
 
 > Status: shipped and verified live on a managed Kubernetes cluster (DOKS example) with `REGISTRY_BACKEND=postgres` /
 > `IDP_STORE_BACKEND=postgres` (Postgres via CloudNativePG). Registry and
@@ -86,5 +92,5 @@ control plane's deny-by-default posture: see the
 
 Once durable, registrations, delegations, and revocations survive restarts — which
 is what makes the live-revocation flow (`vc` mode) reliable rather than dependent
-on an in-memory set. See [Egress enforcement (ops)](/docs/operations/egress-enforcement-ops/)
+on an in-memory set. See [Credential-safe action enforcement (ops)](/docs/operations/egress-enforcement-ops/)
 for `AGENT_IDENTITY_MODE=vc`.

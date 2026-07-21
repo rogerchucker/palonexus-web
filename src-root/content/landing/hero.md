@@ -1,10 +1,18 @@
 ---
 section: hero
-eyebrow: Agentic AI operating layer
-heading: Build, govern, and scale enterprise AI agents.
+eyebrow: Agent authorization & accountability
+heading: Give AI agents authority without giving them standing access.
 lede: >-
-  PaloNexus helps teams deploy purpose-built agents, operate the platform that governs
-  them, and use frameworks that make agent development repeatable.
+  PaloNexus makes sure an AI agent can act only with authority that a real person or
+  service owner was entitled to delegate—and only for the task, resource, and time
+  originally approved.
+distinction:
+  - label: Agent runtimes
+    text: decide how an agent works.
+  - label: Sandboxes
+    text: decide where its code runs.
+  - label: PaloNexus
+    text: decides what it is authorized to do — and whose authority it is using.
 primaryCta:
   label: Request access
   href: 'mailto:rajarshi@remrem.org'

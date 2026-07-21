@@ -1,36 +1,47 @@
 ---
 section: solutions
-eyebrow: Three categories of solutions
-heading: Everything enterprises need to move from experiments to agentic operations.
+eyebrow: Product packaging
+heading: One authorization layer, packaged for how your agents reach production.
 cards:
-  - kicker: Agents
-    title: Purpose-built agents for critical work
+  - kicker: PaloNexus Core
+    title: One authorization contract for every agent action
     description: >-
-      Deploy SRE, DevOps, SecOps, support, and operations agents that understand
-      context, follow policy, and execute inside clear boundaries.
+      An agent registry with accountable human owners, task-scoped delegation and
+      approvals, and a deny-by-default policy engine — every decision recorded on a
+      verifiable authority trail.
     items:
-      - Incident response
-      - Deployment operations
-      - Change review
-      - Runbook automation
-  - kicker: Platforms for agents
-    title: The control layer for agent ecosystems
+      - Agent registry & accountable owners
+      - Task-scoped delegations & approvals
+      - Deny-by-default policy engine
+      - Authority audit on every decision
+  - kicker: PaloNexus Access Broker
+    title: Short-lived credentials instead of standing secrets
     description: >-
-      Connect every agent through a gateway, registry, identity layer, policy engine,
-      observability plane, and audit trail.
+      Approved actions receive the minimum credential needed — bound to the task and
+      delegation, expiring in minutes. Agents and sandboxes never hold durable secrets.
     items:
-      - Agent gateway
-      - Registry and lifecycle
-      - Identity and access
-      - Runtime audit
-  - kicker: Frameworks for agents
-    title: Repeatable systems for building agents
+      - Short-lived runtime credentials (STS)
+      - Task- & delegation-bound issuance
+      - Cloud & SaaS token connectors (planned)
+      - MCP credential injection (planned)
+  - kicker: PaloNexus Lifecycle
+    title: Authority that ends when the human context changes
     description: >-
-      Give teams development frameworks for agent orchestration, evaluations, tool
-      contracts, guardrails, and reusable execution patterns.
+      Workforce directory sync ties every agent to a live owner. Leavers, movers, and
+      ownership changes cascade into agent access — not just at the next audit.
     items:
-      - Development patterns
-      - Evaluation loops
-      - Tool interfaces
-      - Cost-aware orchestration
+      - Workforce directory sync (SCIM & OIDC)
+      - Joiner / mover / leaver revocation
+      - Owner transfer & orphan quarantine (planned)
+      - Access reviews & dormant-agent controls (planned)
+  - kicker: PaloNexus Enforcement
+    title: Runtime-neutral enforcement at boundaries you already have
+    description: >-
+      Enforce the same authorization decision wherever agents act — in the SDK, at the
+      egress gateway, in the cluster. Keep your runtime; add accountable authorization.
+    items:
+      - Kubernetes egress gateway & Envoy ext_authz
+      - LangChain, LangGraph & Deep Agents adapters
+      - Agent-to-agent delegation
+      - kagent, Agent Sandbox, OpenAI Agents SDK & MCP (planned)
 ---

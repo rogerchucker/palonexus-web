@@ -10,7 +10,7 @@ When a governed call is refused, the control plane stamps a human-readable
 [audit chain](/docs/getting-started/glossary/)). This page is the **complete
 catalog** of those values — every reason the decision point (`internal/authz`,
 `internal/policy`) and the egress proxy (`internal/egressproxy`) can emit — with what it means,
-how it maps to an [SDK exception](/docs/sdk/quickstart/), and how to fix it.
+how it maps to an [SDK exception](/docs/getting-started/quickstart/), and how to fix it.
 
 :::tip[Two HTTP codes, two meanings]
 A **`403`** is a hard deny — the policy says no. A **`401`** on the egress path means

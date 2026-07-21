@@ -142,4 +142,4 @@ how the two routing paths are selected.
 - [palonexus_agent scaffold](/docs/sdk/palonexus-agent/) — `build_llm` and `set_identity`.
 - [Configuration & environment variables](/docs/sdk/config-env/) — the full agent env table.
 - [LangChain adapter](/docs/sdk/langchain/) · [LangGraph adapter](/docs/sdk/langgraph/) — the in-process gate that makes the same `/authz` decision shown above.
-- [Egress enforcement](/docs/concepts/egress-enforcement/) — the concept this implements.
+- [Credential-safe action enforcement](/docs/concepts/egress-enforcement/) — the concept this implements.

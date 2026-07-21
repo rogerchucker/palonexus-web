@@ -79,6 +79,6 @@ python examples/deepagents_runbook_governance.py     # gate logic runs even with
 
 ## Related
 
-- [SDK quickstart](/docs/sdk/quickstart/) — the API under test.
+- [Quickstart](/docs/getting-started/quickstart/) — the API under test.
 - [Multi-scenario agent](/docs/develop/recipes/multi-scenario-agent/) — fan out across scenarios in tests.
 - [Security model](/docs/concepts/security-model/) — the invariants these tests pin down.

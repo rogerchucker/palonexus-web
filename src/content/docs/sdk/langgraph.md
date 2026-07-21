@@ -201,4 +201,4 @@ there is none to resume.
 ## Next
 
 - [LangChain adapter](/docs/sdk/langchain/) — guard a tool in `create_agent`.
-- [SDK quickstart](/docs/sdk/quickstart/) · [Glossary](/docs/getting-started/glossary/)
+- [Quickstart](/docs/getting-started/quickstart/) · [Glossary](/docs/getting-started/glossary/)

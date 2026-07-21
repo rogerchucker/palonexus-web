@@ -21,7 +21,7 @@ Kubernetes `Secret`s, ideally synced from an external manager.
 |---|---|---|---|
 | `OPENAI_API_KEY` (`model-broker-secrets`) | `palonexus` ns | model-broker only | The real provider key — **the only place it exists**. No agent pod ever holds it; agents call the broker, the broker calls the provider. |
 | Issuer key `ISSUER_PRIVATE_KEY_B64` | `agent-idp` ns | agent-idp | The `did:web` issuer Ed25519 private key. Signs Membership/Delegation VCs **and** STS tokens. **Must be stable across restarts** or every previously-issued VC fails to verify. Unset → agent-idp generates an ephemeral dev key and warns. |
-| Logto M2M `LOGTO_M2M_APP_ID` / `_SECRET` | seeder env / `seed-logto` | `seed-logto`, portal seed surface | **Reference demo (Logto) — optional.** Machine-to-machine credentials for the Logto Management API, used **only** by the optional demo seeder; PaloNexus itself does not require Logto. Scope to the Management API resource only. Any OIDC/SCIM workforce IdP integrates via the standard patterns — see [IdP Support Model](/docs/concepts/idp-support/). |
+| Logto M2M `LOGTO_M2M_APP_ID` / `_SECRET` | seeder env / `seed-logto` | `seed-logto`, portal seed surface | **Reference demo (Logto) — optional.** Machine-to-machine credentials for the Logto Management API, used **only** by the optional demo seeder; PaloNexus itself does not require Logto. Scope to the Management API resource only. Any OIDC/SCIM workforce IdP integrates via the standard patterns — see [IdP Support Model](/docs/concepts/enterprise-iam/#idp-support-model). |
 | Agent workload tokens (`PALONEXUS_AGENT_TOKEN`) | per-agent | the agent + SDK | The agent's own bearer for live egress decisions. Short-lived; prefer the agent STS / SPIFFE over a long-lived static token. |
 | Agent identity material (`did:key` priv + Membership VC) | per-pod `emptyDir` | agent + egress-sidecar | Written by the agent at bootstrap, read by the sidecar. Never leaves the pod; rotated by re-provisioning. |
 | SDK API keys (`PALONEXUS_API_KEY`, `pn_live_…`/`pn_test_…`) | developer / CI | the SDK facade | Scope and rotate per environment; `pn_test_…` for sandbox, `pn_live_…` for prod. |
@@ -53,7 +53,7 @@ absence never crash-loops the platform — it degrades to the *safe* (closed) st
 for the **optional** Logto reference seed — they load the Northstar **demo** identity
 model and are not required for PaloNexus to run. A "bring-your-own IdP" deployment
 connects its own OIDC/SCIM workforce IdP instead — see
-[IdP Support Model](/docs/concepts/idp-support/).
+[IdP Support Model](/docs/concepts/enterprise-iam/#idp-support-model).
 
 :::note[Issuer Secret name]
 The live cluster's issuer key is the Secret **`agent-idp-secrets`** (key
@@ -119,4 +119,4 @@ Either way the rendered manifest set stays secret-free, and rotation is a manage
 
 - [Self-hosting — secrets to provide out-of-band](/docs/operations/self-hosting/#secrets-to-provide-out-of-band).
 - [Production hardening](/docs/operations/hardening/) · [Environment variables](/docs/reference/env-vars/).
-- [Persistence & identity — issuer key](/docs/concepts/persistence-and-identity/).
+- [Agent identity & credentials — issuer key](/docs/concepts/identity-and-credentials/).

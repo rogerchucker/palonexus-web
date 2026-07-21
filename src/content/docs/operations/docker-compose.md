@@ -224,7 +224,7 @@ the Northstar **demo** identity model (Logto needs its own Postgres + migrations
 is heavier than an evaluation laptop warrants); run it alongside and seed a tenant
 with the [`seed-logto`](/docs/concepts/enterprise-iam/) tool if you want the demo
 personas — otherwise bring your own OIDC/SCIM IdP (see
-[IdP Support Model](/docs/concepts/idp-support/)).
+[IdP Support Model](/docs/concepts/enterprise-iam/#idp-support-model)).
 
 ## Persistence, reset, and teardown
 
