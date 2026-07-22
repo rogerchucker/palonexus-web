@@ -215,6 +215,7 @@ export default defineConfig({
 							label: 'Operate',
 							items: [
 								{ label: 'Control plane', slug: 'operations/control-plane' },
+								{ label: 'Command Center', slug: 'operations/command-center' },
 								{ label: 'Observability', slug: 'operations/observability' },
 								{ label: 'Performance', slug: 'operations/performance' },
 								{ label: 'Backups & restore', slug: 'operations/backups' },

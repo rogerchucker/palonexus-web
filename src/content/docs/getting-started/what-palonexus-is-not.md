@@ -8,8 +8,7 @@ sidebar:
 PaloNexus is the **authorization and accountability layer** between AI agents and the
 enterprise systems they act upon. It decides *what an agent is authorized to do and whose
 authority it is using* — and it deliberately does **not** compete in the categories below.
-Knowing what a product is not is as useful as knowing what it is, so here is the honest
-boundary, one category at a time.
+Here is the honest boundary, one category at a time.
 
 > Agent runtimes decide **how an agent works**.
 > Sandboxes decide **where its code runs**.

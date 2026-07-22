@@ -1,0 +1,37 @@
+---
+import { Image } from 'astro:assets';
+import type { CommandCenterData } from '../../content.config';
+import commandCenter from '../../assets/command-center.png';
+
+interface Props {
+	data: CommandCenterData;
+}
+
+const { data } = Astro.props;
+---
+
+<section class="section command-center" id="command-center">
+	<div class="section-heading narrow">
+		<p class="eyebrow">{data.eyebrow}</p>
+		<h2>{data.heading}</h2>
+		<p class="command-center-lede">{data.lede}</p>
+	</div>
+	<div class="command-center-capture">
+		<Image
+			src={commandCenter}
+			alt="Authority Command Center portal capture: header reads 'Every agent action answers to four questions — which agent acted, on whose authority, who approved it, and what credential it carried', with a green 'Verifiable authority trail — chain verified' strip; an agent fleet and accountable ownership panel shows governed and ungoverned counts, posture (active & healthy, owner inactive, blocked), and bars of agents by accountable owner and by department; a live enforcement feed shows a deny with reason 'no approved delegation' followed by an allow carrying task chip INC-4821 and a delegation chip whose expiry counts down from 4m 39s."
+			loading="lazy"
+		/>
+	</div>
+	<div class="command-center-points">
+		{
+			data.points.map((point) => (
+				<div class="command-center-point">
+					<h3>{point.title}</h3>
+					<p>{point.text}</p>
+				</div>
+			))
+		}
+	</div>
+	{data.comingNext && <p class="command-center-next">{data.comingNext}</p>}
+</section>

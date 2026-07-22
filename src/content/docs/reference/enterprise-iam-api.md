@@ -833,9 +833,9 @@ claims = verify_bundle(
 )
 ```
 
-This same function verifies **both** compliance and provenance credentials with zero code
-changes between them — the generalization (`agentdid.issue_vc`'s `extra_subject` param) is
-genuinely credential-type-agnostic, not implicitly hardcoded to one type.
+This same function verifies **both** compliance and provenance credentials with no code
+changes between them — the underlying mechanism (`agentdid.issue_vc`'s `extra_subject`
+param) is credential-type-agnostic, not hardcoded to one type.
 
 ---
 

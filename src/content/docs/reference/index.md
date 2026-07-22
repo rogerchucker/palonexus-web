@@ -5,7 +5,7 @@ sidebar:
   order: 1
 ---
 
-This section is the precise, code-accurate contract reference for PaloNexus. It
+This section is the contract reference for PaloNexus. It
 covers the HTTP APIs, the request/response headers, and the environment variables
 that configure every component.
 

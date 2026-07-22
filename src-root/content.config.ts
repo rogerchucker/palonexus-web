@@ -51,6 +51,17 @@ const platformSchema = z.object({
 	// "Every result → authority trail" line rendered under the three-column diagram.
 	footer: z.string().optional(),
 });
+const commandCenterSchema = z.object({
+	section: z.literal('command-center'),
+	eyebrow: z.string(),
+	heading: z.string(),
+	lede: z.string(),
+	// The two differentiators + fleet-ownership card, rendered under the live
+	// portal capture. Honesty rule: copy must describe only what the capture shows.
+	points: z.array(z.object({ title: z.string(), text: z.string() })).min(1),
+	// One conditional-mood sentence max about what's coming next; never a claim.
+	comingNext: z.string().optional(),
+});
 const worksWithSchema = z.object({
 	section: z.literal('works-with'),
 	eyebrow: z.string(),
@@ -86,6 +97,7 @@ const landingSchema = z.discriminatedUnion('section', [
 	solutionsSchema,
 	whyNowSchema,
 	platformSchema,
+	commandCenterSchema,
 	worksWithSchema,
 	useCasesSchema,
 	governanceSchema,
@@ -97,6 +109,7 @@ export type HeroData = z.infer<typeof heroSchema>;
 export type SolutionsData = z.infer<typeof solutionsSchema>;
 export type WhyNowData = z.infer<typeof whyNowSchema>;
 export type PlatformData = z.infer<typeof platformSchema>;
+export type CommandCenterData = z.infer<typeof commandCenterSchema>;
 export type WorksWithData = z.infer<typeof worksWithSchema>;
 export type UseCasesData = z.infer<typeof useCasesSchema>;
 export type GovernanceData = z.infer<typeof governanceSchema>;

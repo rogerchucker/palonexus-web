@@ -122,7 +122,7 @@ rec = identity_mgr.request_delegation(
 
 With `hitl_mode="poll"` the `await_approval` node block-polls
 `GET /v1/delegations/{id}` for a **side-channel** approval — the human clicks
-Approve in the portal's [Approvals console](/docs/develop/delegations-and-approvals/),
+Approve in the portal's [Authority Delegation console](/docs/develop/delegations-and-approvals/),
 which calls agent-idp `/approve`. One programmatic `/invoke` thus collects the
 human-approved Delegation VC with no LangGraph resume needed:
 

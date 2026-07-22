@@ -183,20 +183,29 @@ opens all of them at once.
 
 | Tab | Shows | Backed by |
 |---|---|---|
-| **Overview** | KPIs (decisions, allow/deny, agents, active delegations, tokens/cost) + a live activity feed | `/metrics` + `/v1/audit`, agent-idp |
+| **Overview (Authority Command Center)** | the verifiable-authority-trail badge (live hash-chain verify), the agent fleet joined to accountable owners/departments, a live enforcement feed with deciding-layer + delegation chips, allow/deny counters | `/v1/audit` + `/v1/audit/verify` + `/metrics`, agent-idp `/v1/governance/summary` |
 | **Registry** | every service / agent / model / tool: kind, allowlists, budgets, scopes, data-class | `/v1/registry/services` |
 | **Decisions** | allow-vs-deny by target + a live decision table | `/v1/audit` |
-| **Audit** | the hash-chained log + **Verify chain** (tamper-evidence) | `/v1/audit`, `/v1/audit/verify` |
+| **Authority Trail** | the hash-chained log + **Verify chain** (tamper-evidence) | `/v1/audit`, `/v1/audit/verify` |
 | **Identity** | the **did:web** issuer anchor + each agent's **did:key**, capabilities, delegations, revocations | agent-idp `/v1/issuer`, `/v1/agents`, `/v1/delegations`, `/v1/revocations` |
-| **Approvals** | the **human-in-the-loop console** — Approve / Deny pending delegations, **Revoke** active ones | agent-idp delegation + revoke APIs |
-| **Egress Approvals** | held egress requests (actor DID, target, action, resource, reason, countdown) with Approve / Deny | `/v1/egress/requests` (+ `/approve`, `/deny`) |
+| **Authority Delegation** | the **human-in-the-loop console** — Approve / Deny pending delegations, **Revoke** active ones | agent-idp delegation + revoke APIs |
+| **Credential-Safe Enforcement** | held egress requests (actor DID, target, action, resource, reason, countdown) with Approve / Deny | `/v1/egress/requests` (+ `/approve`, `/deny`) |
 | **Agents** | per-agent identity (`did:key`) + allowlist / budget + **what was delegated, by whom, when it expires** + usage | aggregated control-plane + agent-idp |
 | **Traces** | embedded Grafana Tempo Explore for DID/VC-tagged spans | Grafana (`GRAFANA_PUBLIC_URL`) |
 
-The **Approvals** and **Egress Approvals** tabs are the two human-in-the-loop
-surfaces: Approvals resumes a *delegation* (the regulated DID/VC runbook gate); Egress
-Approvals resumes a *held network call* at the egress proxy. Both poll every few
-seconds and resume the waiting decision on approve.
+The **Overview** tab is the **Authority Command Center**: one screen answering, for
+the whole fleet, *which agent acted, on whose authority, who approved it, was the
+approver entitled, what credential was issued, and was it later revoked* — a live
+hash-chain-verified badge over the authority trail, the fleet joined to its
+accountable owners via the SCIM directory, and an enforcement feed naming the
+deciding layer on every record. How to read each panel is documented in
+[Operate the Command Center](/docs/operations/command-center/).
+
+The **Authority Delegation** and **Credential-Safe Enforcement** tabs are the two
+human-in-the-loop surfaces: Authority Delegation resumes a *delegation* (the
+regulated DID/VC runbook gate); Credential-Safe Enforcement resumes a *held network
+call* at the egress proxy. Both poll every few seconds and resume the waiting
+decision on approve.
 
 The same console also carries the two enterprise-IAM surfaces — **Directory** and
 **Governance** — documented under [Connect agents to enterprise authority](/docs/concepts/enterprise-iam/). The

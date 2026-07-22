@@ -133,7 +133,7 @@ pn.close()
 :::note[`pn._fake.grant(...)` is offline-only]
 `grant(...)` pre-arranges an approved delegation so the happy path runs without the
 request/approve dance. In a live deployment the approval is a human action — see the
-[Approvals console](/docs/develop/delegations-and-approvals/). On a live cluster, the
+[Authority Delegation console](/docs/develop/delegations-and-approvals/). On a live cluster, the
 needs-approval branch instead drives `interrupt()` (next section).
 :::
 

@@ -26,11 +26,10 @@ sides are governed very differently:
 
 | | What it is | How it's governed |
 |---|---|---|
-| **Egress** | the agent invoking a model, tool, database, or peer agent | the **real work** (the headline): route every outbound action back through the *same* `/authz`, carrying the agent's own identity plus the user it acts for. |
+| **Egress** | the agent invoking a model, tool, database, or peer agent | the **real work**: route every outbound action back through the *same* `/authz`, carrying the agent's own identity plus the user it acts for. |
 | **Ingress** | a user (or upstream) invoking the agent (`POST /threads/{id}/runs`) | an ordinary north-south request the platform already handles — register the agent, route it, done. Zero new control-plane code. The foundation egress builds on. |
 
-The elegant part: **models, tools, and peer agents become ordinary registry
-entries.** An agent calling the model broker is just a registered caller
+**Models, tools, and peer agents become ordinary registry entries.** An agent calling the model broker is just a registered caller
 (`kind: agent`) reaching the `model-openai` service (`kind: model`); the same
 decision path decides it, the same hash-chained audit row records it (subject =
 user, actor = agent, on task T).

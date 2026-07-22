@@ -31,7 +31,7 @@ and — when an incident is bad enough — reads the **regulated DB-failover run
 remediation. That runbook (`runbooks-api:/runbooks/db-failover`, `dataClass: regulated`) is
 exactly the asset that must **not** be standing access for a bot.
 
-The arc, condensed to the moment that matters:
+The arc, in brief:
 
 1. **Build** — a developer registers `northstar-devops-incident-agent` with mandatory
    `owner=ethan.park`, `sponsor=maya.chen`.
@@ -362,7 +362,7 @@ access expired — re-approval required
 
 ### The approver — `/approvals`
 
-Maya works the **Approvals** console (`/approvals`). Set the **Approver** input (top-right,
+Maya works the **Authority Delegation** console (`/approvals`). Set the **Approver** input (top-right,
 persisted to `localStorage`) to `maya.chen@northstar.example` — that string is sent as `approver`
 and lands in the delegation + audit record. Pending cards show the agent (`actorName`), a
 **DataClassBadge** flagging the regulated tool, the action, resource, task `INC-4821`, reason, and

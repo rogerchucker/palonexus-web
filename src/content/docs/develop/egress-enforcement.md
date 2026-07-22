@@ -115,8 +115,8 @@ This distinction governs the `dataClass` you register a target with:
   runs its own challenge-response per resource. So it is registered
   `dataClass: internal`: allowlist-gated at the proxy, DID/VC-gated at the server.
 - **Targets with no server-side gate stay `regulated`** (e.g. `scale_deployment`),
-  so the proxy itself **holds** them for human approval via the Egress Approvals
-  console.
+  so the proxy itself **holds** them for human approval via the Credential-Safe
+  Enforcement console.
 
 ```
 agent --VP--> egress proxy            (coarse: identity + allowlist + budget)

@@ -6,23 +6,35 @@ import Hero from '../components/landing/Hero.astro';
 import SolutionsGrid from '../components/landing/SolutionsGrid.astro';
 import WhyNow from '../components/landing/WhyNow.astro';
 import PlatformArchitecture from '../components/landing/PlatformArchitecture.astro';
+import CommandCenter from '../components/landing/CommandCenter.astro';
 import WorksWith from '../components/landing/WorksWith.astro';
 import UseCases from '../components/landing/UseCases.astro';
 import Governance from '../components/landing/Governance.astro';
 import ClosingCta from '../components/landing/ClosingCta.astro';
 
-const [nav, hero, solutions, whyNow, platform, worksWith, useCases, governance, closing] =
-	await Promise.all([
-		getEntry('landing', 'nav'),
-		getEntry('landing', 'hero'),
-		getEntry('landing', 'solutions'),
-		getEntry('landing', 'why-now'),
-		getEntry('landing', 'platform'),
-		getEntry('landing', 'works-with'),
-		getEntry('landing', 'use-cases'),
-		getEntry('landing', 'governance'),
-		getEntry('landing', 'closing'),
-	]);
+const [
+	nav,
+	hero,
+	solutions,
+	whyNow,
+	platform,
+	commandCenter,
+	worksWith,
+	useCases,
+	governance,
+	closing,
+] = await Promise.all([
+	getEntry('landing', 'nav'),
+	getEntry('landing', 'hero'),
+	getEntry('landing', 'solutions'),
+	getEntry('landing', 'why-now'),
+	getEntry('landing', 'platform'),
+	getEntry('landing', 'command-center'),
+	getEntry('landing', 'works-with'),
+	getEntry('landing', 'use-cases'),
+	getEntry('landing', 'governance'),
+	getEntry('landing', 'closing'),
+]);
 
 if (
 	!nav ||
@@ -30,6 +42,7 @@ if (
 	!solutions ||
 	!whyNow ||
 	!platform ||
+	!commandCenter ||
 	!worksWith ||
 	!useCases ||
 	!governance ||
@@ -51,6 +64,7 @@ const { Content: GovernanceContent } = await render(governance);
 			<WhyNowContent />
 		</WhyNow>
 		<PlatformArchitecture data={platform.data} />
+		<CommandCenter data={commandCenter.data} />
 		<WorksWith data={worksWith.data} />
 		<UseCases data={useCases.data} />
 		<Governance data={governance.data}>

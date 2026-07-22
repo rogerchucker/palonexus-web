@@ -132,7 +132,7 @@ the window elapses (or a human rejects), it denies with:
 
 | `X-Palonexus-Deny-Reason` | Code | Meaning & fix |
 |---|---|---|
-| `egress to unregistered target` | — | The hold *reason* recorded while parking a call to a host the registry doesn't know. Register the target, or approve it in the **Egress Approvals** tab. |
+| `egress to unregistered target` | — | The hold *reason* recorded while parking a call to a host the registry doesn't know. Register the target, or approve it in the **Credential-Safe Enforcement** tab. |
 | `egress approval denied` | 403 | A human **rejected** the held egress request. |
 | `egress approval expired` | 403 | No decision within the proxy's `ApprovalTimeout` (default 120s) → **fail-closed** expiry. Approve faster, or raise the timeout. |
 

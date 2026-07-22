@@ -1,6 +1,6 @@
 ---
 title: Authority Delegation
-description: Human-in-the-loop authority delegation — time-boxed Delegation VCs, the runbook DID/VC challenge-response, the Approvals and Egress Approvals consoles, and the live-revocation race.
+description: Human-in-the-loop authority delegation — time-boxed Delegation VCs, the runbook DID/VC challenge-response, the Authority Delegation and Credential-Safe Enforcement consoles, and the live-revocation race.
 sidebar:
   order: 5
 ---
@@ -12,7 +12,7 @@ human-in-the-loop layer.
 
 ## The elevation flow at a glance
 
-This is the headline flow of the whole platform: an agent is **denied** a regulated
+This is the central flow of the platform: an agent is **denied** a regulated
 target, opens a **time-boxed delegation request**, a human **approves** it (minting a
 short-lived Delegation Verifiable Credential (VC)), the retried call is **allowed** for exactly that task,
 and on TTL expiry or revocation deny-by-default reasserts. The
@@ -169,7 +169,7 @@ proxy does the coarse allowlist gate, and this fine-grained, per-resource gate r
 The portal surfaces two approval queues that share the same UI pattern (a 3s poll +
 React-Query invalidation):
 
-![PaloNexus Approvals console showing an operator approver field above a cleared human-in-the-loop queue with zero pending delegation requests and zero active credentials](/docs/screenshots/approvals.png)
+![PaloNexus Authority Delegation console showing an operator approver field above a cleared human-in-the-loop queue with zero pending delegation requests and zero active credentials](/docs/screenshots/approvals.png)
 
 *The `/approvals` console — the human-in-the-loop queue where an operator approves or
 denies delegation requests. Shown here in its empty state: the queue is clear (no
@@ -179,10 +179,10 @@ delegation and the audit record.*
 
 | Console | Backs | Approves | When it fires |
 |---|---|---|---|
-| **Approvals** (`/approvals`) | delegation requests at agent-idp | a time-boxed Delegation VC for `(actor, task, action, resource)` | a `regulated` *tool* target needs a fine-grained, server-side-gated delegation |
-| **Egress Approvals** (`/egress`) | the control-plane pending-egress queue | a single held egress request | a `regulated` target with **no** server-side gate (e.g. `scale_deployment`) is held at the proxy |
+| **Authority Delegation** (`/approvals`) | delegation requests at agent-idp | a time-boxed Delegation VC for `(actor, task, action, resource)` | a `regulated` *tool* target needs a fine-grained, server-side-gated delegation |
+| **Credential-Safe Enforcement** (`/egress`) | the control-plane pending-egress queue | a single held egress request | a `regulated` target with **no** server-side gate (e.g. `scale_deployment`) is held at the proxy |
 
-The Egress Approvals path: when the proxy decision is `needs-approval`, it creates
+The Credential-Safe Enforcement path: when the proxy decision is `needs-approval`, it creates
 a pending request and **holds** — long-polling its status up to
 `EGRESS_APPROVAL_TIMEOUT` (default 120s). Approved → forward; denied/timeout →
 `403`. The queue API:

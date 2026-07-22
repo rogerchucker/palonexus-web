@@ -71,11 +71,11 @@ service). A host the registry doesn't know is treated as `external` → requires
 | needs-approval / external | create a pending egress request and **hold** (poll its status up to `ApprovalTimeout`, default 120s): approved → forward; denied/expired → **403** |
 
 The hold queue is the [`/v1/egress/requests`](/docs/reference/http-api/) API and the
-portal's **Egress Approvals** tab — where an operator releases or blocks each held call:
+portal's **Credential-Safe Enforcement** tab — where an operator releases or blocks each held call:
 
-![Egress-approvals console with an operator approver field, showing zero pending outbound requests held at the egress proxy and zero recent decisions, with empty-state messaging that nothing is being held](/docs/screenshots/egress.png)
+![Credential-Safe Enforcement console with an operator approver field, showing zero pending outbound requests held at the egress proxy and zero recent decisions, with empty-state messaging that nothing is being held](/docs/screenshots/egress.png)
 
-*The Egress Approvals console: where operators release or block outbound agent calls held at
+*The Credential-Safe Enforcement console: where operators release or block outbound agent calls held at
 the proxy — shown here with a clear queue.*
 
 ### 2. Envoy egress gateway — the transparent data plane
@@ -194,6 +194,6 @@ grounded plan. **Every hop is decided at `/authz`.**
 
 - [HTTP API — the egress-request API](/docs/reference/http-api/)
 - [Headers — Proxy-Authorization VP](/docs/reference/headers/)
-- [Consoles — Egress Approvals](/docs/concepts/architecture/#consoles)
+- [Consoles — Credential-Safe Enforcement](/docs/concepts/architecture/#consoles)
 - [Authority delegation (how-to)](/docs/develop/delegations-and-approvals/) — the needs-approval branch, end to end.
 - [Credential-Safe Action Enforcement (Ops)](/docs/operations/egress-enforcement-ops/) — wiring the proxy, gateway, and admission webhook.

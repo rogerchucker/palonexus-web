@@ -39,7 +39,7 @@ sequenceDiagram
     N->>N: request_delegation() (idempotent)
     N-->>G: interrupt() — pause, checkpoint on thread_id
     Note over G,H: run suspended — payload carries action, resource, delegation_id
-    H->>A: approve delegation (Approvals console / agent-idp)
+    H->>A: approve delegation (Authority Delegation console / agent-idp)
     G->>N: Command(resume=True)
     N->>A: pn._decide(action, resource) — re-check
     A-->>N: allow
@@ -177,7 +177,7 @@ pn.close()
 ```
 
 The interrupt payload carries `{"action", "resource", "delegation_id", "subject", "task"}`
-under the `palonexus` key, so your UI (or the [Approvals console](/docs/develop/delegations-and-approvals/))
+under the `palonexus` key, so your UI (or the [Authority Delegation console](/docs/develop/delegations-and-approvals/))
 has everything it needs to render the approval request.
 
 ## Explicit resume node

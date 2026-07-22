@@ -87,7 +87,7 @@ curl -fsS -XPOST localhost:8181/v1/registry/services -d '{
   "owner":"sre","kind":"tool","dataClass":"internal"}'
 
 # A target with NO server-side gate -> regulated (the proxy HOLDS it for human
-# approval via the Egress Approvals console).
+# approval via the Credential-Safe Enforcement console).
 curl -fsS -XPOST localhost:8181/v1/registry/services -d '{
   "name":"scale-deployment","upstream":"ops.apps.svc.cluster.local:8080",
   "owner":"sre","kind":"tool","dataClass":"regulated"}'

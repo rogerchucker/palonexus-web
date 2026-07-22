@@ -308,6 +308,58 @@ p {
 	text-align: center;
 }
 
+.command-center {
+	padding-top: 0;
+}
+
+.command-center-lede {
+	font-size: 19px;
+	line-height: 1.6;
+	margin: 18px 0 0;
+	max-width: 720px;
+}
+
+.command-center-capture img {
+	border: 1px solid #ded6c8;
+	border-radius: 16px;
+	box-shadow: 0 30px 80px rgba(18, 20, 19, 0.14);
+	height: auto;
+	width: 100%;
+}
+
+.command-center-points {
+	display: grid;
+	gap: 18px;
+	grid-template-columns: repeat(3, 1fr);
+	margin-top: 30px;
+}
+
+.command-center-point {
+	background: #fffaf2;
+	border: 1px solid #ded6c8;
+	border-radius: 8px;
+	padding: 24px 28px;
+}
+
+.command-center-point h3 {
+	font-size: 18px;
+}
+
+.command-center-point p {
+	font-size: 15px;
+	margin-bottom: 0;
+}
+
+.command-center-next {
+	border-top: 1px dashed #ded6c8;
+	color: #4d5651;
+	font-size: 15px;
+	font-weight: 720;
+	margin: 26px 0 0;
+	padding-top: 18px;
+	text-align: center;
+}
+
 .works-with {
 	padding-top: 0;
 }
@@ -457,7 +509,8 @@ p {
 
 	.solution-grid,
 	.use-case-list,
-	.works-with-groups {
+	.works-with-groups,
+	.command-center-points {
 		grid-template-columns: 1fr;
 	}
 

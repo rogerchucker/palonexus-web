@@ -362,7 +362,7 @@ interrupts for human approval:
 
 1. The agent calls the regulated tool → `/authz` returns **needs-approval**; the
    middleware raises a LangGraph `interrupt()` and a delegation request appears in
-   the portal **Approvals** surface.
+   the portal **Authority Delegation** surface.
 2. The approver (e.g. Maya Chen, `org:agents:approve`) approves; the console resumes the
    run via `Command(resume=...)`.
 3. The agent re-issues the call carrying the Delegation VC → **allowed (200)**.

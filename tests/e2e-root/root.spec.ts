@@ -69,6 +69,33 @@ test.describe('marketing root renders', () => {
 		await expect(plannedGroup.locator('.planned-tag')).toHaveCount(4);
 	});
 
+	test('command-center section renders with heading and a live portal capture', async ({
+		page,
+	}) => {
+		const errors = trackErrors(page);
+		await page.goto('/', { waitUntil: 'networkidle' });
+		const section = page.locator('#command-center');
+		await expect(section).toBeAttached();
+		await expect(
+			section.getByRole('heading', { name: "See every agent's authority in one place" }),
+		).toBeVisible();
+		// The DOKS portal capture must actually decode — a broken <img> would render
+		// the section as an empty frame. The image is lazy-loaded, so scroll first.
+		const img = section.locator('img').first();
+		await img.scrollIntoViewIfNeeded();
+		await expect(img).toBeVisible();
+		await expect
+			.poll(() => img.evaluate((el) => (el as HTMLImageElement).naturalWidth), {
+				message: 'command-center screenshot decoded (naturalWidth > 0)',
+			})
+			.toBeGreaterThan(0);
+		// Honesty rules: the only forward-looking line is the conditional "Coming next"
+		// sentence, and the section carries no planned-tags (those live in works-with).
+		await expect(section.locator('.command-center-next')).toContainText(/^Coming next:/);
+		await expect(section.locator('.planned-tag')).toHaveCount(0);
+		expect(severe(errors), `console errors:\n${errors.join('\n')}`).toEqual([]);
+	});
+
 	test('nav anchors scroll to the right section', async ({ page }) => {
 		await page.goto('/', { waitUntil: 'domcontentloaded' });
 		for (const anchor of SECTION_ANCHORS) {

@@ -252,7 +252,7 @@ with PaloNexus.offline() as pn:
 <Aside type="caution" title="Approval is a human action">
 `pn._fake.approve_delegation(...)` exists **only in offline mode** to stand in for a real
 person. In a live deployment the approval comes from the approver (Maya) in the
-[Approvals console](/docs/develop/delegations-and-approvals/) or via the agent-idp API — the
+[Authority Delegation console](/docs/develop/delegations-and-approvals/) or via the agent-idp API — the
 SDK never approves on a human's behalf.
 </Aside>
 
@@ -436,8 +436,8 @@ and audit, the implementation mechanisms beneath the five pillars — plus the f
 agents, the Grafana LGTM observability stack (Loki, Grafana, Tempo, Mimir), and the portal.
 When it finishes, the consoles are port-forwarded:
 
-- **Portal** — http://localhost:3000 (Overview, Registry, Decisions, Audit, Identity,
-  Approvals, Egress Approvals, Agents, Traces)
+- **Portal** — http://localhost:3000 (Overview — the Authority Command Center — Registry, Decisions,
+  Authority Trail, Identity, Authority Delegation, Credential-Safe Enforcement, Agents, Traces)
 - **Grafana** — http://localhost:3001
 
 Tear it down with `make demo-down`.

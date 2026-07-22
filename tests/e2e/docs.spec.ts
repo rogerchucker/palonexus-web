@@ -52,6 +52,7 @@ const OPERATOR_PAGES = [
 	{ path: '/docs/operations/', label: 'Operations index' },
 	{ path: '/docs/operations/self-hosting/', label: 'Self-hosting' },
 	{ path: '/docs/operations/doks-runbook/', label: 'DOKS runbook' },
+	{ path: '/docs/operations/command-center/', label: 'Operate the Command Center (Epic 31)' },
 ];
 
 // Pages that embed Mermaid diagrams. astro-mermaid emits `<pre class="mermaid">` which
@@ -180,6 +181,30 @@ test.describe('honesty markers', () => {
 		const banner = page.locator('.starlight-aside--caution').first();
 		await expect(banner, 'planned-integration caution aside').toBeVisible();
 		await expect(banner).toContainText(/planned integration/i);
+	});
+});
+
+test.describe('feature-matrix honesty pins (Epic 31)', () => {
+	test('Human SSO row is Planned, not Shipped', async ({ page }) => {
+		await page.goto('/docs/concepts/feature-matrix/', { waitUntil: 'domcontentloaded' });
+		const row = page.locator('main tr', { hasText: 'Human SSO' }).first();
+		await expect(row, 'Human SSO feature row').toBeAttached();
+		// Column order is Capability | What it does | Status | Documented in — pin the status cell
+		// exactly so a regression back to the over-claimed "Shipped" fails loudly.
+		await expect(row.locator('td').nth(2), 'Human SSO status cell').toHaveText('Planned');
+	});
+
+	test('operator-consoles row lists the renamed portal tabs', async ({ page }) => {
+		await page.goto('/docs/concepts/feature-matrix/', { waitUntil: 'domcontentloaded' });
+		const row = page.locator('main tr', { hasText: 'Operator consoles' }).first();
+		await expect(row, 'Operator consoles feature row').toBeAttached();
+		const tabsCell = row.locator('td').nth(1);
+		await expect(tabsCell).toContainText('Authority Trail');
+		await expect(tabsCell).toContainText('Authority Delegation');
+		await expect(tabsCell).toContainText('Credential-Safe Enforcement');
+		// The old bare tab label must not linger in the tab list. Scoped to this cell:
+		// "Audit" legitimately appears elsewhere on the page (e.g. audit-trail rows).
+		await expect(tabsCell).not.toContainText(/\bAudit\b/);
 	});
 });
 
