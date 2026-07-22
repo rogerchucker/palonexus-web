@@ -41,7 +41,7 @@ jobs:
     #   * a push event to the main branch ref (defense in depth on top of the trigger —
     #     pull_request never deploys, even from a branch in this repo).
     # Fork PRs additionally cannot read the secrets below, so they cannot publish.
-    if: ${{ github.repository == 'remrem-apps/palonexus-web' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    if: ${{ github.repository == 'rogerchucker/palonexus-web' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     # The "production" GitHub Environment holds the Cloudflare secrets and can require a
     # human reviewer / restrict to main before any deploy runs.

@@ -98,7 +98,7 @@ See `.env.example` for the full token scopes. Use a **scoped** token, never a gl
 
 - **CI-only**: `npm run deploy` / `deploy:docs` refuse to run and point here
   (`scripts/no-manual-deploy.mjs`). Credentials exist only in GitHub Actions.
-- **Forks**: the deploy `if:` guard checks `github.repository == 'remrem-apps/palonexus-web'`,
+- **Forks**: the deploy `if:` guard checks `github.repository == 'rogerchucker/palonexus-web'`,
   and fork PRs cannot read repository/Environment secrets.
 - **Branches & PRs**: deploy requires `push` to `refs/heads/main`; PRs and feature branches
   only validate.
