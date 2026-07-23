@@ -6,12 +6,10 @@ const cta = z.object({ label: z.string(), href: z.string() });
 // One shape per landing-page section, named so components can import their exact prop
 // type, and discriminated on `section` so each markdown file's frontmatter is validated
 // against exactly the fields that section renders.
-const navSchema = z.object({
-	section: z.literal('nav'),
-	brand: z.string(),
-	links: z.array(z.object({ label: z.string(), href: z.string() })).min(1),
-	cta,
-});
+//
+// Nav has no entry here: the top nav (brand, links, CTA) now comes from the shared
+// ../shared/site-nav.mjs module — see src-root/components/landing/Nav.astro — so it
+// can't drift from the Starlight docs header, which imports the same module.
 const heroSchema = z.object({
 	section: z.literal('hero'),
 	eyebrow: z.string(),
@@ -92,7 +90,6 @@ const closingSchema = z.object({
 });
 
 const landingSchema = z.discriminatedUnion('section', [
-	navSchema,
 	heroSchema,
 	solutionsSchema,
 	whyNowSchema,
@@ -104,7 +101,6 @@ const landingSchema = z.discriminatedUnion('section', [
 	closingSchema,
 ]);
 
-export type NavData = z.infer<typeof navSchema>;
 export type HeroData = z.infer<typeof heroSchema>;
 export type SolutionsData = z.infer<typeof solutionsSchema>;
 export type WhyNowData = z.infer<typeof whyNowSchema>;

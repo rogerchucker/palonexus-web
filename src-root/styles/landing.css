@@ -15,6 +15,25 @@
 	box-sizing: border-box;
 }
 
+/* Floating top nav — full-width, pinned on scroll, translucent + blurred, matching the
+   Starlight docs header (src/components/Header.astro) so the bar reads identically on
+   every page. --pn-nav-h tracks the bar's rendered height so anchor targets (.section)
+   can offset via scroll-margin-top and land clear of the fixed bar. */
+:root {
+	--pn-nav-h: 84px;
+}
+
+.nav-bar {
+	background: color-mix(in srgb, var(--pn-bg) 82%, transparent);
+	backdrop-filter: blur(14px);
+	-webkit-backdrop-filter: blur(14px);
+	border-bottom: 1px solid var(--pn-border-subtle);
+	position: sticky;
+	top: 0;
+	width: 100%;
+	z-index: 40;
+}
+
 .nav {
 	align-items: center;
 	display: flex;
@@ -206,6 +225,9 @@ p {
 	margin: 0 auto;
 	max-width: 1180px;
 	padding: 76px 28px;
+	/* Keeps in-page hash targets (#solutions, #platform, #governance) clear of the
+	   floating sticky nav-bar when the browser jumps to them. */
+	scroll-margin-top: var(--pn-nav-h);
 }
 
 .section-heading {
@@ -498,6 +520,12 @@ p {
 }
 
 @media (max-width: 900px) {
+	:root {
+		/* The nav wraps into a taller column layout below 900px — grow the anchor
+		   offset so section headings still clear the floating bar. */
+		--pn-nav-h: 220px;
+	}
+
 	.nav {
 		align-items: flex-start;
 		flex-direction: column;

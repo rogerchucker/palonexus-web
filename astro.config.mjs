@@ -33,6 +33,12 @@ export default defineConfig({
 			title: 'PaloNexus Docs',
 			description:
 				'Developer integration, Python SDK reference, and operations (Go + Terraform) for PaloNexus — the authorization and accountability layer between AI agents and the systems they act upon.',
+			// Shared floating top nav (brand, Solutions/Platform/Governance/Docs links, CTA) —
+			// same bar as the marketing root, sourced from the same ../shared/site-nav.mjs
+			// module. See src/components/Header.astro.
+			components: {
+				Header: './src/components/Header.astro',
+			},
 			// Brand override (accent + font) shared conceptually with the marketing root's
 			// token layer at src-root/styles/theme.css — see src/styles/brand.css for details.
 			customCss: ['./src/styles/brand.css'],

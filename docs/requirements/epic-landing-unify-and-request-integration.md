@@ -1,6 +1,6 @@
 # Epic — Landing/Docs Theme Unification + Access-Request → Integration-Request Repurpose
 
-**Status:** in progress (2026-07-22) · **Owner:** TPM · **Repo in scope:** `palonexus-web` (this repo)
+**Status:** complete (2026-07-22) · **Owner:** TPM · **Repo in scope:** `palonexus-web` (this repo)
 **Created:** 2026-07-22 · **Tracking:** markdown-only in `docs/requirements/` — no Linear (free-tier limit)
 
 ## 1. Epic summary
@@ -101,7 +101,15 @@ Dependency order:
 
 ### LU-DEV-A1 · Define the shared brand token set + Starlight customCss brand file — Dev-A (theme specialist)
 
-- [ ] Status: not started
+- [x] Status: done (2026-07-22)
+- **Callouts:** Accent = **brand blue hue 221**, derived from navy `#14213d`
+  (D-2 resolved) — light `hsl(221,80%,44%)` `#164fca` (AA 6.99:1), dark
+  `hsl(221,100%,85%)` `#b3cbff` (10.9:1); rust `#b44d29` retired. New
+  `src/styles/brand.css` maps tokens onto Starlight custom properties and is
+  wired into `starlight({ customCss: [...] })`; `base: '/docs'` unchanged.
+  Unified font stack: Inter-first → system fallback (no Inter file loaded
+  today — follow-up F-1). Dark parity via `prefers-color-scheme`. Docs build
+  green.
 - **Description:** Establish the single source of brand truth. Create a shared
   design-token file (accent, typography stack, neutral surface palette, and
   the light/dark values for each) and a Starlight `customCss` brand file that
@@ -122,7 +130,13 @@ Dependency order:
 
 ### LU-DEV-A2 · Consume shared tokens in the landing; retire divergent hardcoded values — Dev-A (theme specialist)
 
-- [ ] Status: not started
+- [x] Status: done (2026-07-22)
+- **Callouts:** New `src-root/styles/theme.css` token layer mirrors the
+  Starlight surfaces (dark via `prefers-color-scheme`); `landing.css`
+  refactored to consume tokens (bespoke `#f6f4ef`/`#14213d`/`#b44d29` retired);
+  `Layout.astro` imports `theme.css`. Landing and docs now share accent,
+  typography, and neutral surfaces in both modes. `build:root` green;
+  light/dark screenshots captured for landing and docs.
 - **Description:** Refactor `src-root/styles/landing.css` (and
   `src-root/layouts/Layout.astro` where it hardcodes theme values) to consume
   the shared token set from LU-DEV-A1 instead of the bespoke warm/cream hexes
@@ -140,7 +154,12 @@ Dependency order:
 
 ### LU-DEV-B1 · Rename route + worker: request-access → request-changes — Dev-B (request-flow)
 
-- [ ] Status: not started
+- [x] Status: done (2026-07-22)
+- **Callouts:** Page dir renamed `request-access/` → `request-changes/`
+  (`index.astro` + `thanks.astro`). Worker rewired to `/api/request-changes`
+  with `request_type` captured, redirects to `/request-changes/?error=1` and
+  `/request-changes/thanks/`, email subject "PaloNexus integration request".
+  Live smoke later confirmed old `/request-access/` returns 404.
 - **Description:** Move the page directory
   `src-root/pages/request-access/` → `src-root/pages/request-changes/`
   (both `index.astro` and `thanks.astro`), and rewire the worker
@@ -160,7 +179,13 @@ Dependency order:
 
 ### LU-DEV-B2 · Repurpose CTA labels + form content to integration/change requests — Dev-B (request-flow)
 
-- [ ] Status: not started
+- [x] Status: done (2026-07-22)
+- **Callouts:** CTA "Request Integration" set in `nav.md`, `hero.md`,
+  `closing.md` (href `/request-changes/`); six-element nav preserved. Form
+  gains a `request_type` select (new IdP / new agent platform / new agent
+  outbound destination / custom guardrail / something more custom) and the
+  2-business-day SLA copy (subject to market conditions). Thanks page copy
+  updated to integration/change-request intent.
 - **Description:** Update the three CTA content files
   (`src-root/content/landing/nav.md`, `hero.md`, `closing.md`): label
   "Request access" → "Request Integration", href `/request-access/` →
@@ -182,7 +207,11 @@ Dependency order:
 
 ### LU-DEV-B3 · Update tests/e2e-root/root.spec.ts in lockstep — Dev-B (request-flow)
 
-- [ ] Status: not started
+- [x] Status: done (2026-07-22)
+- **Callouts:** `root.spec.ts` updated to assert "Request Integration",
+  `/request-changes/` + `/request-changes/thanks/` routes, and form
+  categories + SLA. One fix: SLA assertion regex made whitespace-tolerant
+  (`/market\s+conditions/i`) to tolerate source line-wrap. Root suite 9/9.
 - **Description:** Update `tests/e2e-root/root.spec.ts` so every assertion on
   the CTA label, the request route, the thanks route, and any asserted form
   copy matches the new "Request Integration" / `/request-changes/` surface.
@@ -197,7 +226,12 @@ Dependency order:
 
 ### LU-QA-1 · QA gate: format, both builds, full Playwright — QA
 
-- [ ] Status: not started
+- [x] Status: done (2026-07-22)
+- **Callouts:** `format:check` clean on all changed source (only gitignored
+  `.claude/settings.local.json` warns — not in CI). `build:root` 3 pages;
+  docs `build` 124 pages. Playwright root 9/9 and docs 33/33. One test fix
+  routed to Dev-B: SLA regex made whitespace-tolerant. No stray
+  `request-access`/`Request access` outside historical notes.
 - **Description:** After both Dev workstreams report done, run the gate on the
   combined uncommitted tree: (1) `npm run format:check`, (2) `npm run
   build:root` (landing), (3) `npm run build` (docs), (4) the **full**
@@ -218,7 +252,14 @@ Dependency order:
 
 ### LU-OPS-1 · PR, merge, deploy both Cloudflare workers, live smoke test — Ops
 
-- [ ] Status: not started
+- [x] Status: done (2026-07-22)
+- **Callouts:** PR #22 validated (both CI gates green), merged; both Cloudflare
+  workers deployed green with post-deploy smoke tests. Live: `/`, `/docs/`,
+  `/request-changes/`, `/request-changes/thanks/` all 200; old
+  `/request-access/` returns 404; homepage shows "Request Integration"; form
+  has `request_type` + 2-business-day + market + `action=/api/request-changes`;
+  worker POST verified (invalid→`?error=1`, honeypot→thanks, no mail sent).
+  Local `main` synced.
 - **Description:** Once the QA gate is green, branch → PR → merge, then deploy
   **both** Cloudflare workers (landing/root and docs). Run a live smoke test:
   landing and docs both render the unified brand (light + dark);
@@ -235,7 +276,11 @@ Dependency order:
 
 ### LU-TPM-1 · Close out epic with evidence and decisions — TPM
 
-- [ ] Status: not started
+- [x] Status: done (2026-07-22)
+- **Callouts:** All Dev/QA/Ops issues confirmed done; D-1 and D-2 resolved
+  (see §5); §6 evidence filled; header status flipped to complete. Two
+  optional follow-ups recorded (F-1 real Inter font; F-2 dead
+  `src/layouts/Layout.astro`). Change set merged and deployed via PR #22.
 - **Description:** Confirm all Dev/QA/Ops checkboxes are done, resolve the §5
   flagged decisions (dark-mode parity scope; brand accent choice) with the
   final call recorded, fill §6 with evidence (build/test output, grep
@@ -261,22 +306,31 @@ Dependency order:
   uncommitted; Ops owns commit → PR → merge → deploy.
 - Pre-existing unrelated WIP in the working tree.
 
-## 5. Flagged items / decisions (resolve before close-out)
+## 5. Flagged items / decisions (resolved at close-out)
 
 | # | Item | Detail | Disposition |
 |---|---|---|---|
-| D-1 | Dark-mode parity scope | Docs (Starlight) ship a light/dark toggle out of the box; the landing is currently **light-only**. Decide whether this epic delivers full landing dark-mode (adds a landing toggle + dark token values consumed by `landing.css`) or ships **shared-tokens-with-docs-dark-only** now and defers a landing toggle to a follow-up. Affects LU-DEV-A1/A2 acceptance. | **Open — Dev-A + TPM to decide.** Recommend: define dark token values in the shared file regardless (docs consume them immediately); landing toggle is the scoping variable. |
-| D-2 | Brand accent choice | The landing today uses rust `#b44d29` (eyebrow) over navy `#14213d`. The unified accent can (a) keep rust as the single brand accent, (b) promote navy, or (c) pick a new accent that reads well in both light and dark and against Starlight's neutrals. Whatever is chosen becomes the docs link/accent color too. | **Open — Dev-A (design) proposes, TPM approves.** Decision must be recorded before LU-DEV-A2 consumes it, since the landing refactor bakes it in. |
+| D-1 | Dark-mode parity scope | Docs (Starlight) ship a light/dark toggle out of the box; the landing was **light-only**. | **Resolved (2026-07-22): parity delivered via `prefers-color-scheme`.** Dark token values defined in the shared file and consumed by both surfaces; the landing follows the OS scheme (no separate toggle). One residual: the why-now band inherits Starlight's own low-contrast sidebar relationship — **flagged for human eyeball** (F-3). |
+| D-2 | Brand accent choice | The landing used rust `#b44d29` (eyebrow) over navy `#14213d`. | **Resolved (2026-07-22): unified accent = brand blue hue 221**, derived from the navy — light `hsl(221,80%,44%)` `#164fca` (6.99:1), dark `hsl(221,100%,85%)` `#b3cbff` (10.9:1). Rust retired; the same accent drives docs link/accent color. |
 
-## 6. Evidence log (to be completed at close-out)
+**Optional follow-ups (not blocking, out of this epic):**
+
+| # | Item | Detail |
+|---|---|---|
+| F-1 | Real Inter font | Font stack is Inter-first → system fallback, but no Inter file is loaded today. Add `@fontsource/inter` (or equivalent) so the intended type renders. Optional. |
+| F-2 | Dead `src/layouts/Layout.astro` | Unwired after the theme refactor; candidate for deletion. |
+| F-3 | why-now band contrast | Band uses Starlight's low-contrast sidebar relationship in dark mode — needs a human contrast check (from D-1). |
+
+## 6. Evidence log (closed out 2026-07-22)
 
 | Item | Evidence |
 |---|---|
-| Theme: token file + Starlight customCss wiring | _pending LU-DEV-A1_ |
-| Theme: landing token consumption / bespoke-hex retirement | _pending LU-DEV-A2_ |
-| Rename: route/worker `request-access` → `request-changes` (grep-clean) | _pending LU-DEV-B1_ |
-| Repurpose: CTA "Request Integration" + categories + SLA copy | _pending LU-DEV-B2_ |
-| Tests: `root.spec.ts` updated in lockstep | _pending LU-DEV-B3_ |
-| QA gate: `format:check` / `build:root` / docs `build` / Playwright | _pending LU-QA-1_ |
-| Deploy: both Cloudflare workers + live smoke test | _pending LU-OPS-1_ |
-| Decisions D-1 (dark-mode scope) / D-2 (brand accent) resolved | _pending LU-TPM-1_ |
+| Theme: token file + Starlight customCss wiring | New `src/styles/brand.css` maps brand-blue hue 221 + unified font stack onto Starlight custom properties for light/dark; wired into `starlight({ customCss: [...] })`. `base: '/docs'` unchanged. Docs build green (124 pages). |
+| Theme: landing token consumption / bespoke-hex retirement | New `src-root/styles/theme.css` token layer mirrors Starlight surfaces (dark via `prefers-color-scheme`); `landing.css` refactored to tokens; `Layout.astro` imports `theme.css`. Bespoke `#f6f4ef`/`#14213d`/`#b44d29` retired. `build:root` green (3 pages). Light/dark screenshots captured for landing + docs. |
+| Rename: route/worker `request-access` → `request-changes` (grep-clean) | Pages `request-changes/index.astro` + `thanks.astro`; worker endpoint `/api/request-changes` with `request_type` captured, redirects `/request-changes/?error=1` and `/request-changes/thanks/`, subject "PaloNexus integration request". Old `/request-access/` → 404 (verified live). |
+| Repurpose: CTA "Request Integration" + categories + SLA copy | CTA "Request Integration" in `nav.md`/`hero.md`/`closing.md` → `/request-changes/`; six-element nav preserved. Form `request_type` select (new IdP / new agent platform / new agent outbound destination / custom guardrail / something more custom) + 2-business-day SLA (subject to market conditions). Thanks page updated. |
+| Tests: `root.spec.ts` updated in lockstep | Asserts "Request Integration", `/request-changes/` + `/request-changes/thanks/`, categories + SLA; SLA regex made whitespace-tolerant (`/market\s+conditions/i`) for source line-wrap. |
+| QA gate: `format:check` / `build:root` / docs `build` / Playwright | `format:check` clean (only gitignored `.claude/settings.local.json` warns — not in CI); `build:root` 3 pages; docs `build` 124 pages; Playwright root 9/9, docs 33/33. |
+| Deploy: both Cloudflare workers + live smoke test | PR #22 (both CI gates green) merged; both Cloudflare workers deployed green. Live: `/`, `/docs/`, `/request-changes/`, `/request-changes/thanks/` all 200; old `/request-access/` 404; homepage shows "Request Integration"; form has `request_type` + 2-business-day + market + `action=/api/request-changes`; worker POST verified (invalid→`?error=1`, honeypot→thanks, no mail sent). Local `main` synced. |
+| Decisions D-1 (dark-mode scope) / D-2 (brand accent) resolved | D-1: parity via `prefers-color-scheme` (why-now band flagged for human eyeball — F-3). D-2: accent = brand blue hue 221 (`#164fca` light / `#b3cbff` dark), rust retired. |
+| Follow-ups / deviations | Three optional follow-ups open (§5): F-1 real Inter font, F-2 dead `src/layouts/Layout.astro`, F-3 why-now band dark-mode contrast check. Change set merged + deployed via PR #22 (Ops owned the commit/deploy; Dev/QA left the tree uncommitted per guardrail). |
