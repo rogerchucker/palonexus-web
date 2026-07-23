@@ -5,10 +5,9 @@ sidebar:
   order: 2
 ---
 
-This page is the complete HTTP contract for every plane — the exact method, path, body,
-and status code for calling the platform directly: wiring a gateway, scripting
-the registry, approving an egress hold, or onboarding an agent — enough to
-integrate without reading the source.
+The PaloNexus HTTP contract defines the methods, paths, bodies, and status codes
+for wiring a gateway, scripting the registry, approving an egress hold, and
+onboarding an agent.
 
 The contracts are grouped by plane. All bodies are JSON unless noted. Short forms used
 throughout: `ext_authz` is Envoy's external-authorization hook; a verifiable presentation

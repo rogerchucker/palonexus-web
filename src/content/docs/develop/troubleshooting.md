@@ -5,10 +5,10 @@ sidebar:
   order: 20
 ---
 
-When a governed call is refused, the control plane stamps a human-readable
+When a governed call is refused, the control plane adds a human-readable
 **`X-Palonexus-Deny-Reason`** header on the response (and writes the same string to the
-[audit chain](/docs/getting-started/glossary/)). This page is the **complete
-catalog** of those values — every reason the decision point (`internal/authz`,
+[audit chain](/docs/getting-started/glossary/)). The catalog below lists every
+reason the decision point (`internal/authz`,
 `internal/policy`) and the egress proxy (`internal/egressproxy`) can emit — with what it means,
 how it maps to an [SDK exception](/docs/getting-started/quickstart/), and how to fix it.
 

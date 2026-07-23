@@ -5,9 +5,9 @@ sidebar:
   order: 10
 ---
 
-The thing that makes PaloNexus *trustworthy* — the **tamper-evident audit hash-chain** — is also
-the thing that most needs to be backed up and **proven intact**. This page covers what to back
-up, how, and a restore drill that ends in a chain-verify.
+Back up the **tamper-evident audit hash-chain** and verify its integrity after a
+restore. The same backup policy must also protect the registry, agent-idp state,
+LangGraph checkpointer, and issuer key.
 
 ## What to back up
 

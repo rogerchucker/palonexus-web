@@ -5,9 +5,8 @@ sidebar:
   order: 1
 ---
 
-This section is the contract reference for PaloNexus. It
-covers the HTTP APIs, the request/response headers, and the environment variables
-that configure every component.
+The PaloNexus contract consists of its HTTP APIs, request and response headers,
+and component environment variables.
 
 ## The two API planes
 

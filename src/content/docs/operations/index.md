@@ -5,11 +5,11 @@ sidebar:
   order: 1
 ---
 
-This section is the **operator's view** of PaloNexus: how the control plane is
-built and configured (Go), how it is deployed (Kustomize), how durable state and
-cryptographic agent identity are turned on, how agent egress is enforced at the
-network layer, how the cloud is provisioned (Terraform on DigitalOcean Kubernetes, DOKS),
-and how it is observed (the Grafana LGTM stack — Loki, Grafana, Tempo, Mimir).
+Operators use this section to configure the Go control plane, deploy it with
+Kustomize, enable durable state and cryptographic agent identity, enforce agent
+egress at the network layer, provision DigitalOcean Kubernetes (DOKS) with
+Terraform, and observe the deployment with the Grafana LGTM stack (Loki,
+Grafana, Tempo, and Mimir).
 
 For *integrating* an agent rather than running the platform, start with
 [Deploy an agent](/docs/develop/deploy-an-agent/) instead.

@@ -7,7 +7,7 @@ sidebar:
 
 An agent's egress permissions are declarative registry data, not code. The
 control plane decides every outbound call against the agent's **allowlists** and
-**budget**, deny-by-default. This page covers those two registry-level controls.
+**budget** and denies requests by default.
 
 ## The agent registry entry
 

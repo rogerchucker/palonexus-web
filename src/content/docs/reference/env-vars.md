@@ -5,14 +5,15 @@ sidebar:
   order: 5
 ---
 
-This page is the configuration reference for every PaloNexus component: what
-each knob does and its default. Every component — control plane, agent-idp, model broker,
-agents, and the SDK — is configured **entirely by environment variables**. For
-the smallest set that works, jump to [Minimum viable env, per deployment
+Every PaloNexus component — control plane, agent-idp, model broker, agents, and
+the SDK — is configured **entirely by environment variables**. The tables below
+define each variable and its default. For the smallest working set, go to
+[Minimum viable env, per deployment
 mode](#minimum-viable-env-per-deployment-mode).
 
-Because config is all env, the same image runs in dev and prod, and only the Kustomize
-overlay changes between them. The dev overlay simply removes the OpenID Connect (OIDC) vars to allow anonymous
+This configuration model lets the same image run in development and production;
+only the Kustomize overlay changes. The development overlay removes the OpenID
+Connect (OIDC) variables to allow anonymous
 passthrough while policy still enforces public-vs-private from the registry.
 
 Recurring short forms in the tables below: `ext_authz` is Envoy's external-authorization
