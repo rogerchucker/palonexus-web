@@ -16,6 +16,10 @@ export default defineConfig({
 	// redirect page inside the base-mounted dist), but DESTINATION URLs are
 	// emitted verbatim into the meta-refresh, so they must carry '/docs'.
 	redirects: {
+		// The docs root is now the merged Overview page (the standalone splash landing was
+		// folded into it). Keep /docs/ working for bookmarks and the marketing "Read the docs"
+		// links by redirecting the base root to Overview.
+		'/': '/docs/getting-started/overview',
 		'/getting-started/quickstart-agent-dev': '/docs/getting-started/quickstart',
 		'/getting-started/quickstart-local': '/docs/getting-started/quickstart',
 		'/sdk/quickstart': '/docs/getting-started/quickstart',

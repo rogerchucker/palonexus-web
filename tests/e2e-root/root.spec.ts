@@ -114,10 +114,13 @@ test.describe('marketing root renders', () => {
 		await expect(page.locator('a.nav-cta[href="/request-changes/"]')).toContainText(
 			'Request Integration',
 		);
-		// Docs are reachable from the nav, the hero secondary CTA, and the closing.
+		// The hero secondary CTA and the closing link to the docs root (/docs/, which
+		// redirects to Overview); the nav "Docs" button goes straight to the Overview page.
 		const docsLinks = page.locator('a[href="/docs/"]');
 		expect(await docsLinks.count()).toBeGreaterThanOrEqual(2);
-		await expect(page.locator('.nav-links a[href="/docs/"]')).toHaveText('Docs');
+		await expect(page.locator('.nav-links a[href="/docs/getting-started/overview/"]')).toHaveText(
+			'Docs',
+		);
 	});
 
 	test('request-changes page renders the form with spam guard and email fallback', async ({
