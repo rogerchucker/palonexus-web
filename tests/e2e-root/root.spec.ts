@@ -105,30 +105,40 @@ test.describe('marketing root renders', () => {
 		}
 	});
 
-	test('primary CTAs point at the request-access page and docs are linked', async ({ page }) => {
+	test('primary CTAs point at the request-changes page and docs are linked', async ({ page }) => {
 		await page.goto('/', { waitUntil: 'domcontentloaded' });
 		// Nav CTA, hero primary, and closing CTA all route to the on-site form.
-		const ctas = page.locator('a[href="/request-access/"]');
+		const ctas = page.locator('a[href="/request-changes/"]');
 		expect(await ctas.count()).toBeGreaterThanOrEqual(3);
+		// The nav CTA reads "Request Integration".
+		await expect(page.locator('a.nav-cta[href="/request-changes/"]')).toContainText(
+			'Request Integration',
+		);
 		// Docs are reachable from the nav, the hero secondary CTA, and the closing.
 		const docsLinks = page.locator('a[href="/docs/"]');
 		expect(await docsLinks.count()).toBeGreaterThanOrEqual(2);
 		await expect(page.locator('.nav-links a[href="/docs/"]')).toHaveText('Docs');
 	});
 
-	test('request-access page renders the form with spam guard and email fallback', async ({
+	test('request-changes page renders the form with spam guard and email fallback', async ({
 		page,
 	}) => {
 		const errors = trackErrors(page);
-		const res = await page.goto('/request-access/', { waitUntil: 'networkidle' });
-		expect(res?.status(), 'request-access HTTP status').toBeLessThan(400);
+		const res = await page.goto('/request-changes/', { waitUntil: 'networkidle' });
+		expect(res?.status(), 'request-changes HTTP status').toBeLessThan(400);
 		const form = page.locator('form.request-form');
 		await expect(form).toBeAttached();
-		await expect(form).toHaveAttribute('action', '/api/request-access');
+		await expect(form).toHaveAttribute('action', '/api/request-changes');
 		await expect(form).toHaveAttribute('method', 'post');
 		await expect(form.locator('input[name="name"]')).toHaveAttribute('required', '');
 		await expect(form.locator('input[name="email"]')).toHaveAttribute('required', '');
 		await expect(form.locator('textarea[name="details"]')).toBeAttached();
+		// The request-type select is present with its options.
+		await expect(form.locator('select[name="request_type"]')).toBeAttached();
+		// The 2-business-day SLA copy is stated, market-conditions caveat included.
+		const main = page.locator('main.request-access');
+		await expect(main).toContainText(/2[\s-]business[\s-]day/i);
+		await expect(main).toContainText(/market\s+conditions/i);
 		// Honeypot present but not visible to humans.
 		await expect(form.locator('input[name="website"]')).toBeAttached();
 		await expect(form.locator('input[name="website"]')).not.toBeInViewport();
@@ -139,13 +149,13 @@ test.describe('marketing root renders', () => {
 		expect(severe(errors), `console errors:\n${errors.join('\n')}`).toEqual([]);
 	});
 
-	test('request-access error state shows the fallback banner', async ({ page }) => {
-		await page.goto('/request-access/?error=1', { waitUntil: 'domcontentloaded' });
+	test('request-changes error state shows the fallback banner', async ({ page }) => {
+		await page.goto('/request-changes/?error=1', { waitUntil: 'domcontentloaded' });
 		await expect(page.locator('.form-error')).toBeVisible();
 	});
 
-	test('request-access thanks page renders with a docs pointer', async ({ page }) => {
-		const res = await page.goto('/request-access/thanks/', { waitUntil: 'domcontentloaded' });
+	test('request-changes thanks page renders with a docs pointer', async ({ page }) => {
+		const res = await page.goto('/request-changes/thanks/', { waitUntil: 'domcontentloaded' });
 		expect(res?.status(), 'thanks HTTP status').toBeLessThan(400);
 		await expect(page.locator('h1')).toContainText(/Thanks/);
 		await expect(page.locator('a[href="/docs/"]').first()).toBeAttached();

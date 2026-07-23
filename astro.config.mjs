@@ -33,6 +33,9 @@ export default defineConfig({
 			title: 'PaloNexus Docs',
 			description:
 				'Developer integration, Python SDK reference, and operations (Go + Terraform) for PaloNexus — the authorization and accountability layer between AI agents and the systems they act upon.',
+			// Brand override (accent + font) shared conceptually with the marketing root's
+			// token layer at src-root/styles/theme.css — see src/styles/brand.css for details.
+			customCss: ['./src/styles/brand.css'],
 			tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 4 },
 			// Interactive API reference generated from the agent-idp OpenAPI 3.1 spec.
 			plugins: [

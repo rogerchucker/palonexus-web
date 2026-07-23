@@ -14,8 +14,8 @@ distinction:
   - label: PaloNexus
     text: decides what it is authorized to do — and whose authority it is using.
 primaryCta:
-  label: Request access
-  href: '/request-access/'
+  label: Request Integration
+  href: '/request-changes/'
 secondaryCta:
   label: Read the docs
   href: '/docs/'

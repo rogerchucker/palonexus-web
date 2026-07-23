@@ -19,18 +19,25 @@ const navData = {
 	<div class="site-shell">
 		<Nav data={navData} />
 		<main class="request-access">
-			<p class="eyebrow">Request access</p>
-			<h1>Tell us where your agents need authority.</h1>
+			<p class="eyebrow">Request an integration</p>
+			<h1>Request an integration or change.</h1>
 			<p class="request-lede">
-				PaloNexus is self-hosted and onboarding is hands-on for now. Tell us what you are running
-				and what it needs to reach — we respond to every request, typically within two business
-				days.
+				PaloNexus is delivered as a self-hosted platform plus a Python SDK. The currently supported
+				stack is Logto for IAM, cloud Kubernetes, and Python-based agents. Use this form to request
+				an enhancement — a new identity provider, a new agent platform or runtime, a new outbound
+				destination for your agents to reach, or a custom guardrail (an activity to forbid agents
+				from doing). Something more custom is welcome too.
+			</p>
+			<p class="request-sla">
+				PaloNexus delivers requested and agreed-upon enhancements, changes, and fixes within a
+				2-business-day turnaround. This turnaround is subject to adjustment based on market
+				conditions.
 			</p>
 			<p class="form-error" role="alert">
 				Something went wrong sending your request. Please try again, or email
 				<a href="mailto:support@palonexus.ai">support@palonexus.ai</a> directly.
 			</p>
-			<form class="request-form" method="post" action="/api/request-access">
+			<form class="request-form" method="post" action="/api/request-changes">
 				<div class="form-field">
 					<label for="ra-name">Name</label>
 					<input id="ra-name" name="name" type="text" required maxlength="200" />
@@ -44,13 +51,26 @@ const navData = {
 					<input id="ra-company" name="company" type="text" maxlength="200" />
 				</div>
 				<div class="form-field">
-					<label for="ra-details">What do your agents need to reach?</label>
+					<label for="ra-request-type">Request type</label>
+					<select id="ra-request-type" name="request_type">
+						<option value="New identity provider (IdP)">New identity provider (IdP)</option>
+						<option value="New agent platform / runtime">New agent platform / runtime</option>
+						<option value="New agent outbound destination">New agent outbound destination</option>
+						<option value="Custom guardrail (forbid an activity)"
+							>Custom guardrail (forbid an activity)</option
+						>
+						<option value="Something else">Something else</option>
+					</select>
+				</div>
+				<div class="form-field">
+					<label for="ra-details">Describe the integration, change, or fix you need</label>
 					<textarea
 						id="ra-details"
 						name="details"
 						rows="5"
 						maxlength="4000"
-						placeholder="Runtimes or frameworks in use, target systems (Kubernetes, GitHub, internal APIs, …), and how access is granted today."></textarea>
+						placeholder="For example: a new identity provider (Okta, Entra, Keycloak, …), a new agent platform or runtime, a new outbound destination for agents to reach, or a custom guardrail forbidding a specific activity. Include any details that help us scope it."
+					></textarea>
 				</div>
 				<div class="form-hp" aria-hidden="true">
 					<label for="ra-website">Website</label>
@@ -71,3 +91,11 @@ const navData = {
 		}
 	</script>
 </Layout>
+
+<style>
+	.request-sla {
+		margin: 0 0 1.5rem;
+		font-size: 0.95rem;
+		opacity: 0.85;
+	}
+</style>
