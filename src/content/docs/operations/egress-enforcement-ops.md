@@ -5,10 +5,10 @@ sidebar:
   order: 5
 ---
 
-This page covers operating the **egress-gateway enforcement mode** — one of
-PaloNexus's [three enforcement modes](/docs/concepts/index/#three-enforcement-modes)
-(governed tool · token exchange · egress gateway) — on Kubernetes. The hard part is
-**egress**: making every outbound action an agent takes — model call, tool call,
+The **egress-gateway enforcement mode** is one of PaloNexus's
+[three enforcement modes](/docs/concepts/index/#three-enforcement-modes)
+(governed tool · token exchange · egress gateway). On Kubernetes, it makes every
+outbound agent action — model call, tool call,
 agent→agent hop, external HTTP — pass through the *same* `/authz` decision carrying
 agent + on-behalf-of identity, with credentials injected only after the untrusted
 boundary. For the why and the conceptual model, see

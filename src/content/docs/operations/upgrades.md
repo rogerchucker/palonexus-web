@@ -5,9 +5,9 @@ sidebar:
   order: 11
 ---
 
-PaloNexus upgrades are low-drama by design: **same image everywhere**, config-by-env, idempotent
-schemas, and a fail-closed decision path mean a rolling upgrade rarely needs a maintenance window.
-This page covers the compatibility contract, the procedure, and rollback.
+PaloNexus uses the **same image everywhere**, environment-based configuration,
+idempotent schemas, and a fail-closed decision path. Follow the compatibility
+contract and upgrade order below when performing a rolling upgrade or rollback.
 
 ## Compatibility matrix
 

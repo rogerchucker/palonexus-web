@@ -13,9 +13,9 @@ consumer of the agent's output — a regulator, an auditor, a partner enterprise
 question more: **what does this agent attest about itself, and can I check that
 attestation without trusting PaloNexus's live API?**
 
-This page covers the credential machinery that makes those proofs hold: cryptographic
-egress identity, revocation on the decision path, the durable human identity behind every
-agent, and the compliance/provenance **governance credentials**. Throughout, DID/VC —
+The credential machinery behind those proofs includes cryptographic egress
+identity, revocation on the decision path, the durable human identity behind every
+agent, and compliance and provenance **governance credentials**. Throughout, DID/VC —
 Decentralized Identifiers (DIDs) and Verifiable Credentials (VCs) — is
 **one supported credential format** — the mechanism PaloNexus uses to make signed agent
 credentials and proof of authorization independently verifiable, not the product category.
