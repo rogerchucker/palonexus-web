@@ -1,22 +1,11 @@
 ---
-import { getEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import Nav from '../../components/landing/Nav.astro';
-
-const nav = await getEntry('landing', 'nav');
-if (!nav) throw new Error('Missing required landing page content entry in src/content/landing/');
-
-const navData = {
-	...nav.data,
-	links: nav.data.links.map((link) =>
-		link.href.startsWith('#') ? { ...link, href: `/${link.href}` } : link,
-	),
-};
 ---
 
 <Layout>
+	<Nav />
 	<div class="site-shell">
-		<Nav data={navData} />
 		<main class="request-access">
 			<p class="eyebrow">Request received</p>
 			<h1>Thanks — your request is in.</h1>

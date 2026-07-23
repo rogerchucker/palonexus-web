@@ -1,20 +1,28 @@
 ---
-import type { NavData } from '../../content.config';
+import { brand, cta, navLinks } from '../../../shared/site-nav.mjs';
 
 interface Props {
-	data: NavData;
+	/**
+	 * 'homepage' -> in-page hash links (#solutions), used on the homepage itself.
+	 * 'absolute' (default) -> homepage-qualified hash links (/#solutions), used on
+	 * every other page that renders this nav (request-changes, thanks).
+	 */
+	context?: 'homepage' | 'absolute';
 }
 
-const { data } = Astro.props;
+const { context = 'absolute' } = Astro.props;
+const links = navLinks(context);
 ---
 
-<header class="nav" aria-label="Primary navigation">
-	<a class="brand" href="/" aria-label={`${data.brand} home`}>
-		<span class="brand-mark" aria-hidden="true">PN</span>
-		<span>{data.brand}</span>
-	</a>
-	<nav class="nav-links" aria-label="Page sections">
-		{data.links.map((link) => <a href={link.href}>{link.label}</a>)}
-	</nav>
-	<a class="nav-cta" href={data.cta.href}>{data.cta.label}</a>
-</header>
+<div class="nav-bar">
+	<header class="nav" aria-label="Primary navigation">
+		<a class="brand" href={brand.href} aria-label={`${brand.label} home`}>
+			<span class="brand-mark" aria-hidden="true">{brand.mark}</span>
+			<span>{brand.label}</span>
+		</a>
+		<nav class="nav-links" aria-label="Page sections">
+			{links.map((link) => <a href={link.href}>{link.label}</a>)}
+		</nav>
+		<a class="nav-cta" href={cta.href}>{cta.label}</a>
+	</header>
+</div>

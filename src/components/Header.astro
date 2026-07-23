@@ -1,0 +1,234 @@
+---
+// Overrides Starlight's default Header (node_modules/@astrojs/starlight/components/Header.astro)
+// so the docs share the SAME floating top nav as the marketing root: brand, Solutions /
+// Platform / Governance / Docs links, and the "Request Integration" CTA, all sourced from
+// ../../shared/site-nav.mjs (see src-root/components/landing/Nav.astro for the other
+// consumer) so the two builds can never drift.
+//
+// Starlight's own Search and ThemeSelect are kept — same components, same behavior — just
+// laid out alongside the marketing nav instead of replacing it. The mobile sidebar hamburger
+// (MobileMenuToggle) is rendered by Starlight's PageFrame outside this component; the
+// reserved padding-inline-end it relies on ([data-has-sidebar] .header) is untouched.
+import config from 'virtual:starlight/user-config';
+import Search from 'virtual:starlight/components/Search';
+import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+import { brand, cta, navLinks } from '../../shared/site-nav.mjs';
+
+// Same guard Starlight's own Header.astro uses.
+const shouldRenderSearch =
+	config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
+
+// Every docs page is "away from the homepage" for the purposes of the marketing nav, so
+// section links are always homepage-qualified (`/#solutions`), never bare in-page hashes.
+const links = navLinks('absolute');
+---
+
+<div class="pn-header">
+	<a class="pn-brand" href={brand.href} aria-label={`${brand.label} home`}>
+		<span class="pn-brand-mark" aria-hidden="true">{brand.mark}</span>
+		<span class="pn-brand-label" translate="no">{brand.label}</span>
+	</a>
+
+	<nav class="pn-links print:hidden" aria-label="Page sections">
+		{links.map((link) => <a href={link.href}>{link.label}</a>)}
+	</nav>
+
+	<div class="pn-right sl-flex print:hidden">
+		{shouldRenderSearch && <Search />}
+		<ThemeSelect />
+		<a class="pn-cta" href={cta.href}>
+			{/* Two labels, one visible at a time via CSS (see .pn-cta-short below) — display:none
+			    content is excluded from the accessible name, so the link's accessible name always
+			    matches whichever text is actually shown. */}
+			<span class="pn-cta-full">{cta.label}</span>
+			<span class="pn-cta-short">Request</span>
+		</a>
+	</div>
+</div>
+
+<style>
+	@layer starlight.core {
+		.pn-header {
+			align-items: center;
+			display: flex;
+			gap: 1rem;
+			height: 100%;
+			justify-content: space-between;
+			width: 100%;
+		}
+
+		.pn-brand {
+			align-items: center;
+			color: var(--sl-color-white);
+			display: inline-flex;
+			flex-shrink: 0;
+			font-size: var(--sl-text-lg);
+			font-weight: 760;
+			gap: 0.625rem;
+			text-decoration: none;
+		}
+
+		.pn-brand:hover {
+			color: var(--sl-color-white);
+		}
+
+		.pn-brand-mark {
+			align-items: center;
+			/* Matches src-root/styles/theme.css --pn-navy / --pn-invert-bg exactly, so the
+			   mark reads identically here and on the marketing root. */
+			background: hsl(224, 14%, 16%);
+			border-radius: 0.5rem;
+			color: var(--sl-color-gray-2);
+			display: inline-flex;
+			flex-shrink: 0;
+			font-size: 0.75rem;
+			height: 2.125rem;
+			justify-content: center;
+			width: 2.125rem;
+		}
+
+		:root[data-theme='light'] .pn-brand-mark {
+			background: #14213d;
+			color: #fffaf2;
+		}
+
+		.pn-links {
+			align-items: center;
+			display: none;
+			gap: 1.5rem;
+		}
+
+		.pn-links a {
+			color: var(--sl-color-text);
+			font-size: var(--sl-text-sm);
+			font-weight: 600;
+			text-decoration: none;
+			white-space: nowrap;
+		}
+
+		.pn-links a:hover {
+			color: var(--sl-color-white);
+		}
+
+		.pn-right {
+			align-items: center;
+			flex-shrink: 0;
+			gap: 1rem;
+			justify-content: flex-end;
+		}
+
+		.pn-cta {
+			align-items: center;
+			border: 1px solid var(--sl-color-text);
+			border-radius: 0.5rem;
+			color: var(--sl-color-text);
+			display: inline-flex;
+			flex-shrink: 0;
+			font-size: var(--sl-text-sm);
+			font-weight: 600;
+			padding: 0.5rem 0.875rem;
+			text-decoration: none;
+			white-space: nowrap;
+		}
+
+		.pn-cta:hover {
+			border-color: var(--sl-color-white);
+			color: var(--sl-color-white);
+		}
+
+		/* Mobile-first compact state: no inline section links, theme picker collapsed to its
+		   icon (no text label), and the CTA carries its short label. Widened out in two steps
+		   below as room appears — first the section links (>=50rem, Starlight's own sidebar
+		   breakpoint), then the full-size theme label and CTA text (>=72rem, Starlight's "lg"
+		   breakpoint) once search + 4 links + theme + CTA all comfortably fit beside the brand. */
+		.pn-header {
+			gap: 0.5rem;
+		}
+
+		.pn-right {
+			gap: 0.5rem;
+		}
+
+		.pn-right :global(select) {
+			--sl-select-width: 0em;
+		}
+
+		.pn-cta {
+			padding: 0.5rem 0.625rem;
+		}
+
+		.pn-cta-full {
+			display: none;
+		}
+
+		.pn-cta-short {
+			display: inline;
+		}
+
+		@media (min-width: 50rem) {
+			.pn-links {
+				display: flex;
+				gap: 1.25rem;
+			}
+
+			.pn-header {
+				gap: 0.75rem;
+			}
+
+			.pn-right {
+				gap: 0.75rem;
+			}
+
+			/* Starlight's own Search grows to fill a 1fr grid track by default; here it sits
+			   in a content-sized flex row alongside the marketing links and CTA, so cap it. */
+			.pn-right :global(button[data-open-modal]) {
+				max-width: 10rem;
+			}
+		}
+
+		@media (min-width: 72rem) {
+			.pn-header {
+				gap: 1rem;
+			}
+
+			.pn-links {
+				gap: 1.5rem;
+			}
+
+			.pn-right {
+				gap: 1rem;
+			}
+
+			.pn-right :global(select) {
+				--sl-select-width: 6.25em;
+			}
+
+			.pn-cta {
+				padding: 0.5rem 0.875rem;
+			}
+
+			.pn-right :global(button[data-open-modal]) {
+				max-width: 12rem;
+			}
+
+			.pn-cta-full {
+				display: inline;
+			}
+
+			.pn-cta-short {
+				display: none;
+			}
+		}
+	}
+
+	/* Float the whole bar: translucent, blurred background over a subtle bottom border —
+	   matches the marketing root's .nav-bar (src-root/styles/landing.css) so the floating
+	   feel (Ory-style) is identical on every page. Starlight's PageFrame already renders
+	   this ancestor `.header` as `position: fixed; inset-block-start: 0`, i.e. pinned on
+	   scroll — this only changes its paint, not its positioning. */
+	:global(.header) {
+		background: color-mix(in srgb, var(--sl-color-bg-nav) 82%, transparent) !important;
+		backdrop-filter: blur(14px);
+		-webkit-backdrop-filter: blur(14px);
+	}
+</style>
