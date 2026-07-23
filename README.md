@@ -24,12 +24,12 @@ self-hosting, architecture/features, and an HTTP API reference.
 npm install
 npm run dev        # unified local Worker: http://localhost:8787/
 npm run build      # static site -> dist/  (+ Pagefind search index)
-npm run preview    # serve the built static site
+npm run preview    # unified local Worker, serving both surfaces
 ```
 
-`npm run dev` builds and stages both surfaces, then serves `/`, `/docs/`, and the
-request form through the same local Worker. For Starlight-only hot reload while editing
-documentation, use `npm run dev:astro` (that server is mounted at `/docs/`).
+`npm run dev` and `npm run preview` build and stage both surfaces, then serve `/`, `/docs/`,
+and the request form through the same local Worker. For Starlight-only hot reload while
+editing documentation, use `npm run dev:astro` (that server is mounted at `/docs/`).
 
 The site is **static** (no adapter); `dist/` can be served by any static host.
 

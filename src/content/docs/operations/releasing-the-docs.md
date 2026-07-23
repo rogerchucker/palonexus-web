@@ -33,7 +33,8 @@ npm run format       # auto-fix formatting (code/config; prose is excluded)
 npm run format:check # formatting gate only
 npm run build        # docs build (also validates content schema + Mermaid)
 npm run test:e2e     # Playwright E2E against a freshly built site
-npm run preview      # serve the built site at http://localhost:4321/docs/
+npm run dev          # unified local Worker at http://localhost:8787/ (both / and /docs/)
+npm run preview      # same unified artifact, without HMR
 ```
 
 The E2E suite (`tests/e2e/docs.spec.ts`) builds the site, opens it in Chromium, and verifies:
