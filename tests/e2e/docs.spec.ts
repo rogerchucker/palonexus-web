@@ -3,7 +3,9 @@ import { test, expect, type Page } from '@playwright/test';
 // End-to-end checks for the published documentation site. Every page listed here is a
 // "critical" surface: if any of these fail to render, deployment must be blocked.
 
-const HOMEPAGE = '/docs/';
+// The docs root (/docs/) redirects to the merged Overview page; the Overview is the docs
+// landing surface and the target of the nav "Docs" button.
+const HOMEPAGE = '/docs/getting-started/overview/';
 
 // Developer-facing integration + SDK docs.
 const DEVELOPER_PAGES = [
@@ -24,6 +26,7 @@ const DEVELOPER_PAGES = [
 // (see the `redirects` note in astro.config.mjs — destinations are emitted
 // verbatim, so a missing '/docs' prefix would 404 in production).
 const REDIRECTS = [
+	{ from: '/docs/', to: '/docs/getting-started/overview' },
 	{ from: '/docs/getting-started/quickstart-agent-dev/', to: '/docs/getting-started/quickstart' },
 	{ from: '/docs/getting-started/quickstart-local/', to: '/docs/getting-started/quickstart' },
 	{ from: '/docs/sdk/quickstart/', to: '/docs/getting-started/quickstart' },

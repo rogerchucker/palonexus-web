@@ -26,7 +26,7 @@ export const sections = [
 	{ id: 'governance', label: 'Governance' },
 ];
 
-export const docsLink = { label: 'Docs', href: '/docs/' };
+export const docsLink = { label: 'Docs', href: '/docs/getting-started/overview/' };
 
 export const cta = { label: 'Request Integration', href: '/request-changes/' };
 
