@@ -20,7 +20,15 @@
    every page. --pn-nav-h tracks the bar's rendered height so anchor targets (.section)
    can offset via scroll-margin-top and land clear of the fixed bar. */
 :root {
-	--pn-nav-h: 84px;
+	--pn-nav-h: 64px;
+}
+
+/* The nav bar renders outside .site-shell (so position: sticky works), so it misses the
+   global `.site-shell *` border-box rule. Restore it here, or content-box padding/border
+   inflate the 44px CTA to ~70px and thicken the bar past the docs' 64px. */
+.nav-bar,
+.nav-bar * {
+	box-sizing: border-box;
 }
 
 .nav-bar {
@@ -41,7 +49,11 @@
 	justify-content: space-between;
 	margin: 0 auto;
 	max-width: 1180px;
-	padding: 24px 28px;
+	/* Match the docs header thickness: Starlight's --sl-nav-height is 4rem (64px) on
+	   desktop. The tallest child is the 44px CTA, so 10px block padding lands the bar at
+	   64px. --pn-nav-h above tracks this for anchor scroll-offset. */
+	min-height: 64px;
+	padding: 10px 28px;
 }
 
 a {
@@ -107,6 +119,13 @@ a:hover {
 	padding: 12px 18px;
 	text-align: center;
 	white-space: normal;
+}
+
+/* The nav CTA must stay a single line so the bar holds its 64px height (docs-consistent);
+   without this it can shrink in the flex row and wrap to two lines, thickening the bar. */
+.nav-cta {
+	flex-shrink: 0;
+	white-space: nowrap;
 }
 
 .hero {

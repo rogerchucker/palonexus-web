@@ -23,7 +23,7 @@ const heroSchema = z.object({
 });
 const solutionsSchema = z.object({
 	section: z.literal('solutions'),
-	eyebrow: z.string(),
+	eyebrow: z.string().optional(),
 	heading: z.string(),
 	cards: z
 		.array(

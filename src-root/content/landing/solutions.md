@@ -1,6 +1,5 @@
 ---
 section: solutions
-eyebrow: Product packaging
 heading: One authorization layer, packaged for how your agents reach production.
 cards:
   - kicker: PaloNexus Core
