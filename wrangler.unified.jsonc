@@ -1,0 +1,24 @@
+{
+	// Candidate single-worker configuration for the consolidated site. It is intentionally
+	// named separately while the existing root/docs workers remain the production rollback.
+	// After preview smoke tests pass, point the palonexus.ai route at this worker and retire
+	// the two legacy route configurations.
+	"compatibility_date": "2026-06-10",
+	"name": "palonexus-web-unified",
+	"main": "src/worker/index.js",
+	"assets": {
+		"directory": "./dist-unified",
+		"binding": "ASSETS",
+		"html_handling": "auto-trailing-slash",
+		"not_found_handling": "404-page",
+	},
+	"send_email": [
+		{
+			"name": "REQUEST_ACCESS_EMAIL",
+			"destination_address": "rajarshic@gmail.com",
+		},
+	],
+	"observability": {
+		"enabled": true,
+	},
+}

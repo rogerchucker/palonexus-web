@@ -1,0 +1,33 @@
+name: Unified Site CI
+
+# The consolidation gate builds the shared Astro source and verifies the staged
+# artifact without changing production routing. The existing root/docs workflows
+# remain independent rollback checks until the unified worker is cut over.
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  build:
+    name: Build and verify unified artifact
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build and stage unified site
+        run: npm run stage:unified
+      - name: Check formatting of consolidation files
+        run: npx prettier --check scripts/stage-unified.mjs scripts/verify-unified.mjs wrangler.unified.jsonc package.json
