@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// End-to-end documentation tests. These build the static docs site and serve it with
-// `astro preview` (base path "/docs"), then drive it in a real Chromium browser.
+// End-to-end documentation tests. These build and stage the docs Worker artifact
+// (base path "/docs"), then serve it with Wrangler before driving a real browser.
 // CI gates deployment on these passing — see .github/workflows/docs-ci-deploy.yml.
 
 const PORT = 4321;
@@ -23,10 +23,11 @@ export default defineConfig({
 		screenshot: 'only-on-failure',
 	},
 	projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-	// `npm run preview` builds the site then serves it. The url uses the "/docs" base
-	// because the site root (/) is not owned by this build.
+	// The docs Worker artifact excludes the unified marketing root and supplies the
+	// /docs/ redirect expected by the rollback deployment.
 	webServer: {
-		command: 'npm run preview',
+		command:
+			'npm run build && npm run stage:docs && node scripts/serve-static.mjs dist-deploy 4321',
 		url: `${BASE_URL}/docs/`,
 		reuseExistingServer: !process.env.CI,
 		timeout: 180_000,

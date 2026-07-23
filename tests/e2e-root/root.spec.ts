@@ -29,9 +29,8 @@ test.describe('marketing root renders', () => {
 		await expect(page.locator('h1').first()).toHaveText(
 			/Give AI agents authority without giving them standing access\./,
 		);
-		// The §15 one-sentence product line must stay verbatim in the hero lede.
 		await expect(page.locator('.hero-lede')).toContainText(
-			'entitled to delegate—and only for the task, resource, and time originally approved',
+			'developer SDK, the enforcement Control Plane, and the security Command Center',
 		);
 
 		for (const anchor of SECTION_ANCHORS) {
@@ -41,18 +40,16 @@ test.describe('marketing root renders', () => {
 		expect(severe(errors), `console errors:\n${errors.join('\n')}`).toEqual([]);
 	});
 
-	test('hero carries the runtime / sandbox / PaloNexus three-line distinction', async ({
-		page,
-	}) => {
+	test('hero carries the connected product-surface distinction', async ({ page }) => {
 		await page.goto('/', { waitUntil: 'domcontentloaded' });
 		const lines = page.locator('.hero-distinction li');
 		await expect(lines).toHaveCount(3);
-		await expect(lines.nth(0)).toContainText('Agent runtimes');
-		await expect(lines.nth(0)).toContainText('decide how an agent works');
-		await expect(lines.nth(1)).toContainText('Sandboxes');
-		await expect(lines.nth(1)).toContainText('decide where its code runs');
-		await expect(lines.nth(2)).toContainText('PaloNexus');
-		await expect(lines.nth(2)).toContainText('authorized to do');
+		await expect(lines.nth(0)).toContainText('Integrate — SDK');
+		await expect(lines.nth(0)).toContainText('developers and agent owners');
+		await expect(lines.nth(1)).toContainText('Enforce — Control Plane');
+		await expect(lines.nth(1)).toContainText('platform operations');
+		await expect(lines.nth(2)).toContainText('Observe — Command Center');
+		await expect(lines.nth(2)).toContainText('security teams and leaders');
 	});
 
 	test('works-with section lists working and planned ecosystems honestly', async ({ page }) => {
@@ -77,7 +74,9 @@ test.describe('marketing root renders', () => {
 		const section = page.locator('#command-center');
 		await expect(section).toBeAttached();
 		await expect(
-			section.getByRole('heading', { name: "See every agent's authority in one place" }),
+			section.getByRole('heading', {
+				name: 'Give security teams one view of agent authority and accountability.',
+			}),
 		).toBeVisible();
 		// The DOKS portal capture must actually decode — a broken <img> would render
 		// the section as an empty frame. The image is lazy-loaded, so scroll first.
@@ -89,9 +88,9 @@ test.describe('marketing root renders', () => {
 				message: 'command-center screenshot decoded (naturalWidth > 0)',
 			})
 			.toBeGreaterThan(0);
-		// Honesty rules: the only forward-looking line is the conditional "Coming next"
+		// Honesty rules: the only forward-looking line is the explicit "Planned next:"
 		// sentence, and the section carries no planned-tags (those live in works-with).
-		await expect(section.locator('.command-center-next')).toContainText(/^Coming next:/);
+		await expect(section.locator('.command-center-next')).toContainText(/^Planned next:/);
 		await expect(section.locator('.planned-tag')).toHaveCount(0);
 		expect(severe(errors), `console errors:\n${errors.join('\n')}`).toEqual([]);
 	});

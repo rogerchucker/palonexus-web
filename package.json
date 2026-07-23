@@ -27,6 +27,7 @@
 		"validate:root": "npm run format:check && npm run build:root && npm run test:e2e:root",
 		"generate-types": "wrangler types",
 		"stage:docs": "node scripts/stage-docs.mjs",
+		"serve:static": "node scripts/serve-static.mjs",
 		"ci:deploy": "astro build && npm run stage:docs && wrangler deploy -c wrangler.docs.jsonc",
 		"ci:deploy:root": "npm run build:root && wrangler deploy -c wrangler.jsonc",
 		"deploy": "node scripts/no-manual-deploy.mjs docs",
