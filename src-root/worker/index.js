@@ -1,6 +1,6 @@
 // Marketing-root Worker. Static assets (dist-root) are served by the assets pipeline
 // first; this script only sees requests that no asset matches — in practice the
-// request-access form POST, which it forwards to the founder inbox via the free
+// request-changes form POST, which it forwards to the founder inbox via the free
 // Cloudflare Email Routing `send_email` binding (no third-party form vendor).
 import { EmailMessage } from 'cloudflare:email';
 
@@ -16,8 +16,8 @@ const SENDER = 'access@palonexus.ai';
 export default {
 	async fetch(request, env) {
 		const url = new URL(request.url);
-		if (url.pathname === '/api/request-access' && request.method === 'POST') {
-			return handleRequestAccess(request, env);
+		if (url.pathname === '/api/request-changes' && request.method === 'POST') {
+			return handleRequestChanges(request, env);
 		}
 		return env.ASSETS.fetch(request);
 	},
@@ -32,36 +32,38 @@ const clean = (value, max) =>
 		.trim()
 		.slice(0, max);
 
-async function handleRequestAccess(request, env) {
+async function handleRequestChanges(request, env) {
 	let form;
 	try {
 		form = await request.formData();
 	} catch {
-		return redirect('/request-access/?error=1');
+		return redirect('/request-changes/?error=1');
 	}
 
 	const name = clean(form.get('name'), 200);
 	const email = clean(form.get('email'), 200);
 	const company = clean(form.get('company'), 200);
+	const requestType = clean(form.get('request_type'), 200);
 	const details = String(form.get('details') ?? '')
 		.trim()
 		.slice(0, 4000);
 	const honeypot = clean(form.get('website'), 200);
 
 	// Bots fill the hidden field; pretend success so they stop retrying.
-	if (honeypot) return redirect('/request-access/thanks/');
+	if (honeypot) return redirect('/request-changes/thanks/');
 	if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-		return redirect('/request-access/?error=1');
+		return redirect('/request-changes/?error=1');
 	}
 
 	const body = [
-		'New access request from palonexus.ai/request-access/',
+		'New integration request from palonexus.ai/request-changes/',
 		'',
-		`Name:    ${name}`,
-		`Email:   ${email}`,
-		`Company: ${company || '-'}`,
+		`Name:         ${name}`,
+		`Email:        ${email}`,
+		`Company:      ${company || '-'}`,
+		`Request type: ${requestType || '-'}`,
 		'',
-		'What do your agents need to reach?',
+		'Describe the integration, change, or fix you need:',
 		details || '-',
 		'',
 		`Submitted: ${new Date().toISOString()}`,
@@ -71,7 +73,7 @@ async function handleRequestAccess(request, env) {
 		`From: PaloNexus website <${SENDER}>`,
 		`To: ${DESTINATION}`,
 		`Reply-To: ${email}`,
-		'Subject: PaloNexus access request',
+		'Subject: PaloNexus integration request',
 		`Message-ID: <${crypto.randomUUID()}@palonexus.ai>`,
 		`Date: ${new Date().toUTCString()}`,
 		'MIME-Version: 1.0',
@@ -83,8 +85,8 @@ async function handleRequestAccess(request, env) {
 	try {
 		await env.REQUEST_ACCESS_EMAIL.send(new EmailMessage(SENDER, DESTINATION, raw));
 	} catch (err) {
-		console.error('request-access email send failed:', err instanceof Error ? err.message : err);
-		return redirect('/request-access/?error=1');
+		console.error('request-changes email send failed:', err instanceof Error ? err.message : err);
+		return redirect('/request-changes/?error=1');
 	}
-	return redirect('/request-access/thanks/');
+	return redirect('/request-changes/thanks/');
 }

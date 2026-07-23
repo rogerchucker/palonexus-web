@@ -1,0 +1,101 @@
+/*
+ * PaloNexus marketing-root token layer.
+ *
+ * Imported by ../layouts/Layout.astro, before landing.css. Every color/background/border
+ * value in landing.css should consume one of these custom properties rather than a literal
+ * hex, so the landing page and the Starlight docs (see src/styles/brand.css) share one
+ * brand: same accent hue (221, derived from navy #14213d) and the same neutral/surface
+ * structure as Starlight's own token set (see node_modules/@astrojs/starlight/style/props.css).
+ *
+ * Light values keep the site's existing warm-paper surface (#f6f4ef / #fffaf2) — that
+ * hasn't changed. Dark values are Starlight's *literal* dark-mode neutral stops (hue 224)
+ * so a reader who has their OS set to dark mode sees the same near-black/gray-panel
+ * language on both the landing page and the docs. Dark mode here is driven purely by
+ * prefers-color-scheme — there is no manual toggle on the marketing root.
+ */
+
+:root {
+	--pn-font:
+		'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+		'Helvetica Neue', Arial, sans-serif;
+
+	/* Surfaces + neutrals (light) */
+	--pn-bg: #f6f4ef;
+	--pn-surface: #fffaf2;
+	--pn-surface-2: #efe8dc;
+	--pn-text: #121413;
+	--pn-text-muted: #4d5651;
+	--pn-text-faint: #6b6257;
+	--pn-border: #ded6c8;
+	--pn-border-subtle: #e8dfd0;
+
+	/* "Inverted" dark blocks (arch-column.core, control-list) */
+	--pn-invert-bg: #121413;
+	--pn-invert-text: #fffaf2;
+
+	/* Primary CTA button — its own pair (not --pn-invert-*) so it stays visually distinct
+	   from the secondary button once dark mode collapses invert-bg/surface to the same tone. */
+	--pn-cta-bg: #121413;
+	--pn-cta-text: #fffaf2;
+
+	/* Brand navy band (why-now section, brand mark) */
+	--pn-navy: #14213d;
+	--pn-navy-text: #fffaf2;
+	--pn-gold: #f2c166; /* why-now eyebrow only — kept for contrast against navy */
+
+	/* Shared brand accent — same hue/lightness as src/styles/brand.css light mode */
+	--pn-accent: hsl(221, 80%, 44%);
+	--pn-accent-strong: hsl(221, 80%, 30%);
+	--pn-accent-soft: hsl(221, 88%, 90%);
+	--pn-accent-contrast: #ffffff;
+	--pn-focus-halo: rgba(20, 68, 190, 0.16);
+
+	--pn-dot: #3f7d6a;
+	--pn-shadow: 0 30px 80px rgba(18, 20, 19, 0.14);
+
+	--pn-error-bg: #fff5f5;
+	--pn-error-border: #e8b3a5;
+	--pn-error-text: #8a2b1c;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		/* Surfaces + neutrals (dark) — Starlight's own hue-224 neutral scale */
+		--pn-bg: hsl(224, 10%, 10%);
+		--pn-surface: hsl(224, 14%, 16%);
+		--pn-surface-2: hsl(224, 14%, 16%);
+		--pn-text: hsl(224, 6%, 77%);
+		--pn-text-muted: hsl(224, 6%, 56%);
+		--pn-text-faint: hsl(224, 7%, 36%);
+		--pn-border: hsl(224, 10%, 23%);
+		--pn-border-subtle: hsl(224, 10%, 23%);
+
+		/* On a near-black page, "inverted" dark blocks reuse the elevated panel tone
+		   instead of collapsing to near-invisible near-black-on-near-black. */
+		--pn-invert-bg: hsl(224, 14%, 16%);
+		--pn-invert-text: hsl(224, 6%, 77%);
+
+		/* Bright accent chip, not another dark panel — keeps the primary CTA reading as
+		   "the boldest surface on the page" the way near-black does in light mode. */
+		--pn-cta-bg: hsl(221, 100%, 85%);
+		--pn-cta-text: hsl(224, 10%, 10%);
+
+		--pn-navy: hsl(224, 14%, 16%);
+		--pn-navy-text: hsl(224, 6%, 77%);
+		--pn-gold: #f2c166;
+
+		/* Shared brand accent — same hue/lightness as src/styles/brand.css dark mode */
+		--pn-accent: hsl(221, 100%, 85%);
+		--pn-accent-strong: hsl(221, 100%, 60%);
+		--pn-accent-soft: hsl(221, 54%, 20%);
+		--pn-accent-contrast: hsl(224, 10%, 10%);
+		--pn-focus-halo: rgba(179, 203, 255, 0.22);
+
+		--pn-dot: #58a98c;
+		--pn-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+
+		--pn-error-bg: hsl(339, 39%, 16%);
+		--pn-error-border: hsl(339, 45%, 32%);
+		--pn-error-text: hsl(339, 82%, 80%);
+	}
+}

@@ -11,6 +11,6 @@ links:
   - label: Docs
     href: '/docs/'
 cta:
-  label: Request access
-  href: '/request-access/'
+  label: Request Integration
+  href: '/request-changes/'
 ---
